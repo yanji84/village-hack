@@ -213,6 +213,18 @@ async function animateHalfAdder(ha, a, b, sum, carry) {
   if (terminal) terminal.scrollTop = terminal.scrollHeight;
 }
 
+function addReplayButton(container, animationFn) {
+  const btn = document.createElement('span');
+  btn.textContent = '[ replay ]';
+  btn.style.cssText = 'color: var(--cyan, #00ffff); cursor: pointer; font-size: 11px; opacity: 0.6; transition: opacity 0.2s; margin-top: 4px; display: inline-block;';
+  btn.onmouseenter = () => btn.style.opacity = '1';
+  btn.onmouseleave = () => btn.style.opacity = '0.6';
+  btn.onclick = () => animationFn();
+  container.appendChild(btn);
+  const terminal = document.getElementById('terminal');
+  if (terminal) terminal.scrollTop = terminal.scrollHeight;
+}
+
 function resetHalfAdder(ha) {
   ha._xor.inp.textContent = 'A=?'; ha._xor.inp.style.color = '#00ff41';
   ha._and.inp.textContent = 'B=?'; ha._and.inp.style.color = '#00ff41';
@@ -497,8 +509,10 @@ function runLogicPhase() {
           addPre('  THE HALF-ADDER CIRCUIT\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n        A \u2500\u2500\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n            \u2502\n        B \u2500\u2500\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  Two inputs (A, B) \u2192 Two outputs (SUM, CARRY)');
           // Create half-adder visual
           s.halfAdder = createHalfAdder();
+          s.halfAdderWrapper = document.createElement('div');
+          s.halfAdderWrapper.appendChild(s.halfAdder);
           const haTerminal = document.getElementById('terminal');
-          haTerminal.appendChild(s.halfAdder);
+          haTerminal.appendChild(s.halfAdderWrapper);
           haTerminal.scrollTop = haTerminal.scrollHeight;
           addLine('', '');
           addLine('NEXUS: "Let\'s test it. A=1, B=1:"', 'highlight');
@@ -523,7 +537,16 @@ function runLogicPhase() {
         if (parts.length === 2 && parts[0] === 0 && parts[1] === 1) {
           sound.success();
           // Animate half-adder: A=1, B=1 -> SUM=0, CARRY=1
-          if (s.halfAdder) animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
+          if (s.halfAdder) {
+            animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
+            // Remove any previous replay button
+            const oldBtn = s.halfAdderWrapper.querySelector('span');
+            if (oldBtn && oldBtn.textContent === '[ replay ]') oldBtn.remove();
+            addReplayButton(s.halfAdderWrapper, async () => {
+              resetHalfAdder(s.halfAdder);
+              await animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
+            });
+          }
           addLine('[CORRECT] SUM=0, CARRY=1. Binary 10 = decimal 2.', 'success');
           addLine('  1 + 1 = 2. The circuit works!', 'success');
           addLine('', '');
@@ -545,6 +568,13 @@ function runLogicPhase() {
           if (s.halfAdder) {
             resetHalfAdder(s.halfAdder);
             animateHalfAdder(s.halfAdder, 1, 0, 1, 0);
+            // Remove any previous replay button
+            const oldBtn = s.halfAdderWrapper.querySelector('span');
+            if (oldBtn && oldBtn.textContent === '[ replay ]') oldBtn.remove();
+            addReplayButton(s.halfAdderWrapper, async () => {
+              resetHalfAdder(s.halfAdder);
+              await animateHalfAdder(s.halfAdder, 1, 0, 1, 0);
+            });
           }
           addLine('[CORRECT] SUM=1, CARRY=0. That\'s just 1. Because 1+0=1.', 'success');
           addLine('', '');

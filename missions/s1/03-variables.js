@@ -9,6 +9,18 @@ import {
 
 import { renderBox, createBoxElement, updateBoxValue, flashBox } from '../helpers.js';
 
+function addReplayButton(container, animationFn) {
+  const btn = document.createElement('span');
+  btn.textContent = '[ replay ]';
+  btn.style.cssText = 'color: var(--cyan, #00ffff); cursor: pointer; font-size: 11px; opacity: 0.6; transition: opacity 0.2s; margin-top: 4px; display: inline-block;';
+  btn.onmouseenter = () => btn.style.opacity = '1';
+  btn.onmouseleave = () => btn.style.opacity = '0.6';
+  btn.onclick = () => animationFn();
+  container.appendChild(btn);
+  const terminal = document.getElementById('terminal');
+  if (terminal) terminal.scrollTop = terminal.scrollHeight;
+}
+
 export const mission = {
   id: 2,
   num: '03',
@@ -80,9 +92,20 @@ function runVariablesPhase() {
         // Animated demo: show the replacement visually
         addLine('NEXUS: "Watch it happen:"', 'highlight');
         const term = getTerminal();
+        const wrapper0 = document.createElement('div');
         const scoreBox = createBoxElement('score');
-        term.appendChild(scoreBox);
+        wrapper0.appendChild(scoreBox);
+        term.appendChild(wrapper0);
         term.scrollTop = term.scrollHeight;
+
+        async function replayPhase0() {
+          await updateBoxValue(scoreBox, '?');
+          await sleep(500);
+          await updateBoxValue(scoreBox, '0');
+          await sleep(800);
+          await updateBoxValue(scoreBox, '10');
+          await sleep(600);
+        }
 
         (async () => {
           await sleep(500);
@@ -92,6 +115,7 @@ function runVariablesPhase() {
           addLine('    score = 10', 'info');
           await updateBoxValue(scoreBox, '10');
           await sleep(600);
+          addReplayButton(wrapper0, replayPhase0);
           addLine('NEXUS: "See? The 0 vanished. 10 took its place."', 'highlight');
           s.phase = 1;
           addLine('');
@@ -141,9 +165,20 @@ function runVariablesPhase() {
         // Animated demo: show x changing from 3 to 5
         addLine('NEXUS: "Watch the value get replaced:"', 'highlight');
         const term = getTerminal();
+        const wrapper1 = document.createElement('div');
         const xBox = createBoxElement('x');
-        term.appendChild(xBox);
+        wrapper1.appendChild(xBox);
+        term.appendChild(wrapper1);
         term.scrollTop = term.scrollHeight;
+
+        async function replayPhase1() {
+          await updateBoxValue(xBox, '?');
+          await sleep(500);
+          await updateBoxValue(xBox, '3');
+          await sleep(800);
+          await updateBoxValue(xBox, '5');
+          await sleep(600);
+        }
 
         (async () => {
           await sleep(500);
@@ -153,6 +188,7 @@ function runVariablesPhase() {
           addLine('    x = x + 2  \u2192  3 + 2 = 5', 'info');
           await updateBoxValue(xBox, '5');
           await sleep(600);
+          addReplayButton(wrapper1, replayPhase1);
           addLine('NEXUS: "3 is gone. 5 took its place."', 'highlight');
           s.phase = 2;
           addLine('');
@@ -191,14 +227,30 @@ function runVariablesPhase() {
         // Animated demo: two boxes side by side showing copy behavior
         addLine('NEXUS: "Watch closely:"', 'highlight');
         const term = getTerminal();
+        const wrapper2 = document.createElement('div');
         const flexRow = document.createElement('div');
         flexRow.style.cssText = 'display:flex;gap:16px;margin:12px 0;';
         const aBox = createBoxElement('a');
         const bBox = createBoxElement('b');
         flexRow.appendChild(aBox);
         flexRow.appendChild(bBox);
-        term.appendChild(flexRow);
+        wrapper2.appendChild(flexRow);
+        term.appendChild(wrapper2);
         term.scrollTop = term.scrollHeight;
+
+        async function replayPhase2() {
+          await updateBoxValue(aBox, '?');
+          await updateBoxValue(bBox, '?');
+          await sleep(500);
+          await updateBoxValue(aBox, '5');
+          await sleep(800);
+          await updateBoxValue(bBox, '5');
+          await sleep(800);
+          await updateBoxValue(aBox, '99');
+          await sleep(400);
+          await flashBox(bBox, '#ffaa00');
+          await sleep(600);
+        }
 
         (async () => {
           await sleep(500);
@@ -215,6 +267,7 @@ function runVariablesPhase() {
           await flashBox(bBox, '#ffaa00');
           addLine('    b is still 5 \u2014 it has its own copy!', 'success');
           await sleep(600);
+          addReplayButton(wrapper2, replayPhase2);
           s.phase = 3;
           addLine('');
           setTimeout(runVariablesPhase, 800);
@@ -263,14 +316,32 @@ function runVariablesPhase() {
 
         // Animated trace with two boxes
         const term = getTerminal();
+        const wrapper3 = document.createElement('div');
         const flexRow = document.createElement('div');
         flexRow.style.cssText = 'display:flex;gap:16px;margin:12px 0;';
         const xBox = createBoxElement('x');
         const yBox = createBoxElement('y');
         flexRow.appendChild(xBox);
         flexRow.appendChild(yBox);
-        term.appendChild(flexRow);
+        wrapper3.appendChild(flexRow);
+        term.appendChild(wrapper3);
         term.scrollTop = term.scrollHeight;
+
+        async function replayPhase3() {
+          await updateBoxValue(xBox, '?');
+          await updateBoxValue(yBox, '?');
+          await sleep(500);
+          await updateBoxValue(xBox, '10');
+          await sleep(800);
+          await updateBoxValue(yBox, '10');
+          await sleep(800);
+          await updateBoxValue(xBox, '15');
+          await sleep(400);
+          await flashBox(yBox, '#ffaa00');
+          await sleep(800);
+          await updateBoxValue(yBox, '8');
+          await sleep(600);
+        }
 
         (async () => {
           await sleep(500);
@@ -288,6 +359,7 @@ function runVariablesPhase() {
           addLine('  4: y = y - 2  \u2192  10 - 2 = 8', 'info');
           await updateBoxValue(yBox, '8');
           await sleep(600);
+          addReplayButton(wrapper3, replayPhase3);
 
           addLine('', '');
           addLine('NEXUS: "Assignment, overwriting, the arrow rule, and', 'highlight');

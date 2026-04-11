@@ -59,6 +59,17 @@ function scrollTerminal() {
   if (t) t.scrollTop = t.scrollHeight;
 }
 
+function addReplayButton(container, animationFn) {
+  const btn = document.createElement('span');
+  btn.textContent = '[ replay ]';
+  btn.style.cssText = 'color: var(--cyan, #00ffff); cursor: pointer; font-size: 11px; opacity: 0.6; transition: opacity 0.2s; margin-top: 4px; display: inline-block;';
+  btn.onmouseenter = () => btn.style.opacity = '1';
+  btn.onmouseleave = () => btn.style.opacity = '0.6';
+  btn.onclick = () => animationFn();
+  container.appendChild(btn);
+  scrollTerminal();
+}
+
 export const mission = {
   id: 3,
   num: '04',
@@ -115,8 +126,10 @@ function runRecoveryPhase() {
         // ── Animated variable tracker for Level 1 ──
         (async () => {
           const terminal = document.getElementById('terminal');
+          const wrapper = document.createElement('div');
           const tracker = makeTracker();
-          terminal.appendChild(tracker);
+          wrapper.appendChild(tracker);
+          terminal.appendChild(wrapper);
           scrollTerminal();
 
           // Step 1: x appears
@@ -139,10 +152,28 @@ function runRecoveryPhase() {
 
           // Step 4: annotation
           const ann = makeAnnotation('3 + 5 = 8');
-          tracker.parentNode.insertBefore(ann, tracker.nextSibling);
+          wrapper.appendChild(ann);
           requestAnimationFrame(() => { ann.style.opacity = '1'; });
           scrollTerminal();
           await sleep(600);
+
+          async function replayLevel1() {
+            await updateVarBox(boxX, '?');
+            await updateVarBox(boxY, '?');
+            await updateVarBox(boxZ, '?');
+            ann.style.opacity = '0';
+            await sleep(300);
+            await updateVarBox(boxX, 3);
+            await sleep(800);
+            await updateVarBox(boxY, 5);
+            await sleep(800);
+            await updateVarBox(boxZ, 8);
+            await sleep(800);
+            ann.style.opacity = '1';
+            scrollTerminal();
+            await sleep(600);
+          }
+          addReplayButton(wrapper, replayLevel1);
 
           addLine('NEXUS: "Binary to decimal, then variable tracing. Two', 'highlight');
           addLine('        skills chained together."', 'highlight');
@@ -185,8 +216,10 @@ function runRecoveryPhase() {
         // ── Animated variable tracker for Level 2 ──
         (async () => {
           const terminal = document.getElementById('terminal');
+          const wrapper = document.createElement('div');
           const tracker = makeTracker();
-          terminal.appendChild(tracker);
+          wrapper.appendChild(tracker);
+          terminal.appendChild(wrapper);
           scrollTerminal();
 
           // Step 1: a=4, b=3 (decoded from binary)
@@ -201,7 +234,7 @@ function runRecoveryPhase() {
           const boxC = createVarBox('c', 7);
           tracker.appendChild(boxC);
           const ann1 = makeAnnotation('c = a + b = 4 + 3 = 7');
-          tracker.parentNode.insertBefore(ann1, tracker.nextSibling);
+          wrapper.appendChild(ann1);
           requestAnimationFrame(() => { ann1.style.opacity = '1'; });
           scrollTerminal();
           await sleep(800);
@@ -217,6 +250,31 @@ function runRecoveryPhase() {
           ann1.textContent = 'b = new a + old b = 6 + 3 = 9';
           scrollTerminal();
           await sleep(600);
+
+          async function replayLevel2() {
+            await updateVarBox(boxA, '?');
+            await updateVarBox(boxB, '?');
+            await updateVarBox(boxC, '?');
+            ann1.style.opacity = '0';
+            await sleep(300);
+            await updateVarBox(boxA, 4);
+            await updateVarBox(boxB, 3);
+            await sleep(800);
+            await updateVarBox(boxC, 7);
+            ann1.textContent = 'c = a + b = 4 + 3 = 7';
+            ann1.style.opacity = '1';
+            scrollTerminal();
+            await sleep(800);
+            await updateVarBox(boxA, 6);
+            ann1.textContent = 'a = c - 1 = 7 - 1 = 6  (a changed!)';
+            scrollTerminal();
+            await sleep(800);
+            await updateVarBox(boxB, 9);
+            ann1.textContent = 'b = new a + old b = 6 + 3 = 9';
+            scrollTerminal();
+            await sleep(600);
+          }
+          addReplayButton(wrapper, replayLevel2);
 
           addLine('NEXUS: "Let me trace it:', 'highlight');
           addLine('  a=0100=4, b=0011=3', 'info');
@@ -274,8 +332,10 @@ function runRecoveryPhase() {
         // ── Animated backward trace for Level 3 ──
         (async () => {
           const terminal = document.getElementById('terminal');
+          const wrapper = document.createElement('div');
           const tracker = makeTracker();
-          terminal.appendChild(tracker);
+          wrapper.appendChild(tracker);
+          terminal.appendChild(wrapper);
           scrollTerminal();
 
           // Step 1: Show starting state: a=6, b=?, c=24
@@ -290,7 +350,7 @@ function runRecoveryPhase() {
 
           // Step 2: c was 24, before x2 it was 12
           const ann = makeAnnotation('c was 24, before \u00d72 it was 12');
-          tracker.parentNode.insertBefore(ann, tracker.nextSibling);
+          wrapper.appendChild(ann);
           requestAnimationFrame(() => { ann.style.opacity = '1'; });
           await updateVarBox(boxC, 12);
           scrollTerminal();
@@ -301,6 +361,25 @@ function runRecoveryPhase() {
           await updateVarBox(boxB, 6);
           scrollTerminal();
           await sleep(600);
+
+          async function replayLevel3() {
+            await updateVarBox(boxA, 6);
+            await updateVarBox(boxB, '?');
+            await updateVarBox(boxC, 24);
+            ann.style.opacity = '0';
+            scrollTerminal();
+            await sleep(800);
+            ann.textContent = 'c was 24, before \u00d72 it was 12';
+            ann.style.opacity = '1';
+            await updateVarBox(boxC, 12);
+            scrollTerminal();
+            await sleep(800);
+            ann.textContent = '12 = 6 + b, so b = 6';
+            await updateVarBox(boxB, 6);
+            scrollTerminal();
+            await sleep(600);
+          }
+          addReplayButton(wrapper, replayLevel3);
 
           addLine('NEXUS: "Here\'s the reverse trace:', 'highlight');
           addLine('  a = 0110 = 6', 'info');
