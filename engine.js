@@ -446,8 +446,8 @@ function renderTable(rows, cols) {
   terminal.scrollTop = terminal.scrollHeight;
 }
 
-function renderMaze() {
-  const maze = state.missionState.maze;
+function renderMaze(mazeArg) {
+  const maze = mazeArg || state.missionState.maze;
   let html = '<div class="maze-display">';
   for (const row of maze) {
     for (const cell of row) {

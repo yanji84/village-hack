@@ -33,10 +33,10 @@ const MISSIONS = [
   {
     id: 2,
     num: '03',
-    title: 'MAZE ROUTER',
-    name: 'The Maze Router',
-    desc: 'Guide a data packet through the network maze to reach the server.',
-    skill: 'SKILL: Algorithms + Navigation',
+    title: 'FIRST PROGRAM',
+    name: 'Your First Program',
+    desc: 'Write a sequence of instructions for a robot to follow. One wrong step and it crashes. This is programming.',
+    skill: 'SKILL: Algorithms + Sequential Instructions + Debugging',
   },
   {
     id: 3,
@@ -160,9 +160,9 @@ const missionHints = {
     'Every time the range doubles, you only need ONE more guess. That\'s the magic.',
   ],
   2: [
-    "Don't plan the whole route at once. Where's the FIRST wall blocking you?",
-    'If a direction looks blocked, that\'s information \u2014 now you know one LESS option.',
-    "Sometimes the long way is the only way. Don't fight the walls \u2014 follow them.",
+    'Trace your program step by step with your finger on the maze BEFORE you submit.',
+    'If it crashed, look at which step hit the wall. Everything BEFORE that step was correct.',
+    'The computer runs your program EXACTLY as written. No shortcuts, no common sense.',
   ],
   3: [
     'Work backward. The gate wants an output of 1. What inputs would make it happy?',
@@ -1063,126 +1063,203 @@ function runSearchPhase() {
 }
 
 // ============================================================
-// MISSION 3: MAZE ROUTER
+// MISSION 3: YOUR FIRST PROGRAM
 // ============================================================
+const programMazes = [
+  {
+    name: 'School Server',
+    grid: [
+      '########',
+      '#@.....#',
+      '#.####.#',
+      '#.#..#.#',
+      '#.#.##.#',
+      '#......#',
+      '#.####X#',
+      '########',
+    ],
+    par: 10,
+    hint: 'Plan the whole route first, then type it all at once.',
+  },
+  {
+    name: 'Town Hall Server',
+    grid: [
+      '##########',
+      '#@..#....#',
+      '#.#.#.##.#',
+      '#.#...#..#',
+      '#.#####.##',
+      '#.......##',
+      '####.##..#',
+      '#....#..X#',
+      '##########',
+    ],
+    par: 13,
+    hint: 'The path goes around the big wall in the middle.',
+  },
+];
+
 missionRunners[2] = async function() {
   state.missionState = { mazeIdx: 0, hintIdx: 0 };
 
   await typeLines([
-    { text: '[ROUTING EMERGENCY] Village packets stranded.', cls: 'system' },
+    { text: '[SYSTEM] Village network offline. Manual routing required.', cls: 'system' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Most people think data just TELEPORTS to a server.', cls: 'highlight' },
-    { text: '        It doesn\'t. Every message is a little packet that', cls: 'highlight' },
-    { text: '        HOPS through routers, one step at a time, picking its', cls: 'highlight' },
-    { text: '        way through the network."', cls: 'highlight' },
+    { text: 'NEXUS: "Time for something different. So far you\'ve decoded', cls: 'highlight' },
+    { text: '        data and searched lists. Now you\'re going to write', cls: 'highlight' },
+    { text: '        your first PROGRAM."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "The AI knocked half the village routers offline. The', cls: 'highlight' },
-    { text: '        packets are lost in there, bumping into firewalls. I', cls: 'highlight' },
-    { text: '        need you to walk one through \u2014 manually."', cls: 'highlight' },
+    { text: 'NEXUS: "What is a program? It\'s a list of instructions. Step', cls: 'highlight' },
+    { text: '        1, step 2, step 3. The computer reads them in order', cls: 'highlight' },
+    { text: '        and does EXACTLY what you wrote. No more. No less.', cls: 'highlight' },
+    { text: '        No common sense."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "On your screen: @ is you \u2014 the packet. X is the', cls: 'highlight' },
-    { text: '        destination server. # marks are firewalls. You can\'t', cls: 'highlight' },
-    { text: '        walk through them."', cls: 'highlight' },
+    { text: 'NEXUS: "If you write UP UP RIGHT and there\'s a wall after', cls: 'highlight' },
+    { text: '        the first UP, the program CRASHES. The computer', cls: 'highlight' },
+    { text: '        doesn\'t think \'oh, I should go around.\' It just', cls: 'highlight' },
+    { text: '        stops. That\'s a BUG in YOUR program."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Type UP, DOWN, LEFT, or RIGHT to move one step. Plan', cls: 'highlight' },
-    { text: '        your route. Don\'t just rush at the exit."', cls: 'highlight' },
+    { text: 'NEXUS: "Your job: write the COMPLETE route from @ to X.', cls: 'highlight' },
+    { text: '        Type ALL the steps at once, separated by spaces.', cls: 'highlight' },
+    { text: '        Then hit Enter and watch your program run."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "One more thing. Every network has a SHORTEST PATH \u2014', cls: 'highlight' },
-    { text: '        the best possible route. Real routers compute it', cls: 'highlight' },
-    { text: '        automatically. I\'ll tell you the PAR for each maze,', cls: 'highlight' },
-    { text: '        so you\'ll know if you found it or not."', cls: 'highlight' },
+    { text: 'NEXUS: "# is a wall. . is open. Plan the path before you', cls: 'highlight' },
+    { text: '        type ANYTHING. That\'s what real programmers do \u2014', cls: 'highlight' },
+    { text: '        they THINK first, then code."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Match par and you\'re thinking like a router. Beat par', cls: 'highlight' },
-    { text: '        and you\'re better than a router."', cls: 'highlight' },
+    { text: '  Commands: UP  DOWN  LEFT  RIGHT  (or U D L R)', cls: 'info' },
+    { text: '  Example:  RIGHT RIGHT DOWN DOWN LEFT', cls: 'info' },
     { text: '', cls: '' },
   ]);
 
-  loadMaze(0);
+  loadProgramMaze(0);
 };
 
-function loadMaze(idx) {
-  const m = mazes[idx];
-  state.missionState.maze = m.grid.map(r => r.split(''));
-  state.missionState.moves = 0;
+function loadProgramMaze(idx) {
+  const m = programMazes[idx];
+  const s = state.missionState;
+  s.origGrid = m.grid;
+  s.par = m.par;
+  s.attempts = 0;
+  setPhaseProgress(idx + 1, programMazes.length);
 
-  // Find player
-  const maze = state.missionState.maze;
-  for (let r = 0; r < maze.length; r++) {
-    for (let c = 0; c < maze[r].length; c++) {
-      if (maze[r][c] === '@') {
-        state.missionState.pr = r;
-        state.missionState.pc = c;
-      }
-    }
-  }
+  addLine(`\u2501\u2501\u2501 ${m.name}  (Par: ${m.par} steps) \u2501\u2501\u2501`, 'highlight');
 
-  state.missionState.par = m.par;
-  addLine(`\u2501\u2501\u2501 ${m.name}  (Par: ${m.par} moves) \u2501\u2501\u2501`, 'highlight');
-  renderMaze();
-  addLine('[ Moves: 0 ]', 'info');
+  // Render the maze
+  const maze = m.grid.map(r => r.split(''));
+  renderMaze(maze);
+
+  addLine('', '');
+  addLine('Write your program (all steps, space-separated):', 'warning');
 
   setCurrentInputHandler((input) => {
-    const dir = input.toUpperCase().trim();
-    const dirMap = { 'UP': [-1,0], 'U': [-1,0], 'DOWN': [1,0], 'D': [1,0], 'LEFT': [0,-1], 'L': [0,-1], 'RIGHT': [0,1], 'R': [0,1] };
+    const dirMap = { UP:[-1,0], U:[-1,0], DOWN:[1,0], D:[1,0], LEFT:[0,-1], L:[0,-1], RIGHT:[0,1], R:[0,1] };
+    const steps = input.toUpperCase().trim().split(/[\s,]+/);
 
-    if (!dirMap[dir]) {
-      addLine('Unknown command. Use UP, DOWN, LEFT, or RIGHT.', 'error');
+    if (steps.length === 0 || (steps.length === 1 && steps[0] === '')) {
+      addLine('[ERROR] Write at least one step.', 'error');
       return;
     }
 
-    const [dr, dc] = dirMap[dir];
-    const s = state.missionState;
-    const nr = s.pr + dr;
-    const nc = s.pc + dc;
-    const maze = s.maze;
-
-    if (nr < 0 || nr >= maze.length || nc < 0 || nc >= maze[0].length || maze[nr][nc] === '#') {
-      sound.denied();
-      addLine('BLOCKED! Can\'t move there \u2014 firewall detected.', 'error');
-      return;
+    // Validate all steps are valid directions
+    for (let i = 0; i < steps.length; i++) {
+      if (!dirMap[steps[i]]) {
+        addLine(`[SYNTAX ERROR] Step ${i+1}: "${steps[i]}" is not a command. Use UP DOWN LEFT RIGHT.`, 'error');
+        return;
+      }
     }
 
-    sound.keyClick();
-    s.moves++;
+    s.attempts++;
 
-    // Check if reached goal
-    if (maze[nr][nc] === 'X') {
-      maze[s.pr][s.pc] = '.';
+    // Execute the program step by step
+    const maze = m.grid.map(r => r.split(''));
+    let pr, pc;
+    for (let r = 0; r < maze.length; r++) {
+      for (let c = 0; c < maze[r].length; c++) {
+        if (maze[r][c] === '@') { pr = r; pc = c; }
+      }
+    }
+
+    let crashStep = -1;
+    let reachedGoal = false;
+
+    for (let i = 0; i < steps.length; i++) {
+      const [dr, dc] = dirMap[steps[i]];
+      const nr = pr + dr;
+      const nc = pc + dc;
+
+      if (nr < 0 || nr >= maze.length || nc < 0 || nc >= maze[0].length || maze[nr][nc] === '#') {
+        crashStep = i;
+        break;
+      }
+
+      maze[pr][pc] = ',';
+      pr = nr;
+      pc = nc;
+
+      if (maze[nr][nc] === 'X') {
+        maze[nr][nc] = '@';
+        reachedGoal = true;
+        break;
+      }
       maze[nr][nc] = '@';
-      s.pr = nr; s.pc = nc;
-      renderMaze();
+    }
+
+    // Show result
+    renderMaze(maze);
+
+    if (reachedGoal) {
       sound.success();
-      const moves = s.moves;
-      const par = s.par;
-      addLine(`[CONNECTED] Packet delivered in ${moves} moves. (Par: ${par})`, 'success');
-      if (moves === par) {
-        addLine('NEXUS: "Perfect run. You found the shortest path. That\'s', 'highlight');
-        addLine('        exactly how a real router thinks."', 'highlight');
-      } else if (moves < par) {
-        addLine('NEXUS: "Wait \u2014 you beat par? Let me recheck the maps...', 'highlight');
-        addLine('        ...huh. You actually did. Impressive."', 'highlight');
+      const stepCount = steps.length;
+      addLine(`[PROGRAM COMPLETE] Reached X in ${stepCount} steps!`, 'success');
+
+      if (stepCount <= s.par) {
+        addLine('NEXUS: "Optimal path. Clean code. No wasted moves."', 'highlight');
       } else {
-        const extra = moves - par;
-        addLine(`NEXUS: "Nice work. You took ${extra} extra steps \u2014 small`, 'highlight');
-        addLine('        detours are normal when you\'re navigating blind."', 'highlight');
+        addLine(`NEXUS: "It works! Par was ${s.par} \u2014 you used ${stepCount}.`, 'highlight');
+        addLine('        A working program is always better than no program."', 'highlight');
+      }
+
+      if (s.attempts > 1) {
+        addLine(`NEXUS: "Took ${s.attempts} attempts. Every failed attempt taught`, 'highlight');
+        addLine('        you something. That\'s called DEBUGGING \u2014 fixing', 'highlight');
+        addLine('        your program until it works."', 'highlight');
       }
 
       s.mazeIdx = (s.mazeIdx || 0) + 1;
-      if (s.mazeIdx < mazes.length) {
-        addLine(`\nOne more network to fix...`, 'info');
-        setTimeout(() => loadMaze(s.mazeIdx), 1200);
+      if (s.mazeIdx < programMazes.length) {
+        addLine('', '');
+        addLine('NEXUS: "Good. Next one is harder."', 'highlight');
+        setTimeout(() => loadProgramMaze(s.mazeIdx), 1200);
       } else {
-        addLine('All network routes restored!', 'success big');
+        addLine('', '');
+        addLine('NEXUS: "You just wrote and debugged real programs. A list', 'highlight');
+        addLine('        of instructions, executed in order, exactly as', 'highlight');
+        addLine('        written. That\'s what EVERY program is \u2014 from a', 'highlight');
+        addLine('        simple script to an operating system."', 'highlight');
         setCurrentInputHandler(null);
         setTimeout(() => completeMission(2), 1200);
       }
-      return;
+    } else if (crashStep >= 0) {
+      sound.denied();
+      addLine(`[CRASH] Step ${crashStep + 1} ("${steps[crashStep]}") hit a wall!`, 'error');
+      if (crashStep === 0) {
+        addLine('NEXUS: "Very first step crashed. Look at the maze more', 'highlight');
+        addLine('        carefully before writing."', 'highlight');
+      } else {
+        addLine(`NEXUS: "Steps 1-${crashStep} were fine. Step ${crashStep + 1} is the`, 'highlight');
+        addLine('        bug. Fix it and resubmit the whole program."', 'highlight');
+      }
+      addLine('', '');
+      addLine('Try again \u2014 write the complete program:', 'warning');
+    } else {
+      sound.denied();
+      addLine(`[PROGRAM ENDED] Ran all ${steps.length} steps but didn't reach X.`, 'error');
+      addLine('NEXUS: "Your program ran without crashing \u2014 but it stopped', 'highlight');
+      addLine('        before reaching the goal. You need more steps."', 'highlight');
+      addLine('', '');
+      addLine('Try again:', 'warning');
     }
-
-    maze[s.pr][s.pc] = ','; // visited
-    maze[nr][nc] = '@';
-    s.pr = nr; s.pc = nc;
-    renderMaze();
   });
 }
 
