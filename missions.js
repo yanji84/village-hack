@@ -1197,150 +1197,168 @@ missionRunners[2] = async function() {
   await typeLines([
     { text: '[SYSTEM] AI memory banks partially accessible.', cls: 'system' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "You know binary. You\'ve written a program. Now you', cls: 'highlight' },
-    { text: '        need to learn how computers REMEMBER things."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "When a computer needs to keep track of something \u2014', cls: 'highlight' },
-    { text: '        a score, a name, a count \u2014 it puts it in a box and', cls: 'highlight' },
-    { text: '        gives the box a NAME. That named box is called a', cls: 'highlight' },
-    { text: '        VARIABLE."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "You write: score = 0. Now there\'s a box called', cls: 'highlight' },
-    { text: '        \'score\' and it holds 0. Later you write: score = 10.', cls: 'highlight' },
-    { text: '        Same box, new value. The old value is gone."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "The tricky part? Variables CHANGE as the program', cls: 'highlight' },
-    { text: '        runs. Line 1 might set x to 5. Line 3 might change', cls: 'highlight' },
-    { text: '        it to 8. You have to track every change, in order."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Let\'s practice. I\'ll show you code, you tell me', cls: 'highlight' },
-    { text: '        what the variables hold at the end."', cls: 'highlight' },
+    { text: 'NEXUS: "You can store data and give instructions. But how', cls: 'highlight' },
+    { text: '        does a computer REMEMBER things? Watch."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
 
   runVariablesPhase();
 };
 
+function renderBox(name, value) {
+  // Render a visual "variable box"
+  const v = value === undefined ? '' : String(value);
+  return `  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502  ${name.padEnd(8)}\u2502\n  \u2502  ${(v || '        ').toString().padEnd(8)}\u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518`;
+}
+
 function runVariablesPhase() {
   const s = state.missionState;
-  setPhaseProgress(s.phase + 1, 4);
 
   if (s.phase === 0) {
-    // Phase 1: Simple assignment
-    addLine('\u2501\u2501\u2501 Phase 1: Setting Variables \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Start simple. Read each line and track the values."', 'highlight');
+    // Phase 1: The box metaphor — visual
+    addLine('NEXUS: "Imagine a box with a label on it:"', 'highlight');
     addLine('', '');
-    addPre('  1  x = 5\n  2  y = 3\n  3  z = x + y');
+    addPre(renderBox('score', ''));
     addLine('', '');
-    addLine('What is z?', 'warning');
+    addLine('NEXUS: "I write: score = 0"', 'highlight');
+    addLine('', '');
+    addPre(renderBox('score', '0'));
+    addLine('', '');
+    addLine('NEXUS: "Now I write: score = 10"', 'highlight');
+    addLine('', '');
+    addPre(renderBox('score', '10'));
+    addLine('', '');
+    addLine('NEXUS: "The 0 is GONE. Replaced. The box only holds ONE', 'highlight');
+    addLine('        thing at a time. The old value is erased forever."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "This box is called a VARIABLE. Named storage."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Quick check. I run these two lines:"', 'highlight');
+    addPre('  1  age = 7\n  2  age = 9');
+    addLine('', '');
+    addLine('What is age now?', 'warning');
 
     setCurrentInputHandler((input) => {
-      if (input.trim() === '8') {
+      if (input.trim() === '9') {
         sound.success();
-        addLine('[CORRECT] x=5, y=3, z = 5+3 = 8.', 'success');
-        addLine('NEXUS: "The computer reads line by line. By line 3, it', 'highlight');
-        addLine('        knows x is 5 and y is 3. So x + y = 8."', 'highlight');
+        addLine('[CORRECT] age was 7, then replaced with 9.', 'success');
+        addLine('NEXUS: "The 7 is gone. Only 9 remains."', 'highlight');
         s.phase = 1;
         addLine('');
-        setTimeout(runVariablesPhase, 900);
+        setTimeout(runVariablesPhase, 800);
+      } else if (input.trim() === '7') {
+        sound.denied();
+        addLine('[WRONG] Line 2 REPLACED the value. age was 7, then became 9.', 'error');
       } else {
         sound.denied();
-        addLine('[WRONG] x is 5 and y is 3. What is x + y?', 'error');
+        addLine('[WRONG] Line 1 puts 7 in. Line 2 replaces it with 9. What\'s left?', 'error');
       }
     });
 
   } else if (s.phase === 1) {
-    // Phase 2: Overwriting variables
-    addLine('\u2501\u2501\u2501 Phase 2: Variables Can Change \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Here\'s where it gets interesting. A variable can be', 'highlight');
-    addLine('        OVERWRITTEN. The new value replaces the old one."', 'highlight');
+    // Phase 2: The = trap — arrow mental model
+    addLine('\u2501\u2501\u2501 The = Trap \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "WARNING. This trips up everyone. In math class, =', 'highlight');
+    addLine('        means \'is equal to.\' In code, = means something', 'highlight');
+    addLine('        completely different."', 'highlight');
     addLine('', '');
-    addPre('  1  x = 10\n  2  x = 20\n  3  x = x + 5');
+    addLine('NEXUS: "In code, = means: take the thing on the RIGHT,', 'highlight');
+    addLine('        and PUT it INTO the box on the LEFT."', 'highlight');
     addLine('', '');
-    addLine('What is x after line 3?', 'warning');
+    addLine('NEXUS: "Read it like an arrow:"', 'highlight');
+    addLine('', '');
+    addPre('  x = 5        means    5 \u2192 x      put 5 into x\n  x = x + 1    means    x+1 \u2192 x    take x, add 1, store it back');
+    addLine('', '');
+    addLine('NEXUS: "In math, x = x + 1 is impossible. Nothing equals', 'highlight');
+    addLine('        itself plus one. But in code, it happens a MILLION', 'highlight');
+    addLine('        times a day. It just means: take the current x,', 'highlight');
+    addLine('        add 1, put the result back into x."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Try it:"', 'highlight');
+    addPre('  1  x = 3\n  2  x = x + 2');
+    addLine('', '');
+    addLine('What is x after line 2?', 'warning');
 
     setCurrentInputHandler((input) => {
-      if (input.trim() === '25') {
+      if (input.trim() === '5') {
         sound.success();
-        addLine('[CORRECT] Line 1: x=10. Line 2: x=20 (overwritten!).', 'success');
-        addLine('  Line 3: x = 20+5 = 25.', 'success');
-        addLine('NEXUS: "The 10 is gone forever after line 2. When you', 'highlight');
-        addLine('        write x = 20, the old value is erased. Line 3', 'highlight');
-        addLine('        uses the CURRENT value of x, which is 20."', 'highlight');
+        addLine('[CORRECT] x starts at 3. Line 2: take 3, add 2, store 5 back.', 'success');
+        addLine('NEXUS: "Read = as an arrow. Right side computed first,', 'highlight');
+        addLine('        result goes into the left side. Every time."', 'highlight');
         s.phase = 2;
         addLine('');
-        setTimeout(runVariablesPhase, 900);
+        setTimeout(runVariablesPhase, 800);
+      } else if (input.trim() === '3') {
+        sound.denied();
+        addLine('[WRONG] Line 2 changes x. It takes the old x (3), adds 2. What\'s 3+2?', 'error');
       } else {
         sound.denied();
-        addLine('[WRONG] After line 2, x is 20 (not 10 anymore). Then line 3 adds 5.', 'error');
+        addLine('[WRONG] Line 1: x is 3. Line 2: x = x + 2 = 3 + 2 = ?', 'error');
       }
     });
 
   } else if (s.phase === 2) {
-    // Phase 3: Two variables interacting
-    addLine('\u2501\u2501\u2501 Phase 3: Variables Working Together \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Now two variables that depend on each other.', 'highlight');
-    addLine('        Track both. Use paper if you need to."', 'highlight');
+    // Phase 3: Copy, not link
+    addLine('\u2501\u2501\u2501 Copies, Not Links \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "One more trap. When you write b = a, the computer', 'highlight');
+    addLine('        COPIES a\'s value into b. It doesn\'t link them."', 'highlight');
     addLine('', '');
-    addPre('  1  a = 3\n  2  b = a * 2\n  3  a = b + 1\n  4  b = a - b');
+    addPre('  1  a = 5\n  2  b = a       \u2190 b gets a COPY of 5\n  3  a = 99      \u2190 a changes');
     addLine('', '');
-    addLine('What are a and b after line 4? Type: a b', 'warning');
+    addLine('NEXUS: "a changed to 99. But b still has the COPY from', 'highlight');
+    addLine('        line 2. Changing a doesn\'t change b."', 'highlight');
+    addLine('', '');
+    addLine('What is b?', 'warning');
 
     setCurrentInputHandler((input) => {
-      const parts = input.trim().split(/[\s,]+/).map(Number);
-      // a=3, b=3*2=6, a=6+1=7, b=7-6=1
-      if (parts.length === 2 && parts[0] === 7 && parts[1] === 1) {
+      if (input.trim() === '5') {
         sound.success();
-        addLine('[CORRECT] a=3 \u2192 b=6 \u2192 a=7 \u2192 b=1', 'success');
-        addLine('NEXUS: "Line by line:', 'highlight');
-        addLine('  1: a=3', 'info');
-        addLine('  2: b = 3*2 = 6', 'info');
-        addLine('  3: a = 6+1 = 7  (a CHANGED \u2014 it\'s not 3 anymore)', 'info');
-        addLine('  4: b = 7-6 = 1  (using the NEW a, not the old one)"', 'info');
-        addLine('NEXUS: "The order matters. Line 3 changes a BEFORE line 4', 'highlight');
-        addLine('        uses it. Miss that, and you get the wrong answer."', 'highlight');
+        addLine('[CORRECT] b is still 5. It got a copy, not a link.', 'success');
+        addLine('NEXUS: "b = a copied the VALUE (5), not a connection to a.', 'highlight');
+        addLine('        After that, a and b are independent."', 'highlight');
         s.phase = 3;
         addLine('');
-        setTimeout(runVariablesPhase, 900);
+        setTimeout(runVariablesPhase, 800);
+      } else if (input.trim() === '99') {
+        sound.denied();
+        addLine('[WRONG] b got a COPY of a at line 2 (when a was 5). Line 3 changed a, not b.', 'error');
       } else {
         sound.denied();
-        addLine('[WRONG] Trace each line in order. Write the values after each line.', 'error');
-        addLine('  Line 1: a = ?', 'info');
-        addLine('  Line 2: b = a * 2 = ?', 'info');
-        addLine('  Line 3: a = b + 1 = ?  (b is still the value from line 2)', 'info');
-        addLine('  Line 4: b = a - b = ?  (a is now the value from line 3)', 'info');
+        addLine('[WRONG] b = a copies the value at that moment. a was 5 then. a changed later, but b didn\'t.', 'error');
       }
     });
 
   } else if (s.phase === 3) {
-    // Phase 4: Real code — predict the output
-    addLine('\u2501\u2501\u2501 Phase 4: Predict the Output \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Final one. This looks like real code. A variable', 'highlight');
-    addLine('        called \'message\' is being built piece by piece."', 'highlight');
+    // Phase 4: Predict output (payoff)
+    addLine('\u2501\u2501\u2501 Predict the Output \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Put it all together. Trace this program."', 'highlight');
     addLine('', '');
-    addPre('  1  message = "HELLO"\n  2  name = "WORLD"\n  3  result = message + " " + name\n  4  length = 11\n  5  print(result)');
+    addPre('  1  message = "HELLO"\n  2  name = "WORLD"\n  3  result = message + " " + name\n  4  print(result)');
     addLine('', '');
-    addLine('What does line 5 print? Type the output:', 'warning');
+    addLine('What does line 4 print?', 'warning');
 
     setCurrentInputHandler((input) => {
       if (input.trim().toUpperCase() === 'HELLO WORLD') {
         sound.success();
-        addLine('[CORRECT] HELLO WORLD \u2014 the most famous first output in programming.', 'success');
+        addLine('[CORRECT] HELLO WORLD', 'success');
         addLine('', '');
-        addLine('NEXUS: "Every programmer\'s first program prints Hello World.', 'highlight');
-        addLine('        You just traced one in your head. That means you can', 'highlight');
-        addLine('        READ code. Not just write it \u2014 READ it."', 'highlight');
+        addLine('NEXUS: "Every programmer\'s first program prints Hello', 'highlight');
+        addLine('        World. You just traced one in your head."', 'highlight');
         addLine('', '');
-        addLine('NEXUS: "You now know the three pillars of computing:', 'highlight');
-        addLine('        DATA (binary), INSTRUCTIONS (programs), and', 'highlight');
-        addLine('        MEMORY (variables). Everything else in computer', 'highlight');
-        addLine('        science is built from these three."', 'highlight');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(2), 1200);
+        addLine('NEXUS: "Three missions, three pillars:', 'highlight');
+        addLine('        DATA (binary) \u2014 how computers store things.', 'highlight');
+        addLine('        INSTRUCTIONS (programs) \u2014 how they do things.', 'highlight');
+        addLine('        MEMORY (variables) \u2014 how they remember things.', 'highlight');
+        addLine('        Everything in CS is built from these three."', 'highlight');
+        addLine('', '');
+        addLine('[ Type NEXT to continue ]', 'warning');
+        setCurrentInputHandler(() => {
+          setCurrentInputHandler(null);
+          completeMission(2);
+        });
       } else {
         sound.denied();
-        addLine('[WRONG] Line 3 joins message, a space, and name together.', 'error');
-        addLine('  What is message? What is name? Put a space between them.', 'info');
+        addLine('[WRONG] message is "HELLO", name is "WORLD". The + joins them with a space.', 'error');
       }
     });
   }
