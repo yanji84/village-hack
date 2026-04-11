@@ -49,10 +49,10 @@ const MISSIONS = [
   {
     id: 4,
     num: '05',
-    title: 'FIREWALL BYPASS',
-    name: 'Firewall Bypass',
-    desc: 'Solve logic gate puzzles to open the firewall doors. AND, OR, NOT \u2014 the building blocks of all computers.',
-    skill: 'SKILL: Boolean Logic',
+    title: 'LOGIC GATES',
+    name: 'Logic Gates',
+    desc: 'Learn how computers DECIDE things \u2014 using AND, OR, NOT. Then build a calculator from gates.',
+    skill: 'SKILL: Boolean Logic + Building Hardware',
   },
   {
     id: 5,
@@ -1568,81 +1568,285 @@ function runRecoveryPhase() {
 }
 
 // ============================================================
-// MISSION 5: FIREWALL BYPASS (Logic Gates)
+// MISSION 5: LOGIC GATES — How Computers Decide (and do math)
 // ============================================================
 missionRunners[4] = async function() {
-  state.missionState = { gateIdx: 0, hintIdx: 0 };
+  state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
-    { text: '[TRAFFIC CONTROL OFFLINE] Firewall in the way.', cls: 'system' },
+    { text: '[TRAFFIC CONTROL OFFLINE] Firewall blocking access.', cls: 'system' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Every firewall in the world is really just a big pile', cls: 'highlight' },
-    { text: '        of DECISIONS. If this, then allow. Else, block. Each', cls: 'highlight' },
-    { text: '        decision is a tiny component called a LOGIC GATE."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Logic gates only understand two things: 1 (on) and 0', cls: 'highlight' },
-    { text: '        (off). You give them input, they give you output. One', cls: 'highlight' },
-    { text: '        input, one output. Or two inputs, one output. That\'s', cls: 'highlight' },
-    { text: '        the whole job."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Here\'s what\'ll blow your mind: three gates \u2014 AND, OR,', cls: 'highlight' },
-    { text: '        and NOT \u2014 are enough to build ANY computer. Your', cls: 'highlight' },
-    { text: '        phone. The Internet. All of it. Three gates."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Five locked gates between you and the traffic lights.', cls: 'highlight' },
-    { text: '        I\'ll walk you through each one. Read the rules, think', cls: 'highlight' },
-    { text: '        backward from the output you want."', cls: 'highlight' },
+    { text: 'NEXUS: "Computers don\'t just store data and follow steps.', cls: 'highlight' },
+    { text: '        They make DECISIONS. And every decision a computer', cls: 'highlight' },
+    { text: '        makes comes down to three simple rules. You already', cls: 'highlight' },
+    { text: '        know them \u2014 you just don\'t know their names yet."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
 
-  showGatePuzzle();
+  runLogicPhase();
 };
 
-function showGatePuzzle() {
+function runLogicPhase() {
   const s = state.missionState;
-  const p = gatePuzzles[s.gateIdx];
-  setPhaseProgress(s.gateIdx + 1, gatePuzzles.length);
 
-  addLine(`\u2501\u2501\u2501 ${p.desc} \u2501\u2501\u2501`, 'highlight');
-  addPre(p.explain);
-  addLine('');
-  addLine(p.question, 'warning');
+  if (s.phase === 0) {
+    // Phase 1: AND — discover via real-world scenario
+    addLine('\u2501\u2501\u2501 Rule 1: AND \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Your parent says: you can go outside IF you\'ve', 'highlight');
+    addLine('        finished homework AND cleaned your room. BOTH', 'highlight');
+    addLine('        must be done. Not one \u2014 both."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Let\'s check every possibility. Use 1 for YES,', 'highlight');
+    addLine('        0 for NO."', 'highlight');
+    addLine('', '');
+
+    const andScenarios = [
+      { hw: 0, room: 0, answer: 0 },
+      { hw: 0, room: 1, answer: 0 },
+      { hw: 1, room: 0, answer: 0 },
+      { hw: 1, room: 1, answer: 1 },
+    ];
+    s.andIdx = 0;
+    s.andScenarios = andScenarios;
+    showAndScenario();
+
+  } else if (s.phase === 1) {
+    // Phase 2: OR — discover
+    addLine('\u2501\u2501\u2501 Rule 2: OR \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Different rule. You can have dessert if you eat', 'highlight');
+    addLine('        your vegetables OR your fruit. Either one is', 'highlight');
+    addLine('        enough. Both is fine too."', 'highlight');
+    addLine('', '');
+
+    const orScenarios = [
+      { veg: 0, fruit: 0, answer: 0 },
+      { veg: 0, fruit: 1, answer: 1 },
+      { veg: 1, fruit: 0, answer: 1 },
+      { veg: 1, fruit: 1, answer: 1 },
+    ];
+    s.orIdx = 0;
+    s.orScenarios = orScenarios;
+    showOrScenario();
+
+  } else if (s.phase === 2) {
+    // Phase 3: NOT — simplest
+    addLine('\u2501\u2501\u2501 Rule 3: NOT \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Simplest one. NOT just flips the answer.', 'highlight');
+    addLine('        Raining? Stay inside. NOT raining? Go outside."', 'highlight');
+    addLine('', '');
+    addLine('  If raining = 1, what is NOT raining?', 'warning');
+
+    s.notStep = 0;
+    setCurrentInputHandler((input) => {
+      const n = parseInt(input.trim());
+      if (s.notStep === 0) {
+        if (n === 0) {
+          sound.success();
+          addLine('[CORRECT] NOT 1 = 0. Flip it.', 'success');
+          addLine('', '');
+          addLine('  If raining = 0, what is NOT raining?', 'warning');
+          s.notStep = 1;
+        } else {
+          sound.denied();
+          addLine('[WRONG] NOT flips. 1 becomes...?', 'error');
+        }
+      } else {
+        if (n === 1) {
+          sound.success();
+          addLine('[CORRECT] NOT 0 = 1.', 'success');
+          addLine('', '');
+          addLine('NEXUS: "NOT just flips: 1\u21920, 0\u21921. That\'s the whole rule."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Three rules. AND, OR, NOT. Every decision every', 'highlight');
+          addLine('        computer ever makes is built from these three.', 'highlight');
+          addLine('        Let\'s use them together."', 'highlight');
+          s.phase = 3;
+          addLine('');
+          setTimeout(runLogicPhase, 800);
+        } else {
+          sound.denied();
+          addLine('[WRONG] NOT flips. 0 becomes...?', 'error');
+        }
+      }
+    });
+
+  } else if (s.phase === 3) {
+    // Phase 4: Combined puzzle
+    addLine('\u2501\u2501\u2501 Firewall Lock \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "The firewall has a combination lock. It opens when:"', 'highlight');
+    addLine('', '');
+    addPre('  (key AND badge) OR override = 1');
+    addLine('', '');
+    addLine('NEXUS: "You don\'t have the key (key = 0). You DO have a', 'highlight');
+    addLine('        badge (badge = 1). Should you use the override?"', 'highlight');
+    addLine('', '');
+    addLine('What should override be? (0 or 1)', 'warning');
+
+    setCurrentInputHandler((input) => {
+      const n = parseInt(input.trim());
+      if (n === 1) {
+        sound.success();
+        addLine('[CORRECT] key=0 AND badge=1 = 0. So you need override=1.', 'success');
+        addLine('  0 OR 1 = 1. Firewall opens!', 'success');
+        addLine('', '');
+        addLine('NEXUS: "You combined AND and OR to solve a real problem.', 'highlight');
+        addLine('        Now for the mind-blowing part."', 'highlight');
+        s.phase = 4;
+        addLine('');
+        setTimeout(runLogicPhase, 800);
+      } else {
+        sound.denied();
+        addLine('[WRONG] key AND badge = 0 AND 1 = 0. So (0) OR override must equal 1.', 'error');
+        addLine('  What does override need to be for (0 OR override) = 1?', 'info');
+      }
+    });
+
+  } else if (s.phase === 4) {
+    // Phase 5: Build a binary adder from gates
+    addLine('\u2501\u2501\u2501 Building a Calculator \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Remember binary addition from Mission 1?"', 'highlight');
+    addLine('', '');
+    addPre('  0 + 0 = 0\n  0 + 1 = 1\n  1 + 0 = 1\n  1 + 1 = 10  (that\'s 0, carry 1)');
+    addLine('', '');
+    addLine('NEXUS: "When you add two bits, you get two results: the', 'highlight');
+    addLine('        SUM digit and the CARRY digit. Look at them', 'highlight');
+    addLine('        separately."', 'highlight');
+    addLine('', '');
+    addPre('  A  B  SUM  CARRY\n  0  0   0    0\n  0  1   1    0\n  1  0   1    0\n  1  1   0    1');
+    addLine('', '');
+    addLine('NEXUS: "Look at the CARRY column. When is carry = 1?"', 'highlight');
+    addLine('', '');
+    addLine('What gate matches the CARRY pattern? (AND, OR, or NOT)', 'warning');
+
+    s.adderStep = 0;
+    setCurrentInputHandler((input) => {
+      const guess = input.toUpperCase().trim();
+      if (s.adderStep === 0) {
+        if (guess === 'AND') {
+          sound.success();
+          addLine('[CORRECT] Carry = A AND B. Only 1 when BOTH are 1.', 'success');
+          addLine('', '');
+          addLine('NEXUS: "Now the SUM column. Look at the pattern:', 'highlight');
+          addLine('        0,1,1,0. It\'s 1 when the inputs are DIFFERENT.', 'highlight');
+          addLine('        That\'s a gate called XOR \u2014 exclusive OR."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "So: SUM = A XOR B, CARRY = A AND B."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Let\'s verify. What is 1 + 1 using these gates?"', 'highlight');
+          addLine('  SUM = 1 XOR 1 = ?  (are they different? no \u2192 0)', 'info');
+          addLine('  CARRY = 1 AND 1 = ?  (both 1? yes \u2192 1)', 'info');
+          addLine('', '');
+          addLine('Type: SUM CARRY', 'warning');
+          s.adderStep = 1;
+        } else {
+          sound.denied();
+          addLine('[WRONG] When is carry = 1? Only in the last row. What gate outputs 1 only when BOTH inputs are 1?', 'error');
+        }
+      } else {
+        const parts = input.trim().split(/[\s,]+/).map(Number);
+        if (parts.length === 2 && parts[0] === 0 && parts[1] === 1) {
+          sound.success();
+          addLine('[CORRECT] 1 + 1 = 0 carry 1 = binary 10 = decimal 2.', 'success');
+          addLine('', '');
+          addLine('NEXUS: "You just built a HALF-ADDER. Two logic gates', 'highlight');
+          addLine('        that add binary numbers. This exact circuit', 'highlight');
+          addLine('        is inside every computer ever made."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Your phone has about 15 BILLION of these,', 'highlight');
+          addLine('        running 3 billion times per second. But each', 'highlight');
+          addLine('        one is exactly what you just built. AND + XOR.', 'highlight');
+          addLine('        Two gates. That\'s a calculator."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Three logic gates \u2014 AND, OR, NOT \u2014 plus XOR', 'highlight');
+          addLine('        which is built from those three. That\'s enough', 'highlight');
+          addLine('        to build a computer. Not metaphorically. Literally.', 'highlight');
+          addLine(`        And you, ${state.hackerName || 'kid'}, just proved it."`, 'highlight');
+          addLine('', '');
+          addLine('[ Type NEXT to continue ]', 'warning');
+          setCurrentInputHandler(() => {
+            setCurrentInputHandler(null);
+            completeMission(4);
+          });
+        } else {
+          sound.denied();
+          addLine('[WRONG] XOR: 1 and 1 are the same, not different, so XOR = 0. AND: both 1, so AND = 1.', 'error');
+        }
+      }
+    });
+  }
+}
+
+function showAndScenario() {
+  const s = state.missionState;
+  const sc = s.andScenarios[s.andIdx];
+  const hwLabel = sc.hw ? 'YES' : 'NO';
+  const roomLabel = sc.room ? 'YES' : 'NO';
+
+  addLine(`  Homework: ${hwLabel} (${sc.hw})   Room clean: ${roomLabel} (${sc.room})`, 'info');
+  addLine('  Can you go outside? (1=yes, 0=no)', 'warning');
 
   setCurrentInputHandler((input) => {
-    const parts = input.trim().split(/\s+/).map(Number);
-    const valid = parts.every(n => n === 0 || n === 1);
-
-    if (!valid) {
-      addLine('Use only 0 and 1 values!', 'error');
-      return;
-    }
-
-    let correct = false;
-    if (p.single) {
-      correct = p.check(parts[0]);
-    } else if (p.answers) {
-      correct = p.answers.includes(input.trim());
-    } else {
-      correct = p.check(parts[0], parts[1], parts[2]);
-    }
-
-    if (correct) {
+    const n = parseInt(input.trim());
+    if (n === sc.answer) {
       sound.success();
-      addLine(`[BYPASSED] Gate ${s.gateIdx + 1} open!`, 'success');
-      s.gateIdx++;
-      if (s.gateIdx >= gatePuzzles.length) {
+      addLine(`  [CORRECT] ${sc.hw} AND ${sc.room} = ${sc.answer}`, 'success');
+      s.andIdx++;
+      if (s.andIdx >= s.andScenarios.length) {
+        addLine('', '');
+        addLine('NEXUS: "You just built a TRUTH TABLE for AND. Every', 'highlight');
+        addLine('        possible input, every output. AND means: BOTH', 'highlight');
+        addLine('        must be 1 for the output to be 1."', 'highlight');
+        s.phase = 1;
         addLine('');
-        addLine('All firewall gates bypassed!', 'success big');
-        addLine('Traffic lights restored to normal!', 'success');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(4), 1000);
+        setTimeout(runLogicPhase, 800);
       } else {
-        addLine(`\n${gatePuzzles.length - s.gateIdx} gates remaining...`, 'info');
-        setTimeout(showGatePuzzle, 600);
+        addLine('');
+        showAndScenario();
       }
     } else {
       sound.denied();
-      addLine('[REJECTED] Wrong values. Read the gate description again!', 'error');
+      if (sc.hw === 0 || sc.room === 0) {
+        addLine('  [WRONG] BOTH must be done. Is one of them still NO?', 'error');
+      } else {
+        addLine('  [WRONG] Both are done! Can you go?', 'error');
+      }
+    }
+  });
+}
+
+function showOrScenario() {
+  const s = state.missionState;
+  const sc = s.orScenarios[s.orIdx];
+  const vegLabel = sc.veg ? 'YES' : 'NO';
+  const fruitLabel = sc.fruit ? 'YES' : 'NO';
+
+  addLine(`  Veggies: ${vegLabel} (${sc.veg})   Fruit: ${fruitLabel} (${sc.fruit})`, 'info');
+  addLine('  Dessert? (1=yes, 0=no)', 'warning');
+
+  setCurrentInputHandler((input) => {
+    const n = parseInt(input.trim());
+    if (n === sc.answer) {
+      sound.success();
+      addLine(`  [CORRECT] ${sc.veg} OR ${sc.fruit} = ${sc.answer}`, 'success');
+      s.orIdx++;
+      if (s.orIdx >= s.orScenarios.length) {
+        addLine('', '');
+        addLine('NEXUS: "OR means: at least ONE must be 1. Both is fine', 'highlight');
+        addLine('        too. Only fails when NEITHER is 1."', 'highlight');
+        s.phase = 2;
+        addLine('');
+        setTimeout(runLogicPhase, 800);
+      } else {
+        addLine('');
+        showOrScenario();
+      }
+    } else {
+      sound.denied();
+      if (sc.veg === 0 && sc.fruit === 0) {
+        addLine('  [WRONG] Neither veggies nor fruit. No dessert.', 'error');
+      } else {
+        addLine('  [WRONG] At least one is done \u2014 that\'s enough for OR.', 'error');
+      }
     }
   });
 }
