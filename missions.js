@@ -836,17 +836,16 @@ function runBinaryPhase() {
           sound.success();
           addLine('[CORRECT] It\'s an H! Five rows of bits \u2192 a picture.', 'success');
           addLine('', '');
-          addLine('NEXUS: "One more. This time it\'s not a letter \u2014 it\'s a', 'highlight');
-          addLine('        SHAPE. Same idea, different interpretation."', 'highlight');
+          addLine('NEXUS: "One more. Different letter, same idea."', 'highlight');
           addLine('', '');
 
-          // Arrow pointing right (5x5)
+          // Letter X (5x5) — unmistakable
           const grid2 = [
+            [1,0,0,0,1],
+            [0,1,0,1,0],
             [0,0,1,0,0],
-            [0,0,0,1,0],
-            [1,1,1,1,1],
-            [0,0,0,1,0],
-            [0,0,1,0,0],
+            [0,1,0,1,0],
+            [1,0,0,0,1],
           ];
 
           const gridDiv2 = document.createElement('div');
@@ -862,33 +861,34 @@ function runBinaryPhase() {
           termEl.scrollTop = termEl.scrollHeight;
 
           addLine('', '');
-          addLine('What shape is this? (Type the word)', 'warning');
+          addLine('What letter is this? Type it:', 'warning');
           s.pixelStep = 1;
         } else {
           sound.denied();
-          addLine('[WRONG] Look at where the green blocks are. What letter shape?', 'error');
+          addLine('[WRONG] Look at where the green blocks are. What letter?', 'error');
         }
       } else {
-        const pixelGuess = input.toUpperCase().trim();
-        if (['ARROW', 'BOW', 'POINTER', 'RIGHT', 'PLAY', 'TRIANGLE'].includes(pixelGuess)) {
+        if (input.toUpperCase().trim() === 'X') {
           sound.success();
-          addLine('[CORRECT] It\'s an arrow pointing right! \u2192', 'success');
+          addLine('[CORRECT] It\'s an X!', 'success');
           addLine('', '');
-          addLine('NEXUS: "Same binary. Same 0s and 1s. But this time it was', 'highlight');
-          addLine('        a picture, not a number or a letter. The DATA', 'highlight');
-          addLine('        didn\'t change \u2014 only the INTERPRETATION did."', 'highlight');
+          addLine('NEXUS: "Two grids of 0s and 1s. Two different letters.', 'highlight');
+          addLine('        The computer stored them the exact same way \u2014', 'highlight');
+          addLine('        just bits in a grid. It\'s your EYES that see a', 'highlight');
+          addLine('        letter. The computer just sees numbers."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "That single idea \u2014 data is meaningless without', 'highlight');
-          addLine('        context \u2014 is the deepest truth in computer', 'highlight');
-          addLine('        science. Remember it."', 'highlight');
+          addLine('NEXUS: "That\'s the deepest truth in CS: data is', 'highlight');
+          addLine('        meaningless without INTERPRETATION. Same bits', 'highlight');
+          addLine('        can be a number, a letter, or a picture \u2014', 'highlight');
+          addLine('        depending on how you read them."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "You just learned the language of every computer on', 'highlight');
-          addLine('        Earth. Not bad for a first mission."', 'highlight');
+          addLine('NEXUS: "You just learned the language of every computer', 'highlight');
+          addLine('        on Earth. Not bad for a first mission."', 'highlight');
           setCurrentInputHandler(null);
           setTimeout(() => completeMission(0), 1200);
         } else {
           sound.denied();
-          addLine('[WRONG] It\'s pointing in a direction. What shape points?', 'error');
+          addLine('[WRONG] Look at the green blocks. What letter do they form?', 'error');
         }
       }
     });
