@@ -165,48 +165,68 @@ function loadProgramLevel(idx) {
 
     const terminal = document.getElementById('terminal');
 
-    // Build the program list display: PROGRAM 1:R  2:R  3:D  4:D
-    const progDiv = document.createElement('div');
-    progDiv.style.cssText = 'margin:4px 0;font-family:inherit;font-size:inherit;white-space:pre;';
-    const label = document.createElement('span');
-    label.textContent = 'PROGRAM ';
-    label.style.color = 'var(--dim,#555)';
-    progDiv.appendChild(label);
+    // Build step indicator: [Step 1/10] R R D D ...
+    const stepIndicator = document.createElement('div');
+    stepIndicator.style.cssText = 'margin:6px 0;font-family:inherit;font-size:13px;';
     const stepSpans = steps.map((cmd, i) => {
       const span = document.createElement('span');
-      span.textContent = `${i + 1}:${cmd}`;
-      span.style.cssText = 'margin-right:6px;color:var(--dim,#555);transition:color 0.15s;';
+      span.textContent = cmd;
+      span.style.cssText = 'margin-right:4px;padding:2px 5px;border-radius:2px;color:#555;transition:all 0.15s;font-family:inherit;';
       return span;
     });
-    stepSpans.forEach(sp => progDiv.appendChild(sp));
-    terminal.appendChild(progDiv);
+    stepSpans.forEach(sp => stepIndicator.appendChild(sp));
+    terminal.appendChild(stepIndicator);
+
+    // Render the maze ONCE — we'll update it in place
+    const maze = level.grid.map(r => r.split(''));
+    let pr, pc;
+    for (let r = 0; r < maze.length; r++) {
+      for (let c = 0; c < maze[r].length; c++) {
+        if (maze[r][c] === '@') { pr = r; pc = c; }
+      }
+    }
+    renderMaze(maze);
+    // Grab the maze element we just rendered so we can update it
+    const mazeContainer = terminal.lastElementChild;
     terminal.scrollTop = terminal.scrollHeight;
+
+    // Helper: re-render maze content IN PLACE
+    function updateMazeInPlace() {
+      const mazeEl = mazeContainer.querySelector('.maze-display') || mazeContainer;
+      let html = '';
+      for (const row of maze) {
+        for (const cell of row) {
+          if (cell === '#') html += '<span class="wall">#</span>';
+          else if (cell === '@') html += '<span class="player">@</span>';
+          else if (cell === 'X') html += '<span class="goal">X</span>';
+          else if (cell === ',') html += '<span class="visited">.</span>';
+          else html += '<span class="path">.</span>';
+        }
+        html += '\n';
+      }
+      mazeEl.innerHTML = html;
+    }
 
     // Run animated execution
     (async () => {
-      const maze = level.grid.map(r => r.split(''));
-      let pr, pc;
-      for (let r = 0; r < maze.length; r++) {
-        for (let c = 0; c < maze[r].length; c++) {
-          if (maze[r][c] === '@') { pr = r; pc = c; }
-        }
-      }
-
       let crashStep = -1;
       let reachedGoal = false;
 
       for (let i = 0; i < steps.length; i++) {
-        // Highlight current step in the program list
+        // Highlight current step
         stepSpans.forEach((sp, j) => {
           if (j === i) {
-            sp.style.color = 'cyan';
+            sp.style.color = '#00ffff';
             sp.style.fontWeight = 'bold';
+            sp.style.background = 'rgba(0,255,255,0.1)';
           } else if (j < i) {
-            sp.style.color = 'var(--green,#0a0)';
+            sp.style.color = '#00ff41';
             sp.style.fontWeight = 'normal';
+            sp.style.background = 'none';
           } else {
-            sp.style.color = 'var(--dim,#555)';
+            sp.style.color = '#555';
             sp.style.fontWeight = 'normal';
+            sp.style.background = 'none';
           }
         });
 
@@ -218,35 +238,12 @@ function loadProgramLevel(idx) {
 
         if (nr < 0 || nr >= maze.length || nc < 0 || nc >= maze[0].length || maze[nr][nc] === '#') {
           crashStep = i;
-          // Mark crash step red in program list
-          stepSpans[i].style.color = '#f44';
+          stepSpans[i].style.color = '#ff3333';
+          stepSpans[i].style.background = 'rgba(255,51,51,0.15)';
           stepSpans[i].style.fontWeight = 'bold';
-          // Re-render maze and apply shake
-          renderMaze(maze);
-          const mazeDisplays = terminal.querySelectorAll('.maze-display');
-          const lastMaze = mazeDisplays[mazeDisplays.length - 1];
-          if (lastMaze) {
-            lastMaze.parentElement.classList.add('maze-shake');
-            // Flash the wall cell red if in bounds
-            if (nr >= 0 && nr < maze.length && nc >= 0 && nc < maze[0].length) {
-              const allSpans = lastMaze.querySelectorAll('span');
-              let spanIdx = 0;
-              for (let r = 0; r < maze.length; r++) {
-                for (let c = 0; c < maze[r].length; c++) {
-                  if (r === nr && c === nc && allSpans[spanIdx]) {
-                    allSpans[spanIdx].style.color = '#f44';
-                    allSpans[spanIdx].style.textShadow = '0 0 6px #f44';
-                    const flashSpan = allSpans[spanIdx];
-                    setTimeout(() => {
-                      flashSpan.style.color = '';
-                      flashSpan.style.textShadow = '';
-                    }, 600);
-                  }
-                  spanIdx++;
-                }
-              }
-            }
-          }
+          // Shake the maze
+          mazeContainer.classList.add('maze-shake');
+          setTimeout(() => mazeContainer.classList.remove('maze-shake'), 900);
           terminal.scrollTop = terminal.scrollHeight;
           break;
         }
@@ -257,22 +254,15 @@ function loadProgramLevel(idx) {
         if (maze[nr][nc] === 'X') {
           maze[nr][nc] = '@';
           reachedGoal = true;
-          renderMaze(maze);
-          // Green pulse on goal cell
-          const mazeDisplays = terminal.querySelectorAll('.maze-display');
-          const lastMaze = mazeDisplays[mazeDisplays.length - 1];
-          if (lastMaze) {
-            lastMaze.parentElement.classList.add('maze-goal-pulse');
-          }
-          // Mark step green in program list
-          stepSpans[i].style.color = '#0f0';
+          updateMazeInPlace();
+          mazeContainer.classList.add('maze-goal-pulse');
+          stepSpans[i].style.color = '#00ff41';
           stepSpans[i].style.fontWeight = 'bold';
-          terminal.scrollTop = terminal.scrollHeight;
+          stepSpans[i].style.background = 'rgba(0,255,65,0.15)';
           break;
         }
         maze[nr][nc] = '@';
-        renderMaze(maze);
-        terminal.scrollTop = terminal.scrollHeight;
+        updateMazeInPlace();
       }
 
       // Small pause before result messages
