@@ -119,9 +119,16 @@ function createHalfAdder() {
   const ha = document.createElement('div');
   ha.className = 'half-adder';
   Object.assign(ha.style, {
-    display: 'grid', gridTemplateRows: 'auto auto', gap: '4px',
-    margin: '12px 0', fontFamily: 'monospace',
+    display: 'flex', flexDirection: 'column', gap: '6px',
+    margin: '12px 0', padding: '12px', fontFamily: "'Fira Mono',monospace",
+    border: '1px solid #005a15', borderRadius: '4px', background: '#050505',
   });
+
+  // Title
+  const title = document.createElement('div');
+  title.textContent = 'HALF-ADDER CIRCUIT';
+  Object.assign(title.style, { color: '#00aa2a', fontSize: '10px', letterSpacing: '2px', marginBottom: '4px' });
+  ha.appendChild(title);
 
   const makeRow = (gateName, outputLabel) => {
     const row = document.createElement('div');
@@ -504,10 +511,9 @@ function runLogicPhase() {
           addPre('  Compare:\n    OR:   0,1,1,1   \u2190 at least one is 1\n    XOR:  0,1,1,0   \u2190 EXACTLY one is 1 (not both)');
           addLine('', '');
           addLine('NEXUS: "So: SUM = XOR, CARRY = AND. Two gates, and', 'highlight');
-          addLine('        you have a circuit that adds binary numbers:"', 'highlight');
+          addLine('        you have a circuit that adds binary numbers."', 'highlight');
           addLine('', '');
-          addPre('  THE HALF-ADDER CIRCUIT\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n        A \u2500\u2500\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n            \u2502\n        B \u2500\u2500\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  Two inputs (A, B) \u2192 Two outputs (SUM, CARRY)');
-          // Create half-adder visual
+          // Create half-adder visual (replaces ASCII art)
           s.halfAdder = createHalfAdder();
           s.halfAdderWrapper = document.createElement('div');
           s.halfAdderWrapper.appendChild(s.halfAdder);
@@ -577,8 +583,6 @@ function runLogicPhase() {
             });
           }
           addLine('[CORRECT] SUM=1, CARRY=0. That\'s just 1. Because 1+0=1.', 'success');
-          addLine('', '');
-          addPre('  THE HALF-ADDER\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n        A \u2500\u2500\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n        B \u2500\u2500\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  This circuit adds any two binary digits.\n  Chain several together and you can add\n  numbers of ANY size.');
           addLine('', '');
           addLine('NEXUS: "This is called a HALF-ADDER. It\'s inside every', 'highlight');
           addLine('        computer ever made. Your phone has about 15', 'highlight');
