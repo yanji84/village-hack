@@ -1059,7 +1059,16 @@ function loadProgramLevel(idx) {
 
   setCurrentInputHandler((input) => {
     const dirMap = { UP:[-1,0], U:[-1,0], DOWN:[1,0], D:[1,0], LEFT:[0,-1], L:[0,-1], RIGHT:[0,1], R:[0,1] };
-    const steps = input.toUpperCase().trim().split(/[\s,]+/);
+    const raw = input.toUpperCase().trim();
+    // Accept both "R R D" and "RRD" — split on spaces/commas, then split
+    // any remaining multi-char tokens into individual characters if they're
+    // all valid single-letter commands (U/D/L/R)
+    let steps = raw.split(/[\s,]+/);
+    steps = steps.flatMap(token => {
+      if (dirMap[token]) return [token]; // already valid (U, D, L, R, UP, DOWN, etc.)
+      if (/^[UDLR]+$/.test(token)) return token.split(''); // "RRD" → ["R","R","D"]
+      return [token]; // leave invalid tokens for error handling below
+    });
 
     if (steps.length === 0 || (steps.length === 1 && steps[0] === '')) {
       addLine('[ERROR] Write at least one step.', 'error');
