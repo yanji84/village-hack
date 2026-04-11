@@ -41,38 +41,46 @@ const MISSIONS = [
   {
     id: 3,
     num: '04',
+    title: 'MEMORY RECOVERY',
+    name: 'Memory Recovery',
+    desc: 'The AI\'s memory is corrupted. Decode binary, trace programs, and reverse-engineer missing values to recover it.',
+    skill: 'SKILL: Binary + Variables + Reverse Engineering',
+  },
+  {
+    id: 4,
+    num: '05',
     title: 'FIREWALL BYPASS',
     name: 'Firewall Bypass',
     desc: 'Solve logic gate puzzles to open the firewall doors. AND, OR, NOT \u2014 the building blocks of all computers.',
     skill: 'SKILL: Boolean Logic',
   },
   {
-    id: 4,
-    num: '05',
+    id: 5,
+    num: '06',
     title: 'ENCRYPTION LAB',
     name: 'Encryption Lab',
     desc: 'The rogue AI encrypted all messages! Learn to crack the Caesar cipher to read them.',
     skill: 'SKILL: Cryptography',
   },
   {
-    id: 5,
-    num: '06',
+    id: 6,
+    num: '07',
     title: 'BUG HUNTER',
     name: 'Bug Hunter',
     desc: 'Find and exploit bugs in the AI\'s code. Real hackers read code to find weaknesses!',
     skill: 'SKILL: Reading Code + Debugging',
   },
   {
-    id: 6,
-    num: '07',
+    id: 7,
+    num: '08',
     title: 'DATA HEIST',
     name: 'Data Heist',
     desc: 'Use special database commands to find the AI\'s secret plans hidden in the town database.',
     skill: 'SKILL: Database Queries (SQL)',
   },
   {
-    id: 7,
-    num: '08',
+    id: 8,
+    num: '09',
     title: 'THE FINAL HACK',
     name: 'The Final Hack',
     desc: 'Combine everything you\'ve learned to defeat the rogue AI and save the village!',
@@ -80,7 +88,7 @@ const MISSIONS = [
   },
   // ───── SEASON 2: HARD MODE ─────
   {
-    id: 8,
+    id: 9,
     num: 'S2-01',
     title: 'PASSWORD SECURITY',
     name: 'Password Security',
@@ -88,7 +96,7 @@ const MISSIONS = [
     skill: 'SKILL: Hashing + Combinatorics + Constraints',
   },
   {
-    id: 9,
+    id: 10,
     num: 'S2-02',
     title: 'ASCII & BINARY MATH',
     name: 'ASCII & Binary Math',
@@ -96,7 +104,7 @@ const MISSIONS = [
     skill: 'SKILL: ASCII + Binary Arithmetic + Hex',
   },
   {
-    id: 10,
+    id: 11,
     num: 'S2-03',
     title: 'LOOP ROUTER',
     name: 'Loop Router',
@@ -104,7 +112,7 @@ const MISSIONS = [
     skill: 'SKILL: Loops + Optimization',
   },
   {
-    id: 11,
+    id: 12,
     num: 'S2-04',
     title: 'CIRCUIT DESIGNER',
     name: 'Circuit Designer',
@@ -112,7 +120,7 @@ const MISSIONS = [
     skill: 'SKILL: Truth Tables + Circuit Design',
   },
   {
-    id: 12,
+    id: 13,
     num: 'S2-05',
     title: 'CRYPTANALYSIS',
     name: 'Cryptanalysis',
@@ -120,7 +128,7 @@ const MISSIONS = [
     skill: 'SKILL: Brute Force + Frequency Analysis',
   },
   {
-    id: 13,
+    id: 14,
     num: 'S2-06',
     title: 'CODE TRACER',
     name: 'Code Tracer',
@@ -128,7 +136,7 @@ const MISSIONS = [
     skill: 'SKILL: Mental Execution + Debugging',
   },
   {
-    id: 14,
+    id: 15,
     num: 'S2-07',
     title: 'JOIN INVESTIGATION',
     name: 'JOIN Investigation',
@@ -136,7 +144,7 @@ const MISSIONS = [
     skill: 'SKILL: Advanced SQL',
   },
   {
-    id: 15,
+    id: 16,
     num: 'S2-08',
     title: 'THE CHAIN HACK',
     name: 'The Chain Hack',
@@ -165,67 +173,72 @@ const missionHints = {
     'x = x + 1 means: take the CURRENT value of x, add 1, then store the result back into x.',
   ],
   3: [
-    'Work backward. The gate wants an output of 1. What inputs would make it happy?',
-    'Read the definition of the gate one more time \u2014 slowly. The rule tells you the answer.',
-    'For some gates there\'s more than one valid input. Any correct combo works.',
+    'Start with the binary. Convert each one to a decimal number using place values.',
+    'For tracing: work line by line. After each line, write down what EVERY variable is.',
+    'For reverse engineering: start from the output and work BACKWARD through each line.',
   ],
   4: [
+    'Work backward. The gate wants an output of 1. What inputs would make it happy?',
+    'Read the definition of the gate one more time. The rule tells you the answer.',
+    'For some gates there is more than one valid input. Any correct combo works.',
+  ],
+  5: [
     'The cipher moved letters FORWARD. To read the message, which direction do you need to go?',
     'Imagine walking the alphabet like steps on a staircase. How many steps? Look at the shift.',
     "You don't have to decode the whole word at once. Try just the first letter \u2014 the rest work the same way.",
   ],
-  5: [
+  6: [
     'Read each line slowly. Ask yourself: does this line do what it SAYS it does?',
     'Look for things that look ALMOST right \u2014 a missing symbol, a wrong number, a backwards comparison.',
     'Imagine YOU are the computer. Run each line in your head. Where does your version break?',
   ],
-  6: [
+  7: [
     'Start simple. Get EVERYTHING from the table first. You can always filter afterward.',
     'WHERE is your filter. Which column do you want to filter BY? And what value do you want?',
     'SQL is fussy about quotes. Text values need them. Column names do NOT.',
   ],
-  7: [
+  8: [
     'Each layer uses ONE skill from a different earlier mission. Can you guess which?',
     "Don't try to solve all four layers at once. One at a time. Breathe.",
     'If a layer stumps you, check the hint from the ORIGINAL mission it\'s based on.',
   ],
   // ─── Season 2 ───
-  8: [
+  9: [
     'For hash cracking: work through each candidate. Add the letter values one at a time.',
     'For combinations: multiply the number of options per position. Each position multiplies the total.',
     'For constraints: check each rule separately. Which rules does your guess fail?',
   ],
-  9: [
+  10: [
     'Binary to decimal: you already know how. 8 digits instead of 5. Same idea.',
     "For addition \u2014 look at the rightmost column FIRST. What's 1 plus 1 in binary?",
     'Hex is just binary grouped by 4 bits. If you can read binary, you can read hex.',
   ],
-  10: [
+  11: [
     "Before you type ANYTHING, count the straight runs in the maze. That's how many commands you'll need.",
     'Each straight line of movement is ONE command. Turns are what separate commands.',
     'If you\'re over budget, you\'re typing move-by-move. Look for runs of 3+ and compress them into REPEAT.',
   ],
-  11: [
+  12: [
     "Don't try to describe what the gate DOES in words. Look at the pattern. When is the output 1?",
     'For the half-adder \u2014 compare the SUM column to AND, OR, and XOR outputs. Which one matches?',
     'There are only 4 rows in a 2-input truth table. You can check every row by hand.',
   ],
-  12: [
+  13: [
     "Brute force: you don't need to be smart. Just scan each line until one stops being gibberish.",
     'Frequency analysis: find the most common letter in the cipher. Assume that\'s hiding an E.',
     'If cipher letter minus E gives you the shift, you can work out the rest of the alphabet from there.',
   ],
-  13: [
+  14: [
     'Write every variable on paper. Cross out old values when they change. Your brain remembers it better by hand.',
     "Read one line at a time. Don't jump ahead. The computer doesn't jump ahead either.",
     "For loops \u2014 walk through each pass out loud. 'First time through, i is 1, so...'",
   ],
-  14: [
+  15: [
     "A JOIN needs two tables AND a rule for how they connect. What column in ONE matches a column in the OTHER?",
     'Ask the question first. THEN figure out which tables have the answer.',
     "If the query runs but the answer is wrong, your JOIN condition is probably off. Check which column matches which.",
   ],
-  15: [
+  16: [
     "Read each step's output carefully \u2014 THAT becomes the input to the next step. Write it down.",
     'Every skill from both seasons shows up somewhere in this chain. Which skill does this step feel like?',
     "If you're stuck on a step, pretend it's a standalone mission. What kind of mission was it?",
@@ -1391,9 +1404,173 @@ function runVariablesPhase() {
 }
 
 // ============================================================
-// MISSION 4: FIREWALL BYPASS (Logic Gates)
+// MISSION 4: MEMORY RECOVERY (Combines Binary + Variables + Reverse Engineering)
 // ============================================================
 missionRunners[3] = async function() {
+  state.missionState = { phase: 0, hintIdx: 0 };
+
+  await typeLines([
+    { text: '[SYSTEM] Partial memory dump recovered from AI core.', cls: 'system' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "We pulled fragments of the AI\'s memory before it', cls: 'highlight' },
+    { text: '        locked us out. But the data is raw \u2014 variables', cls: 'highlight' },
+    { text: '        stored in binary. We need to decode it, trace', cls: 'highlight' },
+    { text: '        what the programs were doing, and recover the', cls: 'highlight' },
+    { text: '        missing pieces."', cls: 'highlight' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "This is digital forensics. Everything you\'ve', cls: 'highlight' },
+    { text: '        learned so far, working together."', cls: 'highlight' },
+    { text: '', cls: '' },
+  ]);
+
+  runRecoveryPhase();
+};
+
+function runRecoveryPhase() {
+  const s = state.missionState;
+
+  if (s.phase === 0) {
+    // Level 1: Decode binary values, run a simple computation
+    addLine('\u2501\u2501\u2501 Memory Fragment 1 \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "First fragment. Two variables stored in binary.', 'highlight');
+    addLine('        Decode them, then run the program to find the result."', 'highlight');
+    addLine('', '');
+    addPre('  Memory dump:\n    x = 0011     (binary)\n    y = 0101     (binary)\n\n  Program found:\n    z = x + y');
+    addLine('', '');
+    addLine('  (Remember: places are eights, fours, twos, ones)', 'info');
+    addLine('', '');
+    addLine('What is z? (as a regular number)', 'warning');
+
+    setCurrentInputHandler((input) => {
+      // 0011=3, 0101=5, z=3+5=8
+      if (input.trim() === '8') {
+        sound.success();
+        addLine('[CORRECT] x=0011=3, y=0101=5, z=3+5=8.', 'success');
+        addLine('NEXUS: "Binary to decimal, then variable tracing. Two', 'highlight');
+        addLine('        skills chained together."', 'highlight');
+        s.phase = 1;
+        addLine('');
+        setTimeout(runRecoveryPhase, 800);
+      } else {
+        sound.denied();
+        s.wrongCount = (s.wrongCount || 0) + 1;
+        if (s.wrongCount === 1) {
+          addLine('[WRONG] Two steps: decode the binary first, then add.', 'error');
+        } else {
+          addLine('[WRONG] 0011 = 0+0+2+1 = 3. 0101 = 0+4+0+1 = 5. Now add them.', 'error');
+        }
+      }
+    });
+
+  } else if (s.phase === 1) {
+    // Level 2: Decode + trace multi-line program with overwriting
+    addLine('\u2501\u2501\u2501 Memory Fragment 2 \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Harder one. More variables, more lines. Trace', 'highlight');
+    addLine('        carefully \u2014 values change."', 'highlight');
+    addLine('', '');
+    addPre('  Memory dump:\n    a = 0100     (binary)\n    b = 0011     (binary)\n\n  Program found:\n    1  c = a + b\n    2  a = c - 1\n    3  b = a + b');
+    addLine('', '');
+    addLine('What are a and b after line 3? Type: a b', 'warning');
+
+    s.wrongCount = 0;
+    setCurrentInputHandler((input) => {
+      // a=0100=4, b=0011=3
+      // c = 4+3 = 7
+      // a = 7-1 = 6
+      // b = 6+3 = 9
+      const parts = input.trim().split(/[\s,]+/).map(Number);
+      if (parts.length === 2 && parts[0] === 6 && parts[1] === 9) {
+        sound.success();
+        addLine('[CORRECT] a=6, b=9.', 'success');
+        addLine('NEXUS: "Let me trace it:', 'highlight');
+        addLine('  a=0100=4, b=0011=3', 'info');
+        addLine('  Line 1: c = 4+3 = 7', 'info');
+        addLine('  Line 2: a = 7-1 = 6  (a changed!)', 'info');
+        addLine('  Line 3: b = 6+3 = 9  (using NEW a)"', 'info');
+        addLine('NEXUS: "Binary decoding, variable assignment, overwriting,', 'highlight');
+        addLine('        and the copy rule \u2014 all in one problem."', 'highlight');
+        s.phase = 2;
+        addLine('');
+        setTimeout(runRecoveryPhase, 800);
+      } else {
+        sound.denied();
+        s.wrongCount++;
+        if (s.wrongCount === 1) {
+          addLine('[WRONG] Decode first: 0100 and 0011. Then trace line by line.', 'error');
+        } else if (s.wrongCount === 2) {
+          addLine('[WRONG] a=4, b=3. Line 1: c=7. Line 2: a=? (c minus 1). Line 3: b=? (new a plus old b).', 'error');
+        } else {
+          addLine('[WRONG] a=4, b=3, c=7. Then a = 7-1 = 6. Then b = 6+3 = ?', 'error');
+        }
+      }
+    });
+
+  } else if (s.phase === 2) {
+    // Level 3: Reverse engineering — work backward from output
+    addLine('\u2501\u2501\u2501 Memory Fragment 3: Corrupted \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "This fragment is damaged. One input is missing.', 'highlight');
+    addLine('        But we have the OUTPUT and the PROGRAM. You have', 'highlight');
+    addLine('        to work BACKWARD to find the missing value."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "This is called REVERSE ENGINEERING \u2014 figuring out', 'highlight');
+    addLine('        the input from the output. Real hackers do this', 'highlight');
+    addLine('        every day."', 'highlight');
+    addLine('', '');
+    addPre('  Memory dump:\n    a = 0110     (binary)\n    b = ????     (corrupted!)\n\n  Program found:\n    1  c = a + b\n    2  c = c * 2\n\n  Output recovered:\n    c = 11000    (binary)');
+    addLine('', '');
+    addLine('NEXUS: "You know a. You know c. Work backward through the', 'highlight');
+    addLine('        program to find b."', 'highlight');
+    addLine('', '');
+    addLine('What is b? (as a regular number)', 'warning');
+
+    s.wrongCount = 0;
+    setCurrentInputHandler((input) => {
+      // a = 0110 = 6
+      // c = 11000 = 24
+      // Reverse line 2: c was 24, before *2 it was 12
+      // Reverse line 1: c=12 = a+b = 6+b, so b=6
+      if (input.trim() === '6') {
+        sound.success();
+        addLine('[CORRECT] b = 6.', 'success');
+        addLine('', '');
+        addLine('NEXUS: "Here\'s the reverse trace:', 'highlight');
+        addLine('  a = 0110 = 6', 'info');
+        addLine('  c = 11000 = 24', 'info');
+        addLine('  Reverse line 2: c = c * 2, so before that, c = 24 / 2 = 12', 'info');
+        addLine('  Reverse line 1: c = a + b, so 12 = 6 + b, so b = 6', 'info');
+        addLine('', '');
+        addLine('NEXUS: "You just did reverse engineering. You took an', 'highlight');
+        addLine('        output, a program, and worked BACKWARD to find', 'highlight');
+        addLine('        a missing input. That\'s real forensic analysis."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Binary, variables, tracing, and now reverse', 'highlight');
+        addLine('        engineering. Your toolkit is growing,', 'highlight');
+        addLine(`        ${state.hackerName || 'kid'}."`, 'highlight');
+        addLine('', '');
+        addLine('[ Type NEXT to continue ]', 'warning');
+        setCurrentInputHandler(() => {
+          setCurrentInputHandler(null);
+          completeMission(3);
+        });
+      } else {
+        sound.denied();
+        s.wrongCount++;
+        if (s.wrongCount === 1) {
+          addLine('[WRONG] Start from the end. c is 11000 in binary \u2014 what number is that?', 'error');
+        } else if (s.wrongCount === 2) {
+          addLine('[WRONG] c = 11000 = 24. Line 2 doubled it. So BEFORE line 2, c was 24 \u00f7 2 = ?', 'error');
+        } else {
+          addLine('[WRONG] Before line 2: c = 12. Line 1: c = a + b. a = 6. So 12 = 6 + b. b = ?', 'error');
+        }
+      }
+    });
+  }
+}
+
+// ============================================================
+// MISSION 5: FIREWALL BYPASS (Logic Gates)
+// ============================================================
+missionRunners[4] = async function() {
   state.missionState = { gateIdx: 0, hintIdx: 0 };
 
   await typeLines([
@@ -1458,7 +1635,7 @@ function showGatePuzzle() {
         addLine('All firewall gates bypassed!', 'success big');
         addLine('Traffic lights restored to normal!', 'success');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(3), 1000);
+        setTimeout(() => completeMission(4), 1000);
       } else {
         addLine(`\n${gatePuzzles.length - s.gateIdx} gates remaining...`, 'info');
         setTimeout(showGatePuzzle, 600);
@@ -1473,7 +1650,7 @@ function showGatePuzzle() {
 // ============================================================
 // MISSION 5: ENCRYPTION LAB (Caesar Cipher)
 // ============================================================
-missionRunners[4] = async function() {
+missionRunners[5] = async function() {
   state.missionState = { cipherIdx: 0, hintIdx: 0 };
 
   await typeLines([
@@ -1530,7 +1707,7 @@ function showCipherPuzzle() {
         addLine('All messages decoded! The AI is calling for help: "SAVE US"', 'success');
         addLine('Wait... the AI wants to be SAVED? This changes everything!', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(4), 1000);
+        setTimeout(() => completeMission(5), 1000);
       } else {
         addLine('\nDecrypted! Next message incoming...', 'info');
         setTimeout(showCipherPuzzle, 600);
@@ -1547,7 +1724,7 @@ function showCipherPuzzle() {
 // ============================================================
 // MISSION 6: BUG HUNTER
 // ============================================================
-missionRunners[5] = async function() {
+missionRunners[6] = async function() {
   state.missionState = { bugIdx: 0, hintIdx: 0 };
 
   await typeLines([
@@ -1596,7 +1773,7 @@ function showBugPuzzle() {
         addLine('');
         addLine('All bugs found! The AI\'s defenses are crumbling!', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(5), 1000);
+        setTimeout(() => completeMission(6), 1000);
       } else {
         addLine('\nNice catch! Next code snippet...', 'info');
         setTimeout(showBugPuzzle, 600);
@@ -1612,7 +1789,7 @@ function showBugPuzzle() {
 // ============================================================
 // MISSION 7: DATA HEIST (SQL)
 // ============================================================
-missionRunners[6] = async function() {
+missionRunners[7] = async function() {
   state.missionState = { sqlIdx: 0, hintIdx: 0 };
 
   await typeLines([
@@ -1671,7 +1848,7 @@ function showSqlChallenge() {
         addLine('Database investigation complete!', 'success big');
         addLine('The AI\'s agent has been identified!', 'success');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(6), 1000);
+        setTimeout(() => completeMission(7), 1000);
       } else {
         addLine('');
         setTimeout(showSqlChallenge, 600);
@@ -1687,7 +1864,7 @@ function showSqlChallenge() {
 // ============================================================
 // MISSION 8: THE FINAL HACK
 // ============================================================
-missionRunners[7] = async function() {
+missionRunners[8] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
@@ -1736,7 +1913,7 @@ function runFinalPhase() {
         { text: 'But the story isn\'t over...', cls: 'warning' },
       ]);
       setCurrentInputHandler(null);
-      setTimeout(() => completeMission(7), 1800);
+      setTimeout(() => completeMission(8), 1800);
     }, 500);
     return;
   }
@@ -1765,7 +1942,7 @@ function runFinalPhase() {
 // ============================================================
 // MISSION S2-01: PASSWORD SECURITY (Hashing, Combinatorics, Constraints)
 // ============================================================
-missionRunners[8] = async function() {
+missionRunners[9] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
@@ -1928,7 +2105,7 @@ function runS2M1Phase() {
         addLine('          are the foundations of real-world password', 'purple');
         addLine('          security."', 'purple');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(8), 1200);
+        setTimeout(() => completeMission(9), 1200);
       } else {
         sound.denied();
         addLine(`[REJECTED] Failed: ${failed.map(f => f.msg).join(', ')}`, 'error');
@@ -1940,7 +2117,7 @@ function runS2M1Phase() {
 // ============================================================
 // MISSION S2-02: ASCII & BINARY MATH
 // ============================================================
-missionRunners[9] = async function() {
+missionRunners[10] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
@@ -2069,7 +2246,7 @@ function runS2M2Phase() {
         addLine('          engineers do exactly this, every day. Welcome', 'purple');
         addLine('          to the profession."', 'purple');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(9), 1200);
+        setTimeout(() => completeMission(10), 1200);
       } else {
         sound.denied();
         addLine('[WRONG] Convert each hex pair \u2192 decimal \u2192 ASCII letter.', 'error');
@@ -2081,7 +2258,7 @@ function runS2M2Phase() {
 // ============================================================
 // MISSION S2-03: LOOP ROUTER
 // ============================================================
-missionRunners[10] = async function() {
+missionRunners[11] = async function() {
   state.missionState = { mazeIdx: 0, hintIdx: 0 };
 
   await typeLines([
@@ -2205,7 +2382,7 @@ function loadLoopMaze(idx) {
           } else {
             addLine('All mazes solved with loops!', 'success big');
             setCurrentInputHandler(null);
-            setTimeout(() => completeMission(10), 1000);
+            setTimeout(() => completeMission(11), 1000);
           }
           return;
         }
@@ -2223,7 +2400,7 @@ function loadLoopMaze(idx) {
 // ============================================================
 // MISSION S2-04: CIRCUIT DESIGNER
 // ============================================================
-missionRunners[11] = async function() {
+missionRunners[12] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
@@ -2360,7 +2537,7 @@ function runS2M4Phase() {
         addLine('AI CORE: "From two gates. That is what computer science', 'purple');
         addLine('          really is."', 'purple');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(11), 1500);
+        setTimeout(() => completeMission(12), 1500);
       } else {
         sound.denied();
         addLine('[WRONG] Compare the SUM column to each gate\'s output. Which matches?', 'error');
@@ -2372,7 +2549,7 @@ function runS2M4Phase() {
 // ============================================================
 // MISSION S2-05: CRYPTANALYSIS
 // ============================================================
-missionRunners[12] = async function() {
+missionRunners[13] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
@@ -2496,7 +2673,7 @@ function runS2M5Phase() {
         addLine('You just used the SAME technique that broke Nazi codes in WWII.', 'success');
         addLine('Cryptanalysis complete!', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(12), 1500);
+        setTimeout(() => completeMission(13), 1500);
       } else {
         sound.denied();
         addLine(`[WRONG] Formula: shift = most_common_cipher_letter - E`, 'error');
@@ -2509,7 +2686,7 @@ function runS2M5Phase() {
 // ============================================================
 // MISSION S2-06: CODE TRACER
 // ============================================================
-missionRunners[13] = async function() {
+missionRunners[14] = async function() {
   state.missionState = { idx: 0, hintIdx: 0 };
 
   await typeLines([
@@ -2562,7 +2739,7 @@ function showTracePuzzle() {
         addLine('');
         addLine('You can now read code like a real programmer!', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(13), 1200);
+        setTimeout(() => completeMission(14), 1200);
       } else {
         addLine('');
         setTimeout(showTracePuzzle, 700);
@@ -2577,7 +2754,7 @@ function showTracePuzzle() {
 // ============================================================
 // MISSION S2-07: JOIN INVESTIGATION
 // ============================================================
-missionRunners[14] = async function() {
+missionRunners[15] = async function() {
   state.missionState = { idx: 0, hintIdx: 0 };
 
   await typeLines([
@@ -2642,7 +2819,7 @@ function showJoinChallenge() {
         addLine('');
         addLine('Investigation complete! Victor identified as the attacker.', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(14), 1200);
+        setTimeout(() => completeMission(15), 1200);
       } else {
         addLine('');
         setTimeout(showJoinChallenge, 700);
@@ -2658,7 +2835,7 @@ function showJoinChallenge() {
 // ============================================================
 // MISSION S2-08: THE CHAIN HACK
 // ============================================================
-missionRunners[15] = async function() {
+missionRunners[16] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
@@ -2840,7 +3017,7 @@ function runChainPhase() {
             { text: '          See you then."', cls: 'purple' },
           ]);
           setCurrentInputHandler(null);
-          setTimeout(() => completeMission(15), 2000);
+          setTimeout(() => completeMission(16), 2000);
         }, 500);
       } else {
         sound.denied();
