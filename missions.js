@@ -16,19 +16,19 @@ const MISSIONS = [
   {
     id: 0,
     num: '01',
-    title: 'CODE CRACKER',
-    name: 'Code Cracker',
-    desc: 'Crack codes using deduction, wildcard patterns, and number decoding. Three real hacker skills.',
-    skill: 'SKILL: Deduction + Pattern Matching + Encoding',
+    title: 'BINARY',
+    name: 'Binary \u2014 The Language of Computers',
+    desc: 'Learn the ONLY language computers understand \u2014 ones and zeros. Decode numbers, letters, and even pictures.',
+    skill: 'SKILL: Binary + Data Representation',
     color: 'green',
   },
   {
     id: 1,
     num: '02',
-    title: 'BINARY DECODER',
-    name: 'Binary Decoder',
-    desc: 'Learn the secret language of computers \u2014 ones and zeros \u2014 to decode a hidden message.',
-    skill: 'SKILL: Binary Numbers',
+    title: 'BINARY SEARCH',
+    name: 'Binary Search',
+    desc: 'Learn the most important algorithm in CS \u2014 find anything in billions of items with just a few guesses.',
+    skill: 'SKILL: Algorithms + Logarithmic Thinking',
   },
   {
     id: 2,
@@ -150,14 +150,14 @@ const MISSIONS = [
 // ============================================================
 const missionHints = {
   0: [
-    'For the code lock: each feedback arrow tells you WHICH DIRECTION to adjust that digit.',
-    'For wildcards: ? is one character. Count the letters in the pattern \u2014 the word must have the SAME count.',
-    'For number decoding: count through the alphabet. 1=A, 2=B, 3=C... or work backward from known ones.',
+    'Each position has a VALUE. Reading right to left: 1, 2, 4, 8. What values have a 1 above them?',
+    'Add up ONLY the positions where there is a 1. Ignore the zeros.',
+    'For the pixel grid: squint at the green squares. What letter or shape do they form?',
   ],
   1: [
-    'Look at just the RIGHTMOST digit. What number does that position stand for?',
-    'Each position to the left is worth DOUBLE the one on its right. Can you write the values above each digit?',
-    'Now walk the digits. Where you see a 1, grab the value. Where you see a 0, walk past.',
+    'Always guess the MIDDLE of the remaining range. That eliminates half the possibilities.',
+    'After each "higher" or "lower", your range shrinks by half. What\'s the new middle?',
+    'Every time the range doubles, you only need ONE more guess. That\'s the magic.',
   ],
   2: [
     "Don't plan the whole route at once. Where's the FIRST wall blocking you?",
@@ -649,7 +649,7 @@ const joinChallenges = [
 const missionRunners = [];
 
 // ============================================================
-// MISSION 1: CODE CRACKER (Deduction, Patterns, Encoding)
+// MISSION 1: BINARY — The Language of Computers
 // ============================================================
 missionRunners[0] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
@@ -661,293 +661,405 @@ missionRunners[0] = async function() {
     { text: '        I\'m NEXUS. Thirty years in the game. I\'ll be your', cls: 'highlight' },
     { text: '        voice in the dark for every mission."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "The AI locked three systems. Each one uses a different', cls: 'highlight' },
-    { text: '        kind of code. Cracking them will teach you three real', cls: 'highlight' },
-    { text: '        skills hackers use every day: DEDUCTION, PATTERN', cls: 'highlight' },
-    { text: '        MATCHING, and DECODING."', cls: 'highlight' },
+    { text: 'NEXUS: "First thing you need to know: computers only understand', cls: 'highlight' },
+    { text: '        ONE language. Not English. Not Python. Not emojis.', cls: 'highlight' },
+    { text: '        Just... ones and zeros. ON and OFF. That\'s it."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Let\'s start with the school."', cls: 'highlight' },
+    { text: 'NEXUS: "This language is called BINARY. Every photo you\'ve', cls: 'highlight' },
+    { text: '        ever seen. Every song. Every game. Every text message.', cls: 'highlight' },
+    { text: '        Underneath all of it: ones and zeros. Nothing else."', cls: 'highlight' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "Learn binary, and you speak the language of every', cls: 'highlight' },
+    { text: '        computer on Earth. Let me show you how."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
 
-  runM1Phase();
+  runBinaryPhase();
 };
 
-function runM1Phase() {
+function runBinaryPhase() {
   const s = state.missionState;
   setPhaseProgress(s.phase + 1, 3);
 
   if (s.phase === 0) {
-    // Phase 1: Code Crack — guess a 3-digit code with feedback
-    const secret = [2, 4, 1];
-    s.secret = secret;
-    s.guessCount = 0;
-
-    addLine('\u2501\u2501\u2501 School Network \u2014 Code Lock \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "This lock uses a 3-digit code. Each digit is 1', 'highlight');
-    addLine('        through 5. That\'s 125 possible combinations."', 'highlight');
-    addLine('NEXUS: "But you don\'t need to try all 125. After each guess,', 'highlight');
-    addLine('        the lock tells you if each digit is TOO LOW (\u2191),', 'highlight');
-    addLine('        TOO HIGH (\u2193), or CORRECT (\u2713)."', 'highlight');
-    addLine('NEXUS: "Use the feedback. Don\'t guess randomly \u2014 DEDUCE."', 'highlight');
+    // Phase 1: Learn binary-to-decimal
+    addLine('\u2501\u2501\u2501 Phase 1: Reading Binary Numbers \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Each digit in binary is called a BIT. Each bit is a', 'highlight');
+    addLine('        position, and each position has a VALUE. The values', 'highlight');
+    addLine('        DOUBLE every time you move left."', 'highlight');
     addLine('', '');
-    addLine('Type a 3-digit code (digits 1-5). Example: 3 3 3', 'warning');
+
+    addPre('     Position:  8  4  2  1\n     Binary:    1  0  1  0\n\n     The 8 and 2 positions have 1s.\n     The 4 and 1 positions have 0s.\n     Grab the 8 and the 2. Ignore the rest.\n     8 + 2 = 10.');
+
+    addLine('', '');
+    addLine('NEXUS: "Where you see a 1, grab that value. Where you see a', 'highlight');
+    addLine('        0, walk past. Add up what you grabbed."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Try it. What number is 0011?"', 'highlight');
+    addLine('(Positions: 8, 4, 2, 1 \u2014 reading right to left)', 'info');
+
+    const steps = [
+      { q: '0011', a: '3', explain: '0+0+2+1 = 3. You got it!' },
+      { q: '0110', a: '6', explain: '0+4+2+0 = 6. Excellent!' },
+      { q: '1001', a: '9', explain: '8+0+0+1 = 9. You\'re a natural!' },
+      { q: '1111', a: '15', explain: '8+4+2+1 = 15. That\'s the maximum for 4 bits!' },
+    ];
+    s.stepIdx = 0;
 
     setCurrentInputHandler((input) => {
-      const parts = input.trim().split(/[\s,]+/).map(Number);
-      if (parts.length !== 3 || parts.some(n => n < 1 || n > 5 || isNaN(n))) {
-        addLine('[ERROR] Need exactly 3 digits, each 1-5. Example: 3 2 4', 'error');
-        return;
-      }
-      s.guessCount++;
-      const feedback = parts.map((g, i) => {
-        if (g === secret[i]) return '\u2713';
-        return g < secret[i] ? '\u2191' : '\u2193';
-      });
-      const all = feedback.every(f => f === '\u2713');
-      if (all) {
+      const step = steps[s.stepIdx];
+      if (input.trim() === step.a) {
         sound.success();
-        addLine(`[CRACKED] ${parts.join(' ')} \u2014 ${feedback.join(' ')} \u2014 CODE ACCEPTED!`, 'success');
-        addLine(`NEXUS: "Done in ${s.guessCount} guesses. Each guess narrowed`, 'highlight');
-        addLine('        the possibilities. That\'s called DEDUCTION \u2014', 'highlight');
-        addLine('        using information to eliminate wrong answers."', 'highlight');
-        s.phase = 1;
-        addLine('');
-        setTimeout(runM1Phase, 1000);
+        addLine(`[CORRECT] ${step.explain}`, 'success');
+        s.stepIdx++;
+        if (s.stepIdx < steps.length) {
+          addLine(`\nWhat number is ${steps[s.stepIdx].q}?`, 'warning');
+        } else {
+          addLine('', '');
+          addLine('NEXUS: "Four for four. You can read binary now."', 'highlight');
+          s.phase = 1;
+          setTimeout(runBinaryPhase, 900);
+        }
       } else {
-        sound.keyClick();
-        addLine(`  ${parts.join(' ')} \u2014 ${feedback.join(' ')}`, 'info');
+        sound.denied();
+        addLine('[WRONG] Add positions with a 1. Positions: 8, 4, 2, 1.', 'error');
       }
     });
+
   } else if (s.phase === 1) {
-    // Phase 2: Wildcard pattern matching
-    addLine('\u2501\u2501\u2501 Library System \u2014 Pattern Lock \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "The library uses a different kind of lock. It shows', 'highlight');
-    addLine('        you a PATTERN, and you have to find the password', 'highlight');
-    addLine('        that matches it."', 'highlight');
+    // Phase 2: Binary as letters — decode a word
+    addLine('\u2501\u2501\u2501 Phase 2: Binary as Letters \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Numbers are nice. But computers store LETTERS too.', 'highlight');
+    addLine('        How? Simple. Every letter gets a number. A=1, B=2,', 'highlight');
+    addLine('        C=3... all the way to Z=26. Then THAT number is', 'highlight');
+    addLine('        stored in binary."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "In computing, the ? symbol means ANY SINGLE', 'highlight');
-    addLine('        CHARACTER. This is called a WILDCARD. You\'ll use', 'highlight');
-    addLine('        wildcards in every hacking tool, every search, every', 'highlight');
-    addLine('        file system. Learn this now."', 'highlight');
+    addLine('NEXUS: "So a letter is really just a binary number wearing a', 'highlight');
+    addLine('        disguise. Decode the number, look up the letter."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Example: C?T matches CAT, COT, CUT \u2014 but not COAT', 'highlight');
-    addLine('        (too many letters) or DOG (wrong first letter)."', 'highlight');
+    addLine('NEXUS: "With more letters, we need 5-bit positions:', 'highlight');
+    addLine('        16, 8, 4, 2, 1. Same doubling rule."', 'highlight');
     addLine('', '');
 
-    const challenges = [
-      { pattern: '?AT', words: ['CAT', 'DOG', 'BAT', 'SIT', 'HAT', 'RUN'], matches: ['CAT', 'BAT', 'HAT'] },
-      { pattern: 'S??P', words: ['STOP', 'SHIP', 'SNAP', 'SLIP', 'SLAM', 'SHOP'], matches: ['STOP', 'SHIP', 'SNAP', 'SLIP', 'SHOP'] },
-    ];
-    s.wcIdx = 0;
-    s.wcChallenges = challenges;
-    showWildcardChallenge();
-  } else if (s.phase === 2) {
-    // Phase 3: Number-to-letter decoding
-    addLine('\u2501\u2501\u2501 Weather Station \u2014 Encoded Lock \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Last one. This lock speaks in NUMBERS. But those', 'highlight');
-    addLine('        numbers stand for letters. A=1, B=2, C=3, all the', 'highlight');
-    addLine('        way to Z=26."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "This idea \u2014 that every letter can be a number \u2014', 'highlight');
-    addLine('        is the foundation of EVERYTHING computers do. Every', 'highlight');
-    addLine('        text message, every web page, every password. Numbers', 'highlight');
-    addLine('        pretending to be letters."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "You\'ll see this again in bigger ways. For now:', 'highlight');
-    addLine('        decode this message."', 'highlight');
-    addLine('', '');
     // H=8, E=5, L=12, P=16 → HELP
-    addPre('  Encoded: 8 - 5 - 12 - 16\n\n  A=1  B=2  C=3  D=4  E=5  F=6  G=7  H=8  I=9\n  J=10 K=11 L=12 M=13 N=14 O=15 P=16 Q=17 R=18\n  S=19 T=20 U=21 V=22 W=23 X=24 Y=25 Z=26');
+    const secretWord = 'HELP';
+    const binaryCodes = secretWord.split('').map(l => {
+      const num = l.charCodeAt(0) - 64;
+      return num.toString(2).padStart(5, '0');
+    });
+
+    addLine('NEXUS: "I intercepted a transmission from the rogue AI. Four', 'highlight');
+    addLine('        letters, each stored in 5 bits. Decode them."', 'highlight');
+    addLine('', '');
+    addPre('Positions: 16  8  4  2  1\n\n' + binaryCodes.map((b, i) => `Letter ${i+1}:  ${b.split('').join('  ')}  = ?`).join('\n') + '\n\n  A=1  B=2  C=3  D=4  E=5  F=6  G=7  H=8  I=9\n  J=10 K=11 L=12 M=13 N=14 O=15 P=16 Q=17 R=18');
     addLine('', '');
     addLine('Type the decoded word:', 'warning');
 
     setCurrentInputHandler((input) => {
-      if (input.toUpperCase().trim() === 'HELP') {
+      if (input.toUpperCase().trim() === secretWord) {
         sound.success();
-        addLine('[DECODED] 8=H, 5=E, 12=L, 16=P \u2192 HELP', 'success');
-        addLine('NEXUS: "...HELP? The rogue AI is asking for HELP?"', 'highlight');
-        addLine('NEXUS: "That doesn\'t make sense. Rogue AIs don\'t cry for', 'highlight');
-        addLine('        help. Something\'s off. Keep going \u2014 we need more', 'highlight');
-        addLine('        intel before I figure this out."', 'highlight');
-        addLine('', '');
-        addLine('NEXUS: "You just learned three real hacking skills:', 'highlight');
-        addLine('        deduction, pattern matching, and decoding. Every', 'highlight');
-        addLine('        mission from here builds on these."', 'highlight');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(0), 1200);
+        addLine(`[DECODED] "${secretWord}".`, 'success');
+        addLine('NEXUS: "...wait. HELP? The rogue AI is asking for HELP?"', 'highlight');
+        addLine('NEXUS: "Something is very wrong here. Keep going."', 'highlight');
+        s.phase = 2;
+        addLine('');
+        setTimeout(runBinaryPhase, 1000);
       } else {
         sound.denied();
-        addLine('[WRONG] Each number is a letter\'s position in the alphabet.', 'error');
+        let correct = 0;
+        const inp = input.toUpperCase();
+        for (let i = 0; i < Math.min(inp.length, secretWord.length); i++) {
+          if (inp[i] === secretWord[i]) correct++;
+        }
+        if (correct > 0 && inp.length === secretWord.length) {
+          addLine(`[PARTIAL] ${correct}/${secretWord.length} correct. Keep going!`, 'warning');
+        } else {
+          addLine('[WRONG] Decode each 5-bit group to a number, then look up the letter.', 'error');
+        }
+      }
+    });
+
+  } else if (s.phase === 2) {
+    // Phase 3: Binary as PIXELS
+    addLine('\u2501\u2501\u2501 Phase 3: Binary as Pictures \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Here\'s the thing that\'ll blow your mind. Binary', 'highlight');
+    addLine('        isn\'t just for numbers and letters. The SAME ones', 'highlight');
+    addLine('        and zeros can also be PICTURES."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "On a screen, every pixel is either ON (1) or OFF (0).', 'highlight');
+    addLine('        A grid of bits IS an image. Your screen right now is', 'highlight');
+    addLine('        just millions of bits arranged in a grid."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Same 0s and 1s. Numbers, letters, or pictures \u2014 it', 'highlight');
+    addLine('        depends on how you INTERPRET them. That\'s the most', 'highlight');
+    addLine('        important idea in all of computer science."', 'highlight');
+    addLine('', '');
+
+    // Pixel grid: letter "H" (5x5)
+    const grid1 = [
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+      [1,1,1,1,1],
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+    ];
+
+    addLine('NEXUS: "1 = green pixel. 0 = dark. What letter does this', 'highlight');
+    addLine('        grid of bits draw?"', 'highlight');
+    addLine('', '');
+
+    // Render as colored blocks
+    const gridDiv = document.createElement('div');
+    gridDiv.style.cssText = 'font-family:monospace;font-size:18px;line-height:1.2;letter-spacing:4px;margin:12px 0;padding:12px;border:1px solid #005a15;display:inline-block;';
+    for (const row of grid1) {
+      const rowSpan = document.createElement('div');
+      rowSpan.innerHTML = row.map(b =>
+        b ? '<span style="color:#00ff41">\u2588</span>' : '<span style="color:#1a1a1a">\u2588</span>'
+      ).join('');
+      gridDiv.appendChild(rowSpan);
+    }
+    const termEl = document.getElementById('terminal');
+    termEl.appendChild(gridDiv);
+    termEl.scrollTop = termEl.scrollHeight;
+
+    addLine('', '');
+    addLine('Also shown as raw binary:', 'info');
+    addPre(grid1.map(row => '  ' + row.join(' ')).join('\n'));
+    addLine('', '');
+    addLine('What letter is it? Type the letter:', 'warning');
+
+    s.pixelStep = 0;
+
+    setCurrentInputHandler((input) => {
+      if (s.pixelStep === 0) {
+        if (input.toUpperCase().trim() === 'H') {
+          sound.success();
+          addLine('[CORRECT] It\'s an H! Five rows of bits \u2192 a picture.', 'success');
+          addLine('', '');
+          addLine('NEXUS: "One more. This time it\'s not a letter \u2014 it\'s a', 'highlight');
+          addLine('        SHAPE. Same idea, different interpretation."', 'highlight');
+          addLine('', '');
+
+          // Arrow pointing right (5x5)
+          const grid2 = [
+            [0,0,1,0,0],
+            [0,0,0,1,0],
+            [1,1,1,1,1],
+            [0,0,0,1,0],
+            [0,0,1,0,0],
+          ];
+
+          const gridDiv2 = document.createElement('div');
+          gridDiv2.style.cssText = 'font-family:monospace;font-size:18px;line-height:1.2;letter-spacing:4px;margin:12px 0;padding:12px;border:1px solid #005a15;display:inline-block;';
+          for (const row of grid2) {
+            const rowSpan2 = document.createElement('div');
+            rowSpan2.innerHTML = row.map(b =>
+              b ? '<span style="color:#00ff41">\u2588</span>' : '<span style="color:#1a1a1a">\u2588</span>'
+            ).join('');
+            gridDiv2.appendChild(rowSpan2);
+          }
+          termEl.appendChild(gridDiv2);
+          termEl.scrollTop = termEl.scrollHeight;
+
+          addLine('', '');
+          addLine('What shape is this? (Type the word)', 'warning');
+          s.pixelStep = 1;
+        } else {
+          sound.denied();
+          addLine('[WRONG] Look at where the green blocks are. What letter shape?', 'error');
+        }
+      } else {
+        if (input.toUpperCase().trim() === 'ARROW') {
+          sound.success();
+          addLine('[CORRECT] An arrow! \u2192', 'success');
+          addLine('', '');
+          addLine('NEXUS: "Same binary. Same 0s and 1s. But this time it was', 'highlight');
+          addLine('        a picture, not a number or a letter. The DATA', 'highlight');
+          addLine('        didn\'t change \u2014 only the INTERPRETATION did."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "That single idea \u2014 data is meaningless without', 'highlight');
+          addLine('        context \u2014 is the deepest truth in computer', 'highlight');
+          addLine('        science. Remember it."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "You just learned the language of every computer on', 'highlight');
+          addLine('        Earth. Not bad for a first mission."', 'highlight');
+          setCurrentInputHandler(null);
+          setTimeout(() => completeMission(0), 1200);
+        } else {
+          sound.denied();
+          addLine('[WRONG] It\'s pointing in a direction. What shape points?', 'error');
+        }
       }
     });
   }
 }
 
-function showWildcardChallenge() {
-  const s = state.missionState;
-  const c = s.wcChallenges[s.wcIdx];
-
-  addLine(`Pattern: <span class="highlight">${c.pattern}</span>`, '');
-  addLine(`Words: ${c.words.join('  ')}`, 'info');
-  addLine('Type ALL words that match the pattern (separated by spaces):', 'warning');
-
-  setCurrentInputHandler((input) => {
-    const guesses = input.toUpperCase().trim().split(/[\s,]+/).sort();
-    const expected = c.matches.slice().sort();
-    if (guesses.length === expected.length && guesses.every((g, i) => g === expected[i])) {
-      sound.success();
-      addLine(`[MATCH] Correct! ${c.pattern} \u2192 ${c.matches.join(', ')}`, 'success');
-      s.wcIdx++;
-      if (s.wcIdx >= s.wcChallenges.length) {
-        addLine('NEXUS: "Wildcards. You\'ll use these in shell commands,', 'highlight');
-        addLine('        database searches, and every security scanner."', 'highlight');
-        s.phase = 2;
-        addLine('');
-        setTimeout(runM1Phase, 900);
-      } else {
-        addLine('');
-        addLine('NEXUS: "Good. Next pattern:"', 'highlight');
-        setTimeout(showWildcardChallenge, 700);
-      }
-    } else {
-      sound.denied();
-      addLine('[WRONG] ? matches ANY single character. Check each word against the pattern.', 'error');
-    }
-  });
-}
-
 // ============================================================
-// MISSION 2: BINARY DECODER
+// MISSION 2: BINARY SEARCH — The Most Important Algorithm
 // ============================================================
 missionRunners[1] = async function() {
-  state.missionState = { phase: 'tutorial', step: 0, hintIdx: 0 };
+  state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
-    { text: '[INTERCEPT] Unknown signal on the radio.', cls: 'system' },
+    { text: '[SYSTEM] Access to village records requires authentication.', cls: 'system' },
     { text: '', cls: '' },
-    { text: 'You lean in. It\'s nothing but ones and zeros, scrolling forever.', cls: '' },
+    { text: 'NEXUS: "You know how computers STORE data now. Next question:', cls: 'highlight' },
+    { text: '        how do they FIND things? You\'ve got a million records.', cls: 'highlight' },
+    { text: '        How do you find the one you need \u2014 fast?"', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Kid. That\'s BINARY. That\'s what computers really', cls: 'highlight' },
-    { text: '        speak when nobody\'s watching."', cls: 'highlight' },
+    { text: 'NEXUS: "There\'s an algorithm for this. It\'s called BINARY', cls: 'highlight' },
+    { text: '        SEARCH. It\'s arguably the most important algorithm', cls: 'highlight' },
+    { text: '        in computer science. Every database, every search', cls: 'highlight' },
+    { text: '        engine, every sorted list uses it."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Everything you\'ve ever seen on a screen? Music,', cls: 'highlight' },
-    { text: '        photos, this conversation \u2014 all of it. Underneath,', cls: 'highlight' },
-    { text: '        just ON and OFF. One and zero. That\'s all computers', cls: 'highlight' },
-    { text: '        actually understand."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Each digit is called a BIT. Eight of them together', cls: 'highlight' },
-    { text: '        make a BYTE \u2014 enough to hold one letter of the alphabet."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Here\'s the trick. Each position is worth DOUBLE the', cls: 'highlight' },
-    { text: '        one on its right. So right-to-left, the positions read:', cls: 'highlight' },
-    { text: '        one, two, four, eight, sixteen, and so on \u2014 doubling', cls: 'highlight' },
-    { text: '        every time."', cls: 'highlight' },
+    { text: 'NEXUS: "The idea is simple: always guess the MIDDLE. Each', cls: 'highlight' },
+    { text: '        guess eliminates HALF the remaining possibilities."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
 
-  addPre('     Position:  8  4  2  1\n     Binary:    1  0  1  0    <- ones here, zeros here\n\n     The 8 and 2 positions have 1s.\n     The 4 and 1 positions have 0s.\n     So grab the 8 and the 2. Ignore the rest.\n     8 + 2 = 10.');
-
-  await typeLines([
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Where you see a 1, you grab that position\'s value.', cls: 'highlight' },
-    { text: '        Where you see a 0, you walk past. Add up what you', cls: 'highlight' },
-    { text: '        grabbed. That\'s your number."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "I\'m dropping you some practice before the real one.', cls: 'highlight' },
-    { text: '        What number is 0011?"', cls: 'highlight' },
-    { text: '(Remember: positions are 8, 4, 2, 1, reading right to left)', cls: 'info' },
-  ]);
-
-  const tutorialSteps = [
-    { q: '0011', a: '3', explain: '0+0+2+1 = 3. You got it!' },
-    { q: '0110', a: '6', explain: '0+4+2+0 = 6. Excellent!' },
-    { q: '1001', a: '9', explain: '8+0+0+1 = 9. You\'re a natural!' },
-    { q: '1111', a: '15', explain: '8+4+2+1 = 15. Maximum value for 4 bits!' },
-  ];
-
-  let tutIdx = 0;
-
-  setCurrentInputHandler(function tutorialHandler(input) {
-    const step = tutorialSteps[tutIdx];
-    if (input.trim() === step.a) {
-      sound.success();
-      addLine(`[CORRECT] ${step.explain}`, 'success');
-      tutIdx++;
-      if (tutIdx < tutorialSteps.length) {
-        addLine(`\nNext: What number is ${tutorialSteps[tutIdx].q}?`, 'warning');
-      } else {
-        addLine('');
-        addLine('Tutorial complete! Now for the real challenge...', 'success');
-        setTimeout(startBinaryDecode, 1000);
-      }
-    } else {
-      sound.denied();
-      addLine(`[WRONG] Try again. Remember: positions are 8, 4, 2, 1`, 'error');
-      addLine(`What is ${step.q}?`, 'warning');
-    }
-  });
+  runSearchPhase();
 };
 
-function startBinaryDecode() {
-  // Spell out a secret word using binary -> ASCII (simplified)
-  // We'll use A=1, B=2, ... to keep it simple for a 9 year old
-  const secretWord = 'HELP';
-  const letterBin = {
-    'H': '01000', 'E': '00101', 'L': '01100', 'P': '10000',
-  };
-  // Simplified: we'll use 5-bit where A=1 (00001) through Z=26
-  const letters = secretWord.split('');
-  const binaryCodes = letters.map(l => {
-    const num = l.charCodeAt(0) - 64; // A=1
-    return num.toString(2).padStart(5, '0');
-  });
+function runSearchPhase() {
+  const s = state.missionState;
+  setPhaseProgress(s.phase + 1, 3);
 
-  addLine('');
-  addLine('\u2501\u2501\u2501 INTERCEPTED MESSAGE \u2501\u2501\u2501', 'highlight');
-  addLine('NEXUS: "This is the real one. Four letters, each one hiding in', 'highlight');
-  addLine('        5 bits of binary. Same trick as before, just five', 'highlight');
-  addLine('        positions instead of four."', 'highlight');
-  addLine('');
-  addLine('NEXUS: "Here\'s the letter code \u2014 A is 1, B is 2, all the way', 'highlight');
-  addLine('        up. Z is 26. So the number you decode IS the letter\'s', 'highlight');
-  addLine('        position in the alphabet."', 'highlight');
-  addLine('');
-  addLine('NEXUS: "Five bits means five positions. Read the pattern below."', 'highlight');
-  addPre('Positions: 16  8  4  2  1\n\n' + binaryCodes.map((b, i) => `Letter ${i+1}:  ${b.split('').join('  ')}  = ?`).join('\n'));
+  if (s.phase === 0) {
+    // Phase 1: Guess my number 1-50
+    const target = 37;
+    s.searchTarget = target;
+    s.searchLo = 1;
+    s.searchHi = 50;
+    s.searchGuesses = 0;
 
-  addLine('');
-  addLine('NEXUS: "Decode all four letters. Type the word. I\'ll be', 'highlight');
-  addLine('        watching."', 'highlight');
+    addLine('\u2501\u2501\u2501 Phase 1: Guess the Number \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "I\'m thinking of a number between 1 and 50. Each', 'highlight');
+    addLine('        guess, I\'ll tell you HIGHER or LOWER."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "The SMART way: always guess the middle of the range.', 'highlight');
+    addLine('        That cuts the possibilities in HALF every time."', 'highlight');
+    addLine('', '');
+    addLine('Range: 1 to 50. Guess a number:', 'warning');
 
-  let decoded = false;
-  setCurrentInputHandler((input) => {
-    if (input.toUpperCase() === secretWord) {
-      sound.success();
-      addLine(`[DECODED] The message is "${secretWord}".`, 'success');
-      addLine('NEXUS: "...wait. HELP? The rogue AI is asking for HELP?"', 'highlight');
-      addLine('NEXUS: "That doesn\'t make sense. Rogue AIs don\'t cry for', 'highlight');
-      addLine('        help. Something\'s off. Keep going \u2014 we need more', 'highlight');
-      addLine('        intel before I figure this out."', 'highlight');
-      decoded = true;
-      setCurrentInputHandler(null);
-      setTimeout(() => completeMission(1), 1000);
-    } else {
-      sound.denied();
-      // Check individual letters for partial credit
-      let correct = 0;
-      const inp = input.toUpperCase();
-      for (let i = 0; i < Math.min(inp.length, secretWord.length); i++) {
-        if (inp[i] === secretWord[i]) correct++;
+    setCurrentInputHandler((input) => {
+      const n = parseInt(input.trim());
+      if (isNaN(n) || n < 1 || n > 50) {
+        addLine('[ERROR] Guess a number between 1 and 50.', 'error');
+        return;
       }
-      if (correct > 0 && inp.length === secretWord.length) {
-        addLine(`[PARTIAL] ${correct} out of ${secretWord.length} letters are correct. Keep trying!`, 'warning');
+      s.searchGuesses++;
+      if (n === target) {
+        sound.success();
+        addLine(`[FOUND] ${n} is correct! Found in ${s.searchGuesses} guesses.`, 'success');
+        const optimal = Math.ceil(Math.log2(50));
+        if (s.searchGuesses <= optimal) {
+          addLine('NEXUS: "Perfect binary search. Always splitting the middle."', 'highlight');
+        } else {
+          addLine(`NEXUS: "A perfect binary search would do it in ${optimal}.`, 'highlight');
+          addLine('        The key: always guess the MIDDLE of what\'s left."', 'highlight');
+        }
+        s.phase = 1;
+        addLine('');
+        setTimeout(runSearchPhase, 1000);
+      } else if (n < target) {
+        s.searchLo = Math.max(s.searchLo, n + 1);
+        addLine(`  ${n} \u2014 HIGHER. Range: ${s.searchLo} to ${s.searchHi}`, 'info');
       } else {
-        addLine('[WRONG] Convert each binary to a number, then number to letter.', 'error');
-        addLine('Example: 00001 = 1 = A, 00010 = 2 = B, 00011 = 3 = C', 'info');
+        s.searchHi = Math.min(s.searchHi, n - 1);
+        addLine(`  ${n} \u2014 LOWER. Range: ${s.searchLo} to ${s.searchHi}`, 'info');
       }
-    }
-  });
+    });
+
+  } else if (s.phase === 1) {
+    // Phase 2: The magic of doubling
+    addLine('\u2501\u2501\u2501 Phase 2: Why Binary Search is Magic \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Here\'s why binary search is the most important', 'highlight');
+    addLine('        algorithm. Watch what happens when the list gets', 'highlight');
+    addLine('        bigger."', 'highlight');
+    addLine('', '');
+    addPre('  Items to search     Max guesses needed\n  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  10                   4\n  100                  7\n  1,000                10\n  1,000,000            20\n  1,000,000,000        30\n  100,000,000,000      37');
+    addLine('', '');
+    addLine('NEXUS: "A billion items. Thirty guesses. Google searches 100', 'highlight');
+    addLine('        billion web pages. Binary search: 37 comparisons.', 'highlight');
+    addLine('        Not 100 billion. Thirty-seven."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Every time you DOUBLE the items, you need just ONE', 'highlight');
+    addLine('        more guess. That\'s called LOGARITHMIC growth. It\'s', 'highlight');
+    addLine('        why computers can search impossibly large things."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Quick check. A sorted list has 1000 items. What\'s', 'highlight');
+    addLine('        the maximum number of guesses binary search needs?"', 'highlight');
+    addLine('(Look at the table above)', 'info');
+
+    setCurrentInputHandler((input) => {
+      if (input.trim() === '10') {
+        sound.success();
+        addLine('[CORRECT] 1000 items = 10 guesses max.', 'success');
+        s.phase = 2;
+        addLine('');
+        setTimeout(runSearchPhase, 900);
+      } else {
+        sound.denied();
+        addLine('[WRONG] Check the table \u2014 find 1,000 in the left column.', 'error');
+      }
+    });
+
+  } else if (s.phase === 2) {
+    // Phase 3: Binary search a word list
+    const words = ['APPLE', 'BANANA', 'CHERRY', 'DRAGON', 'EAGLE', 'FALCON', 'GRAPE', 'HAWK'];
+    const target = 'FALCON';
+    s.wordTarget = target;
+    s.wordLo = 0;
+    s.wordHi = words.length - 1;
+    s.wordGuesses = 0;
+    s.words = words;
+
+    addLine('\u2501\u2501\u2501 Phase 3: Search in Practice \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Final test. Here\'s a sorted list of 8 words. I\'m', 'highlight');
+    addLine('        looking for one specific word. Use binary search."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Type the POSITION NUMBER (1-8) of your guess. I\'ll', 'highlight');
+    addLine('        tell you if the target is BEFORE or AFTER it."', 'highlight');
+    addLine('', '');
+    addPre(words.map((w, i) => `  ${i+1}. ${w}`).join('\n'));
+    addLine('', '');
+    addLine(`Target: find the word "${target}". Guess a position (1-8):`, 'warning');
+
+    setCurrentInputHandler((input) => {
+      const pos = parseInt(input.trim());
+      if (isNaN(pos) || pos < 1 || pos > 8) {
+        addLine('[ERROR] Type a position number 1-8.', 'error');
+        return;
+      }
+      s.wordGuesses++;
+      const guessWord = words[pos - 1];
+      if (guessWord === target) {
+        sound.success();
+        addLine(`[FOUND] Position ${pos} = ${guessWord}! Done in ${s.wordGuesses} guesses.`, 'success');
+        const optimal = Math.ceil(Math.log2(8));
+        addLine('', '');
+        if (s.wordGuesses <= optimal) {
+          addLine('NEXUS: "Perfect. You searched 8 items in ' + s.wordGuesses + ' guesses.', 'highlight');
+        } else {
+          addLine(`NEXUS: "Binary search could do it in ${optimal}. The trick:`, 'highlight');
+          addLine('        always pick the middle of the remaining range."', 'highlight');
+        }
+        addLine('', '');
+        addLine('NEXUS: "Two missions done. You know how computers STORE', 'highlight');
+        addLine('        data (binary) and how they FIND data (binary search).', 'highlight');
+        addLine('        Those are the two most fundamental operations in', 'highlight');
+        addLine('        all of computing. Everything else builds on them."', 'highlight');
+        setCurrentInputHandler(null);
+        setTimeout(() => completeMission(1), 1200);
+      } else if (guessWord < target) {
+        addLine(`  Position ${pos} = ${guessWord} \u2014 target is AFTER this. Search positions ${pos+1}-${s.wordHi+1}.`, 'info');
+        s.wordLo = pos;
+      } else {
+        addLine(`  Position ${pos} = ${guessWord} \u2014 target is BEFORE this. Search positions ${s.wordLo+1}-${pos-1}.`, 'info');
+        s.wordHi = pos - 2;
+      }
+    });
+  }
 }
 
 // ============================================================
