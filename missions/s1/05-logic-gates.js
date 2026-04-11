@@ -221,50 +221,73 @@ function runLogicPhase() {
           sound.success();
           addLine('[CORRECT] CARRY = A AND B.', 'success');
           addLine('', '');
-          addLine('NEXUS: "Now the SUM column: 0, 1, 1, 0. Look at when', 'highlight');
-          addLine('        SUM is 1 \u2014 it\'s 1 when A and B are DIFFERENT.', 'highlight');
-          addLine('        When they\'re the same (both 0 or both 1), SUM is 0."', 'highlight');
+          addLine('NEXUS: "Now the SUM column. Look at the pattern:"', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "That pattern has a name: XOR. Exclusive OR.', 'highlight');
-          addLine('        Regular OR says \'at least one.\' XOR says \'exactly', 'highlight');
-          addLine('        one \u2014 not both.\'"', 'highlight');
+          addPre('  A  B  \u2502  SUM\n  \u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\n  0  0  \u2502   0\n  0  1  \u2502   1\n  1  0  \u2502   1\n  1  1  \u2502   0');
           addLine('', '');
-          addPre('  Compare:\n    OR:   0,1,1,1   \u2190 1 when at least one is 1\n    XOR:  0,1,1,0   \u2190 1 when EXACTLY one is 1');
+          addLine('NEXUS: "It\'s not AND (that would be 0,0,0,1). It\'s not', 'highlight');
+          addLine('        OR (that would be 0,1,1,1). So what IS it?"', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "So SUM = A XOR B, CARRY = A AND B. Two gates,', 'highlight');
-          addLine('        and you have a circuit that adds binary numbers.', 'highlight');
-          addLine('        Here\'s what it looks like:"', 'highlight');
-          addLine('', '');
-          addPre('  THE HALF-ADDER CIRCUIT\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n        A \u2500\u2500\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n            \u2502\n        B \u2500\u2500\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  Two inputs (A, B) \u2192 Two outputs (SUM, CARRY)\n  That\'s the complete circuit.');
-          addLine('', '');
-          addLine('NEXUS: "Let\'s test it. If A=1 and B=1, what does the', 'highlight');
-          addLine('        circuit output?"', 'highlight');
-          addLine('', '');
-          addLine('  1 XOR 1 = ? (same or different? \u2192 same \u2192 0)', 'info');
-          addLine('  1 AND 1 = ? (both 1? \u2192 yes \u2192 1)', 'info');
-          addLine('', '');
-          addLine('Type: SUM CARRY', 'warning');
+          addLine('When is SUM = 1? Pick one:', 'warning');
+          addLine('  A) when both inputs are 1', 'info');
+          addLine('  B) when at least one input is 1', 'info');
+          addLine('  C) when the inputs are DIFFERENT', 'info');
+          addLine('  D) when both inputs are 0', 'info');
           s.adderStep = 1;
         } else {
           sound.denied();
           addLine('[WRONG] CARRY is only 1 in the last row \u2014 when BOTH inputs are 1. Which gate does that?', 'error');
         }
       } else if (s.adderStep === 1) {
-        const parts = input.trim().split(/[\s,]+/).map(Number);
-        if (parts.length === 2 && parts[0] === 0 && parts[1] === 1) {
+        // Kid discovers XOR
+        if (guess === 'C') {
           sound.success();
-          addLine('[CORRECT] SUM=0, CARRY=1. That\'s binary 10 = decimal 2.', 'success');
-          addLine('  1 + 1 = 2. The circuit works!', 'success');
+          addLine('[CORRECT] SUM = 1 when the inputs are DIFFERENT.', 'success');
           addLine('', '');
-          addLine('NEXUS: "Let\'s try one more. A=1, B=0:"', 'highlight');
-          addLine('  1 XOR 0 = ? (different? \u2192 yes \u2192 1)', 'info');
-          addLine('  1 AND 0 = ? (both 1? \u2192 no \u2192 0)', 'info');
+          addLine('NEXUS: "That pattern has a name: XOR. Exclusive OR.', 'highlight');
+          addLine('        Regular OR says \'at least one.\' XOR says', 'highlight');
+          addLine('        \'exactly one \u2014 not both.\'"', 'highlight');
+          addLine('', '');
+          addPre('  Compare:\n    OR:   0,1,1,1   \u2190 at least one is 1\n    XOR:  0,1,1,0   \u2190 EXACTLY one is 1 (not both)');
+          addLine('', '');
+          addLine('NEXUS: "So: SUM = XOR, CARRY = AND. Two gates, and', 'highlight');
+          addLine('        you have a circuit that adds binary numbers:"', 'highlight');
+          addLine('', '');
+          addPre('  THE HALF-ADDER CIRCUIT\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n        A \u2500\u2500\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n            \u2502\n        B \u2500\u2500\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  Two inputs (A, B) \u2192 Two outputs (SUM, CARRY)');
+          addLine('', '');
+          addLine('NEXUS: "Let\'s test it. A=1, B=1:"', 'highlight');
+          addLine('  XOR: are 1 and 1 different? \u2192 SUM = ?', 'info');
+          addLine('  AND: are both 1? \u2192 CARRY = ?', 'info');
           addLine('', '');
           addLine('Type: SUM CARRY', 'warning');
           s.adderStep = 2;
+        } else if (guess === 'A') {
+          sound.denied();
+          addLine('[WRONG] That\'s AND (0,0,0,1). SUM is 0,1,1,0 \u2014 look at which rows have 1.', 'error');
+        } else if (guess === 'B') {
+          sound.denied();
+          addLine('[WRONG] That\'s OR (0,1,1,1). SUM is 0,1,1,0 \u2014 the last row is different.', 'error');
         } else {
           sound.denied();
-          addLine('[WRONG] XOR: are 1 and 1 different? No \u2192 0. AND: are both 1? Yes \u2192 1.', 'error');
+          addLine('[WRONG] Look at rows 2 and 3: A and B are different, SUM is 1. Row 4: same, SUM is 0.', 'error');
+        }
+      } else if (s.adderStep === 2) {
+        // Test: 1+1
+        const parts = input.trim().split(/[\s,]+/).map(Number);
+        if (parts.length === 2 && parts[0] === 0 && parts[1] === 1) {
+          sound.success();
+          addLine('[CORRECT] SUM=0, CARRY=1. Binary 10 = decimal 2.', 'success');
+          addLine('  1 + 1 = 2. The circuit works!', 'success');
+          addLine('', '');
+          addLine('NEXUS: "One more. A=1, B=0:"', 'highlight');
+          addLine('  XOR: different? \u2192 SUM = ?', 'info');
+          addLine('  AND: both 1? \u2192 CARRY = ?', 'info');
+          addLine('', '');
+          addLine('Type: SUM CARRY', 'warning');
+          s.adderStep = 3;
+        } else {
+          sound.denied();
+          addLine('[WRONG] 1 and 1 are the SAME \u2192 XOR = 0. Both are 1 \u2192 AND = 1.', 'error');
         }
       } else {
         const parts = input.trim().split(/[\s,]+/).map(Number);
