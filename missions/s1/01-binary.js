@@ -70,6 +70,9 @@ async function animateBinaryBreakdown() {
   ];
 
   // Build the grid container
+  const wrapper = document.createElement('div');
+  wrapper.className = 'binary-breakdown-wrapper';
+
   const grid = document.createElement('div');
   grid.className = 'binary-breakdown';
   grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,70px);gap:4px;padding:14px;margin:12px 0;background:#0d1117;border:1px solid #005a15;border-radius:4px;font-family:monospace;text-align:center;';
@@ -81,7 +84,8 @@ async function animateBinaryBreakdown() {
     el.textContent = c.label;
     el.style.cssText = 'padding:6px 2px;color:#00ff41;font-size:11px;border:1px solid #005a15;border-radius:3px;transition:border-color 0.3s;';
     grid.appendChild(el);
-
+    return el;
+  });
 
   // Digit row
   const digitCells = columns.map(c => {
@@ -90,6 +94,8 @@ async function animateBinaryBreakdown() {
     el.textContent = String(c.digit);
     el.style.cssText = `padding:8px 2px;font-size:20px;font-weight:bold;color:${c.digit ? '#00ff41' : '#333'};border:1px solid #005a15;border-radius:3px;transition:all 0.3s;`;
     grid.appendChild(el);
+    return el;
+  });
 
   // Result row (initially empty dashes)
   const resultCells = columns.map(() => {
@@ -98,6 +104,8 @@ async function animateBinaryBreakdown() {
     el.textContent = '-';
     el.style.cssText = 'padding:8px 2px;font-size:16px;font-weight:bold;color:#333;border:1px solid #005a15;border-radius:3px;transition:all 0.3s;';
     grid.appendChild(el);
+    return el;
+  });
 
   // Total row
   const totalEl = document.createElement('div');
@@ -106,56 +114,85 @@ async function animateBinaryBreakdown() {
   totalEl.textContent = 'Total: ...';
   grid.appendChild(totalEl);
 
-  termEl.appendChild(grid);
+  wrapper.appendChild(grid);
+  termEl.appendChild(wrapper);
   termEl.scrollTop = termEl.scrollHeight;
 
-  // Animate column by column
-  let runningTotal = 0;
-  await sleep(300);
-
-  for (let i = 0; i < columns.length; i++) {
-    const col = columns[i];
-
-    // Highlight the column
-    headerCells[i].style.borderColor = '#00ff41';
-    digitCells[i].style.borderColor = '#00ff41';
-    resultCells[i].style.borderColor = '#00ff41';
-
-    await sleep(200);
-
-    if (col.digit === 1) {
-      // Show the value, update total
-      runningTotal += col.value;
-      resultCells[i].textContent = String(col.value);
-      resultCells[i].style.color = '#00ff41';
-      resultCells[i].style.textShadow = '0 0 6px #00ff41';
-      totalEl.textContent = 'Total: ' + runningTotal;
-      totalEl.style.color = '#00ff41';
-    } else {
-      // Zero column — just dim it
+  // The replay-able animation logic
+  async function runAnimation() {
+    // Reset all cells to initial state
+    columns.forEach((c, i) => {
+      headerCells[i].style.borderColor = '#005a15';
+      digitCells[i].textContent = String(c.digit);
+      digitCells[i].style.color = c.digit ? '#00ff41' : '#333';
+      digitCells[i].style.borderColor = '#005a15';
       resultCells[i].textContent = '-';
       resultCells[i].style.color = '#333';
-      digitCells[i].style.color = '#333';
+      resultCells[i].style.textShadow = 'none';
+      resultCells[i].style.fontSize = '16px';
+      resultCells[i].style.borderColor = '#005a15';
+    });
+    totalEl.textContent = 'Total: ...';
+    totalEl.style.color = '#555';
+    totalEl.style.fontSize = '18px';
+    totalEl.style.fontWeight = 'normal';
+    totalEl.style.textShadow = 'none';
+    totalEl.style.borderColor = '#005a15';
+
+    // Animate column by column
+    let runningTotal = 0;
+    await sleep(300);
+
+    for (let i = 0; i < columns.length; i++) {
+      const col = columns[i];
+
+      // Highlight the column
+      headerCells[i].style.borderColor = '#00ff41';
+      digitCells[i].style.borderColor = '#00ff41';
+      resultCells[i].style.borderColor = '#00ff41';
+
+      await sleep(200);
+
+      if (col.digit === 1) {
+        // Show the value, update total
+        runningTotal += col.value;
+        resultCells[i].textContent = String(col.value);
+        resultCells[i].style.color = '#00ff41';
+        resultCells[i].style.textShadow = '0 0 6px #00ff41';
+        totalEl.textContent = 'Total: ' + runningTotal;
+        totalEl.style.color = '#00ff41';
+      } else {
+        // Zero column — just dim it
+        resultCells[i].textContent = '-';
+        resultCells[i].style.color = '#333';
+        digitCells[i].style.color = '#333';
+      }
+
+      termEl.scrollTop = termEl.scrollHeight;
+      await sleep(600);
+
+      // Dim the column after processing (except result stays)
+      headerCells[i].style.borderColor = '#005a15';
+      digitCells[i].style.borderColor = '#005a15';
+      resultCells[i].style.borderColor = '#005a15';
     }
 
+    // Final total pulse
+    totalEl.textContent = 'Total: ' + runningTotal;
+    totalEl.style.color = '#00ff41';
+    totalEl.style.fontSize = '20px';
+    totalEl.style.fontWeight = 'bold';
+    totalEl.style.textShadow = '0 0 8px #00ff41, 0 0 16px #00aa2a';
+    totalEl.style.borderColor = '#00ff41';
     termEl.scrollTop = termEl.scrollHeight;
     await sleep(600);
-
-    // Dim the column after processing (except result stays)
-    headerCells[i].style.borderColor = '#005a15';
-    digitCells[i].style.borderColor = '#005a15';
-    resultCells[i].style.borderColor = '#005a15';
   }
 
-  // Final total pulse
-  totalEl.textContent = 'Total: ' + runningTotal;
-  totalEl.style.color = '#00ff41';
-  totalEl.style.fontSize = '20px';
-  totalEl.style.fontWeight = 'bold';
-  totalEl.style.textShadow = '0 0 8px #00ff41, 0 0 16px #00aa2a';
-  totalEl.style.borderColor = '#00ff41';
-  termEl.scrollTop = termEl.scrollHeight;
-  await sleep(600);
+  // Run the animation the first time
+  await runAnimation();
+
+  // Add replay button inside the wrapper
+  addReplayButton(wrapper, runAnimation);
 }
 
 async function runBinaryPhase() {
@@ -313,6 +350,8 @@ async function runBinaryPhase() {
             cell.style.boxShadow = 'none';
           }
           sound.keyClick();
+          // Auto-check: if this row now matches the target, advance
+          checkPixelRow(s, gridState, hGrid, COLS);
         };
         s.gridCells.push(cell);
         gridDiv.appendChild(cell);
@@ -324,6 +363,37 @@ async function runBinaryPhase() {
     addLine('', '');
     showPixelRow();
   }
+}
+
+function checkPixelRow(s, gridState, hGrid, COLS) {
+  const row = s.currentRow;
+  if (row >= hGrid.length) return;
+  const rowBinary = hGrid[row];
+
+  // Check if current row matches
+  const matches = rowBinary.every((v, i) => gridState[row][i] === v);
+  if (!matches) return; // not done yet, wait for more clicks
+
+  // Row is correct — advance
+  sound.success();
+  addLine(`[ROW ${row + 1} \u2713]`, 'success');
+
+  // Lock this row's cells
+  for (let c = 0; c < COLS; c++) {
+    const cell = s.gridCells[row * COLS + c];
+    cell.onclick = null;
+    cell.style.cursor = 'default';
+  }
+  s.currentRow++;
+
+  // Highlight next row
+  if (s.currentRow < hGrid.length) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = s.gridCells[s.currentRow * COLS + c];
+      cell.style.border = '1px solid #333';
+    }
+  }
+  setTimeout(showPixelRow, 400);
 }
 
 function showPixelRow() {
@@ -381,10 +451,10 @@ function showPixelRow() {
     return;
   }
 
-  // Show the binary for this row, ask kid to click the right squares
+  // Show the binary for this row
   const rowBinary = hGrid[row];
   addLine(`Row ${row + 1} of 5:  <span style="color:var(--cyan);font-weight:bold;letter-spacing:3px">${rowBinary.join(' ')}</span>`, '');
-  addLine('Click the squares that should be ON (where the digit is 1), then type OK.', 'info');
+  addLine('Click the squares where the digit is 1.', 'info');
 
   // Highlight the active row cells
   for (let c = 0; c < COLS; c++) {
@@ -392,51 +462,6 @@ function showPixelRow() {
     cell.style.border = '1px solid #333';
   }
 
-  setCurrentInputHandler((input) => {
-    if (input.toUpperCase().trim() !== 'OK') {
-      addLine('Type OK when you\'ve clicked the right squares for this row.', 'info');
-      return;
-    }
-
-    // Check if the kid's clicks match the binary
-    const gridState = [];
-    for (let c = 0; c < COLS; c++) {
-      const cell = s.gridCells[row * COLS + c];
-      // Browser stores colors as rgb() not hex, so check for green channel
-      const isOn = cell.style.background.includes('0, 255, 65') || cell.style.background.includes('00ff41');
-      gridState.push(isOn ? 1 : 0);
-    }
-
-    const correct = gridState.every((v, i) => v === rowBinary[i]);
-
-    if (correct) {
-      sound.success();
-      addLine(`[ROW ${row + 1} CORRECT]`, 'success');
-      // Lock this row's cells
-      for (let c = 0; c < COLS; c++) {
-        const cell = s.gridCells[row * COLS + c];
-        cell.onclick = null;
-        cell.style.cursor = 'default';
-      }
-      s.currentRow++;
-      // Highlight next row
-      if (s.currentRow < hGrid.length) {
-        for (let c = 0; c < COLS; c++) {
-          const cell = s.gridCells[s.currentRow * COLS + c];
-          cell.style.border = '1px solid #333';
-        }
-      }
-      setTimeout(showPixelRow, 500);
-    } else {
-      sound.denied();
-      addLine('[WRONG] Check the binary again. 1 = click ON, 0 = leave OFF.', 'error');
-      // Reset this row
-      for (let c = 0; c < COLS; c++) {
-        const cell = s.gridCells[row * COLS + c];
-        cell.style.background = '#111';
-        cell.style.border = '1px solid #333';
-        cell.style.boxShadow = 'none';
-      }
-    }
-  });
+  // No input handler needed — auto-check happens on click (see checkPixelRow)
+  setCurrentInputHandler(null);
 }
