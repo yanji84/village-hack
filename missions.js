@@ -1342,21 +1342,29 @@ function runVariablesPhase() {
     });
 
   } else if (s.phase === 3) {
-    // Phase 4: Predict output (payoff)
-    addLine('\u2501\u2501\u2501 Predict the Output \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Put it all together. Trace this program."', 'highlight');
+    // Phase 4: Put it all together — numbers only
+    addLine('\u2501\u2501\u2501 Put It All Together \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Everything you learned in one problem. Trace it."', 'highlight');
     addLine('', '');
-    addPre('  1  message = "HELLO"\n  2  name = "WORLD"\n  3  result = message + " " + name\n  4  print(result)');
+    addPre('  1  x = 10\n  2  y = x\n  3  x = x + 5\n  4  y = y - 2');
     addLine('', '');
-    addLine('What does line 4 print?', 'warning');
+    addLine('What are x and y after line 4? Type: x y', 'warning');
 
+    // x=10, y=10 (copy), x=10+5=15, y=10-2=8
     setCurrentInputHandler((input) => {
-      if (input.trim().toUpperCase() === 'HELLO WORLD') {
+      const parts = input.trim().split(/[\s,]+/).map(Number);
+      if (parts.length === 2 && parts[0] === 15 && parts[1] === 8) {
         sound.success();
-        addLine('[CORRECT] HELLO WORLD', 'success');
+        addLine('[CORRECT] x=15, y=8.', 'success');
         addLine('', '');
-        addLine('NEXUS: "Every programmer\'s first program prints Hello', 'highlight');
-        addLine('        World. You just traced one in your head."', 'highlight');
+        addLine('NEXUS: "Line by line:', 'highlight');
+        addLine('  1: x = 10', 'info');
+        addLine('  2: y = x \u2192 y gets a COPY: y = 10', 'info');
+        addLine('  3: x = x + 5 \u2192 10 + 5 = 15  (y still 10)', 'info');
+        addLine('  4: y = y - 2 \u2192 10 - 2 = 8', 'info');
+        addLine('', '');
+        addLine('NEXUS: "Assignment, overwriting, the arrow rule, and', 'highlight');
+        addLine('        copies \u2014 all in four lines. You nailed it."', 'highlight');
         addLine('', '');
         addLine('NEXUS: "Three missions, three pillars:', 'highlight');
         addLine('        DATA (binary) \u2014 how computers store things.', 'highlight');
@@ -1369,9 +1377,14 @@ function runVariablesPhase() {
           setCurrentInputHandler(null);
           completeMission(2);
         });
+      } else if (parts.length === 2 && parts[0] === 15 && parts[1] === 13) {
+        // Common mistake: thinking y tracks x, so y = 15 - 2 = 13
+        sound.denied();
+        addLine('[WRONG] y didn\'t follow x\'s change. y got a COPY of 10 at line 2.', 'error');
+        addLine('  x changed to 15, but y is still 10. Then line 4: 10 - 2 = ?', 'info');
       } else {
         sound.denied();
-        addLine('[WRONG] message is "HELLO", name is "WORLD". The + joins them with a space.', 'error');
+        addLine('[WRONG] Trace each line. Remember: y = x copies the value, not a link.', 'error');
       }
     });
   }
