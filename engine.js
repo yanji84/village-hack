@@ -410,13 +410,8 @@ function showSkipBtn(show) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function setPhaseProgress(current, total) {
-  const bar = $('mission-title-bar');
-  if (!state._baseTitle) return;
-  if (total && total > 1) {
-    bar.innerHTML = `${state._baseTitle} <span style="color:var(--cyan);margin-left:10px;font-size:10px">[ PHASE ${current}/${total} ]</span>`;
-  } else {
-    bar.textContent = state._baseTitle;
-  }
+  // No-op — phase display removed for cleaner UI.
+  // Function kept to avoid breaking missions.js calls.
 }
 
 function escHtml(s) {
@@ -986,29 +981,9 @@ function boot() {
     showHub();
   };
 
-  // Hint button
-  $('hint-btn').onclick = () => {
-    const now = Date.now();
-    const lastHint = state.missionState._lastHintAt || 0;
-    const cooldownMs = 5000;
-    if (now - lastHint < cooldownMs) {
-      const remaining = Math.ceil((cooldownMs - (now - lastHint)) / 1000);
-      addLine(`[HINT] Try the previous hint first. Wait ${remaining}s...`, 'info');
-      return;
-    }
-    sound.click();
-    state.missionState._lastHintAt = now;
-    if (missionHints[state.currentMission]) {
-      const hints = missionHints[state.currentMission];
-      const idx = state.missionState.hintIdx || 0;
-      if (idx < hints.length) {
-        addLine(`[HINT] ${hints[idx]}`, 'warning');
-        state.missionState.hintIdx = (idx + 1);
-      } else {
-        addLine('[HINT] No more hints — you\'ve got this.', 'info');
-      }
-    }
-  };
+  // Hint button removed — hints now given naturally in-mission on wrong answers
+  const hintBtn = $('hint-btn');
+  if (hintBtn) hintBtn.style.display = 'none';
 
   // Skip button (skip typing animation)
   $('skip-btn').onclick = () => {
