@@ -25,18 +25,18 @@ const MISSIONS = [
   {
     id: 1,
     num: '02',
-    title: 'BINARY SEARCH',
-    name: 'Binary Search',
-    desc: 'Learn the most important algorithm in CS \u2014 find anything in billions of items with just a few guesses.',
-    skill: 'SKILL: Algorithms + Logarithmic Thinking',
+    title: 'FIRST PROGRAM',
+    name: 'Your First Program',
+    desc: 'Write a complete set of instructions and watch the computer follow them EXACTLY. One wrong step = crash.',
+    skill: 'SKILL: Sequential Instructions + Debugging',
   },
   {
     id: 2,
     num: '03',
-    title: 'FIRST PROGRAM',
-    name: 'Your First Program',
-    desc: 'Write a sequence of instructions for a robot to follow. One wrong step and it crashes. This is programming.',
-    skill: 'SKILL: Algorithms + Sequential Instructions + Debugging',
+    title: 'VARIABLES & MEMORY',
+    name: 'Variables & Memory',
+    desc: 'Computers remember things by giving them NAMES. Learn to track values as they change \u2014 the foundation of all code.',
+    skill: 'SKILL: Variables + State + Mental Execution',
   },
   {
     id: 3,
@@ -155,14 +155,14 @@ const missionHints = {
     'For the pixel grid: squint at the green squares. What letter or shape do they form?',
   ],
   1: [
-    'Always guess the MIDDLE of the remaining range. That eliminates half the possibilities.',
-    'After each "higher" or "lower", your range shrinks by half. What\'s the new middle?',
-    'Every time the range doubles, you only need ONE more guess. That\'s the magic.',
-  ],
-  2: [
     'Trace your program step by step with your finger on the maze BEFORE you submit.',
     'If it crashed, look at which step hit the wall. Everything BEFORE that step was correct.',
     'The computer runs your program EXACTLY as written. No shortcuts, no common sense.',
+  ],
+  2: [
+    'Read each line in order. When a variable changes, cross out the old value and write the new one.',
+    'The RIGHT side of = is computed FIRST, using whatever value the variable has RIGHT NOW.',
+    'x = x + 1 means: take the CURRENT value of x, add 1, then store the result back into x.',
   ],
   3: [
     'Work backward. The gate wants an output of 1. What inputs would make it happy?',
@@ -895,175 +895,7 @@ function runBinaryPhase() {
 }
 
 // ============================================================
-// MISSION 2: BINARY SEARCH — The Most Important Algorithm
-// ============================================================
-missionRunners[1] = async function() {
-  state.missionState = { phase: 0, hintIdx: 0 };
-
-  await typeLines([
-    { text: '[SYSTEM] Access to village records requires authentication.', cls: 'system' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "You know how computers STORE data now. Next question:', cls: 'highlight' },
-    { text: '        how do they FIND things? You\'ve got a million records.', cls: 'highlight' },
-    { text: '        How do you find the one you need \u2014 fast?"', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "There\'s an algorithm for this. It\'s called BINARY', cls: 'highlight' },
-    { text: '        SEARCH. It\'s arguably the most important algorithm', cls: 'highlight' },
-    { text: '        in computer science. Every database, every search', cls: 'highlight' },
-    { text: '        engine, every sorted list uses it."', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: 'NEXUS: "The idea is simple: always guess the MIDDLE. Each', cls: 'highlight' },
-    { text: '        guess eliminates HALF the remaining possibilities."', cls: 'highlight' },
-    { text: '', cls: '' },
-  ]);
-
-  runSearchPhase();
-};
-
-function runSearchPhase() {
-  const s = state.missionState;
-  setPhaseProgress(s.phase + 1, 3);
-
-  if (s.phase === 0) {
-    // Phase 1: Guess my number 1-50
-    const target = 37;
-    s.searchTarget = target;
-    s.searchLo = 1;
-    s.searchHi = 50;
-    s.searchGuesses = 0;
-
-    addLine('\u2501\u2501\u2501 Phase 1: Guess the Number \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "I\'m thinking of a number between 1 and 50. Each', 'highlight');
-    addLine('        guess, I\'ll tell you HIGHER or LOWER."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "The SMART way: always guess the middle of the range.', 'highlight');
-    addLine('        That cuts the possibilities in HALF every time."', 'highlight');
-    addLine('', '');
-    addLine('Range: 1 to 50. Guess a number:', 'warning');
-
-    setCurrentInputHandler((input) => {
-      const n = parseInt(input.trim());
-      if (isNaN(n) || n < 1 || n > 50) {
-        addLine('[ERROR] Guess a number between 1 and 50.', 'error');
-        return;
-      }
-      s.searchGuesses++;
-      if (n === target) {
-        sound.success();
-        addLine(`[FOUND] ${n} is correct! Found in ${s.searchGuesses} guesses.`, 'success');
-        const optimal = Math.ceil(Math.log2(50));
-        if (s.searchGuesses <= optimal) {
-          addLine('NEXUS: "Perfect binary search. Always splitting the middle."', 'highlight');
-        } else {
-          addLine(`NEXUS: "A perfect binary search would do it in ${optimal}.`, 'highlight');
-          addLine('        The key: always guess the MIDDLE of what\'s left."', 'highlight');
-        }
-        s.phase = 1;
-        addLine('');
-        setTimeout(runSearchPhase, 1000);
-      } else if (n < target) {
-        s.searchLo = Math.max(s.searchLo, n + 1);
-        addLine(`  ${n} \u2014 HIGHER. Range: ${s.searchLo} to ${s.searchHi}`, 'info');
-      } else {
-        s.searchHi = Math.min(s.searchHi, n - 1);
-        addLine(`  ${n} \u2014 LOWER. Range: ${s.searchLo} to ${s.searchHi}`, 'info');
-      }
-    });
-
-  } else if (s.phase === 1) {
-    // Phase 2: The magic of doubling
-    addLine('\u2501\u2501\u2501 Phase 2: Why Binary Search is Magic \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Here\'s why binary search is the most important', 'highlight');
-    addLine('        algorithm. Watch what happens when the list gets', 'highlight');
-    addLine('        bigger."', 'highlight');
-    addLine('', '');
-    addPre('  Items to search     Max guesses needed\n  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  10                   4\n  100                  7\n  1,000                10\n  1,000,000            20\n  1,000,000,000        30\n  100,000,000,000      37');
-    addLine('', '');
-    addLine('NEXUS: "A billion items. Thirty guesses. Google searches 100', 'highlight');
-    addLine('        billion web pages. Binary search: 37 comparisons.', 'highlight');
-    addLine('        Not 100 billion. Thirty-seven."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "Every time you DOUBLE the items, you need just ONE', 'highlight');
-    addLine('        more guess. That\'s called LOGARITHMIC growth. It\'s', 'highlight');
-    addLine('        why computers can search impossibly large things."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "Quick check. A sorted list has 1000 items. What\'s', 'highlight');
-    addLine('        the maximum number of guesses binary search needs?"', 'highlight');
-    addLine('(Look at the table above)', 'info');
-
-    setCurrentInputHandler((input) => {
-      if (input.trim() === '10') {
-        sound.success();
-        addLine('[CORRECT] 1000 items = 10 guesses max.', 'success');
-        s.phase = 2;
-        addLine('');
-        setTimeout(runSearchPhase, 900);
-      } else {
-        sound.denied();
-        addLine('[WRONG] Check the table \u2014 find 1,000 in the left column.', 'error');
-      }
-    });
-
-  } else if (s.phase === 2) {
-    // Phase 3: Binary search a word list
-    const words = ['APPLE', 'BANANA', 'CHERRY', 'DRAGON', 'EAGLE', 'FALCON', 'GRAPE', 'HAWK'];
-    const target = 'FALCON';
-    s.wordTarget = target;
-    s.wordLo = 0;
-    s.wordHi = words.length - 1;
-    s.wordGuesses = 0;
-    s.words = words;
-
-    addLine('\u2501\u2501\u2501 Phase 3: Search in Practice \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Final test. Here\'s a sorted list of 8 words. I\'m', 'highlight');
-    addLine('        looking for one specific word. Use binary search."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "Type the POSITION NUMBER (1-8) of your guess. I\'ll', 'highlight');
-    addLine('        tell you if the target is BEFORE or AFTER it."', 'highlight');
-    addLine('', '');
-    addPre(words.map((w, i) => `  ${i+1}. ${w}`).join('\n'));
-    addLine('', '');
-    addLine(`Target: find the word "${target}". Guess a position (1-8):`, 'warning');
-
-    setCurrentInputHandler((input) => {
-      const pos = parseInt(input.trim());
-      if (isNaN(pos) || pos < 1 || pos > 8) {
-        addLine('[ERROR] Type a position number 1-8.', 'error');
-        return;
-      }
-      s.wordGuesses++;
-      const guessWord = words[pos - 1];
-      if (guessWord === target) {
-        sound.success();
-        addLine(`[FOUND] Position ${pos} = ${guessWord}! Done in ${s.wordGuesses} guesses.`, 'success');
-        const optimal = Math.ceil(Math.log2(8));
-        addLine('', '');
-        if (s.wordGuesses <= optimal) {
-          addLine('NEXUS: "Perfect. You searched 8 items in ' + s.wordGuesses + ' guesses.', 'highlight');
-        } else {
-          addLine(`NEXUS: "Binary search could do it in ${optimal}. The trick:`, 'highlight');
-          addLine('        always pick the middle of the remaining range."', 'highlight');
-        }
-        addLine('', '');
-        addLine('NEXUS: "Two missions done. You know how computers STORE', 'highlight');
-        addLine('        data (binary) and how they FIND data (binary search).', 'highlight');
-        addLine('        Those are the two most fundamental operations in', 'highlight');
-        addLine('        all of computing. Everything else builds on them."', 'highlight');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(1), 1200);
-      } else if (guessWord < target) {
-        addLine(`  Position ${pos} = ${guessWord} \u2014 target is AFTER this. Search positions ${pos+1}-${s.wordHi+1}.`, 'info');
-        s.wordLo = pos;
-      } else {
-        addLine(`  Position ${pos} = ${guessWord} \u2014 target is BEFORE this. Search positions ${s.wordLo+1}-${pos-1}.`, 'info');
-        s.wordHi = pos - 2;
-      }
-    });
-  }
-}
-
-// ============================================================
-// MISSION 3: YOUR FIRST PROGRAM
+// MISSION 2: YOUR FIRST PROGRAM
 // ============================================================
 const programMazes = [
   {
@@ -1099,15 +931,15 @@ const programMazes = [
   },
 ];
 
-missionRunners[2] = async function() {
+missionRunners[1] = async function() {
   state.missionState = { mazeIdx: 0, hintIdx: 0 };
 
   await typeLines([
     { text: '[SYSTEM] Village network offline. Manual routing required.', cls: 'system' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "Time for something different. So far you\'ve decoded', cls: 'highlight' },
-    { text: '        data and searched lists. Now you\'re going to write', cls: 'highlight' },
-    { text: '        your first PROGRAM."', cls: 'highlight' },
+    { text: 'NEXUS: "You know how computers STORE data now. Next: making', cls: 'highlight' },
+    { text: '        them DO things. You\'re going to write your first', cls: 'highlight' },
+    { text: '        PROGRAM."', cls: 'highlight' },
     { text: '', cls: '' },
     { text: 'NEXUS: "What is a program? It\'s a list of instructions. Step', cls: 'highlight' },
     { text: '        1, step 2, step 3. The computer reads them in order', cls: 'highlight' },
@@ -1238,7 +1070,7 @@ function loadProgramMaze(idx) {
         addLine('        written. That\'s what EVERY program is \u2014 from a', 'highlight');
         addLine('        simple script to an operating system."', 'highlight');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(2), 1200);
+        setTimeout(() => completeMission(1), 1200);
       }
     } else if (crashStep >= 0) {
       sound.denied();
@@ -1261,6 +1093,164 @@ function loadProgramMaze(idx) {
       addLine('Try again:', 'warning');
     }
   });
+}
+
+// ============================================================
+// MISSION 3: VARIABLES & MEMORY
+// ============================================================
+missionRunners[2] = async function() {
+  state.missionState = { phase: 0, hintIdx: 0 };
+
+  await typeLines([
+    { text: '[SYSTEM] AI memory banks partially accessible.', cls: 'system' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "You know binary. You\'ve written a program. Now you', cls: 'highlight' },
+    { text: '        need to learn how computers REMEMBER things."', cls: 'highlight' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "When a computer needs to keep track of something \u2014', cls: 'highlight' },
+    { text: '        a score, a name, a count \u2014 it puts it in a box and', cls: 'highlight' },
+    { text: '        gives the box a NAME. That named box is called a', cls: 'highlight' },
+    { text: '        VARIABLE."', cls: 'highlight' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "You write: score = 0. Now there\'s a box called', cls: 'highlight' },
+    { text: '        \'score\' and it holds 0. Later you write: score = 10.', cls: 'highlight' },
+    { text: '        Same box, new value. The old value is gone."', cls: 'highlight' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "The tricky part? Variables CHANGE as the program', cls: 'highlight' },
+    { text: '        runs. Line 1 might set x to 5. Line 3 might change', cls: 'highlight' },
+    { text: '        it to 8. You have to track every change, in order."', cls: 'highlight' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "Let\'s practice. I\'ll show you code, you tell me', cls: 'highlight' },
+    { text: '        what the variables hold at the end."', cls: 'highlight' },
+    { text: '', cls: '' },
+  ]);
+
+  runVariablesPhase();
+};
+
+function runVariablesPhase() {
+  const s = state.missionState;
+  setPhaseProgress(s.phase + 1, 4);
+
+  if (s.phase === 0) {
+    // Phase 1: Simple assignment
+    addLine('\u2501\u2501\u2501 Phase 1: Setting Variables \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Start simple. Read each line and track the values."', 'highlight');
+    addLine('', '');
+    addPre('  1  x = 5\n  2  y = 3\n  3  z = x + y');
+    addLine('', '');
+    addLine('What is z?', 'warning');
+
+    setCurrentInputHandler((input) => {
+      if (input.trim() === '8') {
+        sound.success();
+        addLine('[CORRECT] x=5, y=3, z = 5+3 = 8.', 'success');
+        addLine('NEXUS: "The computer reads line by line. By line 3, it', 'highlight');
+        addLine('        knows x is 5 and y is 3. So x + y = 8."', 'highlight');
+        s.phase = 1;
+        addLine('');
+        setTimeout(runVariablesPhase, 900);
+      } else {
+        sound.denied();
+        addLine('[WRONG] x is 5 and y is 3. What is x + y?', 'error');
+      }
+    });
+
+  } else if (s.phase === 1) {
+    // Phase 2: Overwriting variables
+    addLine('\u2501\u2501\u2501 Phase 2: Variables Can Change \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Here\'s where it gets interesting. A variable can be', 'highlight');
+    addLine('        OVERWRITTEN. The new value replaces the old one."', 'highlight');
+    addLine('', '');
+    addPre('  1  x = 10\n  2  x = 20\n  3  x = x + 5');
+    addLine('', '');
+    addLine('What is x after line 3?', 'warning');
+
+    setCurrentInputHandler((input) => {
+      if (input.trim() === '25') {
+        sound.success();
+        addLine('[CORRECT] Line 1: x=10. Line 2: x=20 (overwritten!).', 'success');
+        addLine('  Line 3: x = 20+5 = 25.', 'success');
+        addLine('NEXUS: "The 10 is gone forever after line 2. When you', 'highlight');
+        addLine('        write x = 20, the old value is erased. Line 3', 'highlight');
+        addLine('        uses the CURRENT value of x, which is 20."', 'highlight');
+        s.phase = 2;
+        addLine('');
+        setTimeout(runVariablesPhase, 900);
+      } else {
+        sound.denied();
+        addLine('[WRONG] After line 2, x is 20 (not 10 anymore). Then line 3 adds 5.', 'error');
+      }
+    });
+
+  } else if (s.phase === 2) {
+    // Phase 3: Two variables interacting
+    addLine('\u2501\u2501\u2501 Phase 3: Variables Working Together \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Now two variables that depend on each other.', 'highlight');
+    addLine('        Track both. Use paper if you need to."', 'highlight');
+    addLine('', '');
+    addPre('  1  a = 3\n  2  b = a * 2\n  3  a = b + 1\n  4  b = a - b');
+    addLine('', '');
+    addLine('What are a and b after line 4? Type: a b', 'warning');
+
+    setCurrentInputHandler((input) => {
+      const parts = input.trim().split(/[\s,]+/).map(Number);
+      // a=3, b=3*2=6, a=6+1=7, b=7-6=1
+      if (parts.length === 2 && parts[0] === 7 && parts[1] === 1) {
+        sound.success();
+        addLine('[CORRECT] a=3 \u2192 b=6 \u2192 a=7 \u2192 b=1', 'success');
+        addLine('NEXUS: "Line by line:', 'highlight');
+        addLine('  1: a=3', 'info');
+        addLine('  2: b = 3*2 = 6', 'info');
+        addLine('  3: a = 6+1 = 7  (a CHANGED \u2014 it\'s not 3 anymore)', 'info');
+        addLine('  4: b = 7-6 = 1  (using the NEW a, not the old one)"', 'info');
+        addLine('NEXUS: "The order matters. Line 3 changes a BEFORE line 4', 'highlight');
+        addLine('        uses it. Miss that, and you get the wrong answer."', 'highlight');
+        s.phase = 3;
+        addLine('');
+        setTimeout(runVariablesPhase, 900);
+      } else {
+        sound.denied();
+        addLine('[WRONG] Trace each line in order. Write the values after each line.', 'error');
+        addLine('  Line 1: a = ?', 'info');
+        addLine('  Line 2: b = a * 2 = ?', 'info');
+        addLine('  Line 3: a = b + 1 = ?  (b is still the value from line 2)', 'info');
+        addLine('  Line 4: b = a - b = ?  (a is now the value from line 3)', 'info');
+      }
+    });
+
+  } else if (s.phase === 3) {
+    // Phase 4: Real code — predict the output
+    addLine('\u2501\u2501\u2501 Phase 4: Predict the Output \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Final one. This looks like real code. A variable', 'highlight');
+    addLine('        called \'message\' is being built piece by piece."', 'highlight');
+    addLine('', '');
+    addPre('  1  message = "HELLO"\n  2  name = "WORLD"\n  3  result = message + " " + name\n  4  length = 11\n  5  print(result)');
+    addLine('', '');
+    addLine('What does line 5 print? Type the output:', 'warning');
+
+    setCurrentInputHandler((input) => {
+      if (input.trim().toUpperCase() === 'HELLO WORLD') {
+        sound.success();
+        addLine('[CORRECT] HELLO WORLD \u2014 the most famous first output in programming.', 'success');
+        addLine('', '');
+        addLine('NEXUS: "Every programmer\'s first program prints Hello World.', 'highlight');
+        addLine('        You just traced one in your head. That means you can', 'highlight');
+        addLine('        READ code. Not just write it \u2014 READ it."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "You now know the three pillars of computing:', 'highlight');
+        addLine('        DATA (binary), INSTRUCTIONS (programs), and', 'highlight');
+        addLine('        MEMORY (variables). Everything else in computer', 'highlight');
+        addLine('        science is built from these three."', 'highlight');
+        setCurrentInputHandler(null);
+        setTimeout(() => completeMission(2), 1200);
+      } else {
+        sound.denied();
+        addLine('[WRONG] Line 3 joins message, a space, and name together.', 'error');
+        addLine('  What is message? What is name? Put a space between them.', 'info');
+      }
+    });
+  }
 }
 
 // ============================================================
