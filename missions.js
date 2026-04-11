@@ -648,6 +648,22 @@ const joinChallenges = [
 // ============================================================
 const missionRunners = [];
 
+// Helper: render a 2D binary grid as colored pixel squares
+function renderPixelGrid(container, grid) {
+  const gridDiv = document.createElement('div');
+  gridDiv.style.cssText = 'display:inline-grid;gap:3px;margin:12px 0;padding:14px;border:1px solid #005a15;background:#050505;border-radius:4px;';
+  gridDiv.style.gridTemplateColumns = `repeat(${grid[0].length}, 28px)`;
+  for (const row of grid) {
+    for (const bit of row) {
+      const cell = document.createElement('div');
+      cell.style.cssText = `width:28px;height:28px;border-radius:3px;border:1px solid ${bit ? '#00aa2a' : '#1a2a1a'};background:${bit ? '#00ff41' : '#111'};box-shadow:${bit ? '0 0 6px #00ff41' : 'none'};`;
+      gridDiv.appendChild(cell);
+    }
+  }
+  container.appendChild(gridDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
 // ============================================================
 // MISSION 1: BINARY — The Language of Computers
 // ============================================================
@@ -816,23 +832,13 @@ function runBinaryPhase() {
       [1,0,0,0,1],
     ];
 
-    addLine('NEXUS: "1 = green pixel. 0 = dark. What letter does this', 'highlight');
-    addLine('        grid of bits draw?"', 'highlight');
+    addLine('NEXUS: "1 = green square. 0 = dark square. What letter', 'highlight');
+    addLine('        does this grid draw?"', 'highlight');
     addLine('', '');
 
-    // Render as colored blocks
-    const gridDiv = document.createElement('div');
-    gridDiv.style.cssText = 'font-family:monospace;font-size:18px;line-height:1.2;letter-spacing:4px;margin:12px 0;padding:12px;border:1px solid #005a15;display:inline-block;';
-    for (const row of grid1) {
-      const rowSpan = document.createElement('div');
-      rowSpan.innerHTML = row.map(b =>
-        b ? '<span style="color:#00ff41">\u2588</span>' : '<span style="color:#1a1a1a">\u2588</span>'
-      ).join('');
-      gridDiv.appendChild(rowSpan);
-    }
+    // Render as pixel grid with visible contrast
     const termEl = document.getElementById('terminal');
-    termEl.appendChild(gridDiv);
-    termEl.scrollTop = termEl.scrollHeight;
+    renderPixelGrid(termEl, grid1);
 
     addLine('', '');
     addLine('Also shown as raw binary:', 'info');
@@ -860,17 +866,7 @@ function runBinaryPhase() {
             [1,0,0,0,1],
           ];
 
-          const gridDiv2 = document.createElement('div');
-          gridDiv2.style.cssText = 'font-family:monospace;font-size:18px;line-height:1.2;letter-spacing:4px;margin:12px 0;padding:12px;border:1px solid #005a15;display:inline-block;';
-          for (const row of grid2) {
-            const rowSpan2 = document.createElement('div');
-            rowSpan2.innerHTML = row.map(b =>
-              b ? '<span style="color:#00ff41">\u2588</span>' : '<span style="color:#1a1a1a">\u2588</span>'
-            ).join('');
-            gridDiv2.appendChild(rowSpan2);
-          }
-          termEl.appendChild(gridDiv2);
-          termEl.scrollTop = termEl.scrollHeight;
+          renderPixelGrid(termEl, grid2);
 
           addLine('', '');
           addLine('What letter is this? Type it:', 'warning');
