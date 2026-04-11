@@ -1297,33 +1297,47 @@ function runVariablesPhase() {
     });
 
   } else if (s.phase === 2) {
-    // Phase 3: Copy, not link
-    addLine('\u2501\u2501\u2501 Copies, Not Links \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "One more trap. When you write b = a, the computer', 'highlight');
-    addLine('        COPIES a\'s value into b. It doesn\'t link them."', 'highlight');
+    // Phase 3: Copy, not link — let them get it wrong first
+    addLine('\u2501\u2501\u2501 Tricky One \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Read this carefully."', 'highlight');
     addLine('', '');
-    addPre('  1  a = 5\n  2  b = a       \u2190 b gets a COPY of 5\n  3  a = 99      \u2190 a changes');
+    addPre('  1  a = 5\n  2  b = a\n  3  a = 99');
     addLine('', '');
-    addLine('NEXUS: "a changed to 99. But b still has the COPY from', 'highlight');
-    addLine('        line 2. Changing a doesn\'t change b."', 'highlight');
-    addLine('', '');
-    addLine('What is b?', 'warning');
+    addLine('What is b after line 3?', 'warning');
 
     setCurrentInputHandler((input) => {
       if (input.trim() === '5') {
         sound.success();
-        addLine('[CORRECT] b is still 5. It got a copy, not a link.', 'success');
-        addLine('NEXUS: "b = a copied the VALUE (5), not a connection to a.', 'highlight');
-        addLine('        After that, a and b are independent."', 'highlight');
+        addLine('[CORRECT] b is 5.', 'success');
+        addLine('', '');
+        addLine('NEXUS: "Most people get this wrong the first time. They', 'highlight');
+        addLine('        think b = a LINKS them \u2014 like b is a shortcut to', 'highlight');
+        addLine('        a. It\'s not. b = a COPIES the value. After line 2,', 'highlight');
+        addLine('        b has its own 5. When a changes in line 3, b', 'highlight');
+        addLine('        doesn\'t know and doesn\'t care."', 'highlight');
         s.phase = 3;
         addLine('');
         setTimeout(runVariablesPhase, 800);
       } else if (input.trim() === '99') {
         sound.denied();
-        addLine('[WRONG] b got a COPY of a at line 2 (when a was 5). Line 3 changed a, not b.', 'error');
+        addLine('', '');
+        addLine('NEXUS: "That\'s the mistake almost everyone makes. You', 'highlight');
+        addLine('        thought b = a LINKS them \u2014 like b always equals', 'highlight');
+        addLine('        whatever a is. But it doesn\'t work that way."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "b = a means: look at a RIGHT NOW (it\'s 5), COPY', 'highlight');
+        addLine('        that value into b. Done. After that, b has its', 'highlight');
+        addLine('        own 5. When a changes to 99 in line 3, b still', 'highlight');
+        addLine('        has the 5 it got earlier."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Think of it like taking a photo. b = a takes a', 'highlight');
+        addLine('        PHOTO of a\'s value. If a changes later, the', 'highlight');
+        addLine('        photo doesn\'t update. It\'s a snapshot."', 'highlight');
+        addLine('', '');
+        addLine('So what is b?', 'warning');
       } else {
         sound.denied();
-        addLine('[WRONG] b = a copies the value at that moment. a was 5 then. a changed later, but b didn\'t.', 'error');
+        addLine('[WRONG] After line 2, b got a value from a. After line 3, a changed. Did b change too?', 'error');
       }
     });
 
