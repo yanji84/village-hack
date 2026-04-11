@@ -71,6 +71,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         # Quieter logs
         return
 
+    def end_headers(self):
+        # No-cache for JS modules and HTML during development
+        path = self.path or ''
+        if path.endswith('.js') or path.endswith('.html') or path == '/':
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
+        super().end_headers()
+
     def _send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
         self.send_response(status)
