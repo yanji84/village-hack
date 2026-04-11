@@ -786,39 +786,52 @@ function runBinaryPhase() {
     });
 
   } else if (s.phase === 2) {
-    // Phase 3: Draw in binary — interactive pixel grid
+    // Phase 3: Render binary as pixels — row by row
+    const hGrid = [
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+      [1,1,1,1,1],
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+    ];
+
     addLine('\u2501\u2501\u2501 Binary as Pictures \u2501\u2501\u2501', 'highlight');
     addLine('NEXUS: "One more thing. Binary doesn\'t just store numbers', 'highlight');
     addLine('        and letters. It stores PICTURES too."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "Every screen is a grid of tiny squares called pixels.', 'highlight');
-    addLine('        Each pixel is either ON or OFF. 1 or 0. A grid of', 'highlight');
+    addLine('        Each pixel is either ON (1) or OFF (0). A grid of', 'highlight');
     addLine('        bits IS an image."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Click the squares below to draw the letter H.', 'highlight');
-    addLine('        Green = 1 (on). Dark = 0 (off). When you\'re done,', 'highlight');
-    addLine('        type DONE."', 'highlight');
+    addLine('NEXUS: "I\'m going to give you 5 rows of binary. For each', 'highlight');
+    addLine('        row, click the squares that should be ON \u2014 the ones', 'highlight');
+    addLine('        where the binary digit is 1. You\'re RENDERING an', 'highlight');
+    addLine('        image from binary, just like a screen does."', 'highlight');
     addLine('', '');
 
-    // Create interactive 5x7 grid (taller = more recognizable letters)
+    // Create the 5x5 interactive grid (all dark initially)
     const termEl = document.getElementById('terminal');
     const ROWS = 5, COLS = 5;
     const gridState = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    s.currentRow = 0;
+    s.hGrid = hGrid;
 
     const gridDiv = document.createElement('div');
     gridDiv.style.cssText = 'display:inline-grid;gap:3px;margin:12px 0;padding:14px;border:1px solid #005a15;background:#050505;border-radius:4px;cursor:pointer;';
     gridDiv.style.gridTemplateColumns = `repeat(${COLS}, 36px)`;
+    s.gridCells = [];
 
-    const cells = [];
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const cell = document.createElement('div');
-        cell.style.cssText = 'width:36px;height:36px;border-radius:3px;border:1px solid #1a2a1a;background:#111;transition:all 0.15s;';
+        const isActiveRow = r === 0;
+        cell.style.cssText = `width:36px;height:36px;border-radius:3px;border:1px solid ${isActiveRow ? '#333' : '#1a2a1a'};background:#111;transition:all 0.15s;`;
         cell.dataset.r = r;
         cell.dataset.c = c;
         cell.onclick = () => {
           const row = parseInt(cell.dataset.r);
           const col = parseInt(cell.dataset.c);
+          if (row !== s.currentRow) return; // only current row is clickable
           gridState[row][col] = gridState[row][col] ? 0 : 1;
           if (gridState[row][col]) {
             cell.style.background = '#00ff41';
@@ -826,12 +839,12 @@ function runBinaryPhase() {
             cell.style.boxShadow = '0 0 6px #00ff41';
           } else {
             cell.style.background = '#111';
-            cell.style.border = '1px solid #1a2a1a';
+            cell.style.border = '1px solid #333';
             cell.style.boxShadow = 'none';
           }
           sound.keyClick();
         };
-        cells.push(cell);
+        s.gridCells.push(cell);
         gridDiv.appendChild(cell);
       }
     }
@@ -839,67 +852,123 @@ function runBinaryPhase() {
     termEl.scrollTop = termEl.scrollHeight;
 
     addLine('', '');
-    addLine('(Click squares to toggle them. Type DONE when finished.)', 'info');
+    showPixelRow();
+  }
+}
+
+function showPixelRow() {
+  const s = state.missionState;
+  const row = s.currentRow;
+  const hGrid = s.hGrid;
+  const COLS = 5;
+
+  if (row >= hGrid.length) {
+    // All rows done — reveal the letter
+    sound.success();
+    addLine('', '');
+    addLine('NEXUS: "You just RENDERED an image from binary. What letter', 'highlight');
+    addLine('        did you make?"', 'highlight');
 
     setCurrentInputHandler((input) => {
-      if (input.toUpperCase().trim() === 'DONE') {
-        const total = gridState.flat().reduce((a, b) => a + b, 0);
-        if (total < 5) {
-          addLine('NEXUS: "That grid is mostly empty. Draw a letter first!"', 'highlight');
-          return;
-        }
+      if (input.toUpperCase().trim() === 'H') {
         sound.success();
-        addLine('', '');
-        addLine('NEXUS: "Nice. Here\'s how the computer stores what you drew:"', 'highlight');
-        addLine('', '');
-        addPre(gridState.map(row => '  ' + row.join(' ')).join('\n'));
-        addLine('', '');
-        addLine('NEXUS: "Five rows of 0s and 1s. That\'s all a picture is to', 'highlight');
-        addLine('        a computer. Your phone screen? Same thing, just', 'highlight');
-        addLine('        2 million pixels instead of 25."', 'highlight');
+        addLine('[CORRECT] It\'s the letter H!', 'success');
         addLine('', '');
 
-        // Now the discovery moment: show same bits as a number
-        addLine('NEXUS: "Now here\'s the mind-bending part. Watch this..."', 'highlight');
+        // Discovery moment: same bits as numbers
+        addLine('NEXUS: "Now here\'s the mind-bending part. Read each row', 'highlight');
+        addLine('        as a binary NUMBER instead of a picture:"', 'highlight');
         addLine('', '');
-
-        // Show the H grid
-        const hGrid = [
-          [1,0,0,0,1],
-          [1,0,0,0,1],
-          [1,1,1,1,1],
-          [1,0,0,0,1],
-          [1,0,0,0,1],
-        ];
-        addLine('NEXUS: "This grid is the letter H as a picture:"', 'highlight');
-        renderPixelGrid(termEl, hGrid);
-
-        addLine('', '');
-        addLine('NEXUS: "But read each row as a binary NUMBER:"', 'highlight');
-        addPre(hGrid.map(row => {
-          const binStr = row.join('');
+        addPre(hGrid.map(r => {
+          const binStr = r.join('');
           const num = parseInt(binStr, 2);
-          return `  ${row.join(' ')}  =  ${num}`;
+          return `  ${r.join(' ')}  =  ${num}`;
         }).join('\n'));
+        addLine('', '');
+        addLine('NEXUS: "Same bits. As a picture: the letter H. As', 'highlight');
+        addLine('        numbers: 17, 17, 31, 17, 17. The DATA didn\'t', 'highlight');
+        addLine('        change \u2014 only how you INTERPRET it."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "That\'s the deepest idea in computer science.', 'highlight');
+        addLine('        Data means nothing without context. Same 0s and', 'highlight');
+        addLine('        1s can be numbers, letters, pictures, sound \u2014', 'highlight');
+        addLine('        anything. Depends on how you read them."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "You just learned the language of every computer', 'highlight');
+        addLine(`        on Earth. Not bad for a first mission, ${state.hackerName || 'kid'}."`, 'highlight');
+        addLine('', '');
+        addLine('[ Type NEXT to continue ]', 'warning');
 
-        addLine('', '');
-        addLine('NEXUS: "Same bits. As a picture: the letter H. As numbers:', 'highlight');
-        addLine('        17, 17, 31, 17, 17. The DATA didn\'t change \u2014', 'highlight');
-        addLine('        only how you INTERPRET it."', 'highlight');
-        addLine('', '');
-        addLine('NEXUS: "That\'s the deepest idea in computer science. Data', 'highlight');
-        addLine('        is meaningless without context. Same 0s and 1s', 'highlight');
-        addLine('        can be numbers, letters, pictures, sound \u2014 anything.', 'highlight');
-        addLine('        It all depends on how you read them."', 'highlight');
-        addLine('', '');
-        addLine('NEXUS: "You just learned the language of every computer on', 'highlight');
-        addLine('        Earth. Not bad for a first mission,', 'highlight');
-        addLine(`        ${state.hackerName || 'kid'}."`, 'highlight');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(0), 1500);
+        setCurrentInputHandler((input2) => {
+          setCurrentInputHandler(null);
+          completeMission(0);
+        });
+      } else {
+        sound.denied();
+        addLine('[WRONG] Look at the green squares in the grid. What letter shape?', 'error');
       }
     });
+    return;
   }
+
+  // Show the binary for this row, ask kid to click the right squares
+  const rowBinary = hGrid[row];
+  addLine(`Row ${row + 1} of 5:  <span style="color:var(--cyan);font-weight:bold;letter-spacing:3px">${rowBinary.join(' ')}</span>`, '');
+  addLine('Click the squares that should be ON (where the digit is 1), then type OK.', 'info');
+
+  // Highlight the active row cells
+  for (let c = 0; c < COLS; c++) {
+    const cell = s.gridCells[row * COLS + c];
+    cell.style.border = '1px solid #333';
+  }
+
+  setCurrentInputHandler((input) => {
+    if (input.toUpperCase().trim() !== 'OK') {
+      addLine('Type OK when you\'ve clicked the right squares for this row.', 'info');
+      return;
+    }
+
+    // Check if the kid's clicks match the binary
+    const gridState = [];
+    for (let c = 0; c < COLS; c++) {
+      const cell = s.gridCells[row * COLS + c];
+      // Browser stores colors as rgb() not hex, so check for green channel
+      const isOn = cell.style.background.includes('0, 255, 65') || cell.style.background.includes('00ff41');
+      gridState.push(isOn ? 1 : 0);
+    }
+
+    const correct = gridState.every((v, i) => v === rowBinary[i]);
+
+    if (correct) {
+      sound.success();
+      addLine(`[ROW ${row + 1} CORRECT]`, 'success');
+      // Lock this row's cells
+      for (let c = 0; c < COLS; c++) {
+        const cell = s.gridCells[row * COLS + c];
+        cell.onclick = null;
+        cell.style.cursor = 'default';
+      }
+      s.currentRow++;
+      // Highlight next row
+      if (s.currentRow < hGrid.length) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = s.gridCells[s.currentRow * COLS + c];
+          cell.style.border = '1px solid #333';
+        }
+      }
+      setTimeout(showPixelRow, 500);
+    } else {
+      sound.denied();
+      addLine('[WRONG] Check the binary again. 1 = click ON, 0 = leave OFF.', 'error');
+      // Reset this row
+      for (let c = 0; c < COLS; c++) {
+        const cell = s.gridCells[row * COLS + c];
+        cell.style.background = '#111';
+        cell.style.border = '1px solid #333';
+        cell.style.boxShadow = 'none';
+      }
+    }
+  });
 }
 
 // ============================================================
