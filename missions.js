@@ -1704,19 +1704,26 @@ function runLogicPhase() {
   } else if (s.phase === 4) {
     // Phase 5: Build a binary adder from gates
     addLine('\u2501\u2501\u2501 Building a Calculator \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Remember binary addition from Mission 1?"', 'highlight');
+    addLine('NEXUS: "Now I\'m going to show you something that connects', 'highlight');
+    addLine('        everything. How does a computer actually ADD numbers?"', 'highlight');
     addLine('', '');
-    addPre('  0 + 0 = 0\n  0 + 1 = 1\n  1 + 0 = 1\n  1 + 1 = 10  (that\'s 0, carry 1)');
+    addLine('NEXUS: "In binary, there are only 4 possible additions:"', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "When you add two bits, you get two results: the', 'highlight');
-    addLine('        SUM digit and the CARRY digit. Look at them', 'highlight');
-    addLine('        separately."', 'highlight');
+    addPre('  0 + 0 = 0\n  0 + 1 = 1\n  1 + 0 = 1\n  1 + 1 = 10   \u2190 write 0, carry 1 to next column');
     addLine('', '');
-    addPre('  A  B  SUM  CARRY\n  0  0   0    0\n  0  1   1    0\n  1  0   1    0\n  1  1   0    1');
+    addLine('NEXUS: "That last one is like 5+5=10 in decimal. The column', 'highlight');
+    addLine('        overflows, so you write 0 and CARRY 1 to the left."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Look at the CARRY column. When is carry = 1?"', 'highlight');
+    addLine('NEXUS: "Now here\'s the trick. When you add two bits, you', 'highlight');
+    addLine('        get TWO outputs: the SUM digit and the CARRY digit.', 'highlight');
+    addLine('        Let me put them side by side:"', 'highlight');
     addLine('', '');
-    addLine('What gate matches the CARRY pattern? (AND, OR, or NOT)', 'warning');
+    addPre('  A  B  \u2502  SUM  CARRY\n  \u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  0  0  \u2502   0    0\n  0  1  \u2502   1    0\n  1  0  \u2502   1    0\n  1  1  \u2502   0    1');
+    addLine('', '');
+    addLine('NEXUS: "Look at the CARRY column. It\'s only 1 when BOTH', 'highlight');
+    addLine('        A and B are 1. Sound familiar?"', 'highlight');
+    addLine('', '');
+    addLine('Which gate matches the CARRY column? (AND, OR, or NOT)', 'warning');
 
     s.adderStep = 0;
     setCurrentInputHandler((input) => {
@@ -1724,43 +1731,71 @@ function runLogicPhase() {
       if (s.adderStep === 0) {
         if (guess === 'AND') {
           sound.success();
-          addLine('[CORRECT] Carry = A AND B. Only 1 when BOTH are 1.', 'success');
+          addLine('[CORRECT] CARRY = A AND B.', 'success');
           addLine('', '');
-          addLine('NEXUS: "Now the SUM column. Look at the pattern:', 'highlight');
-          addLine('        0,1,1,0. It\'s 1 when the inputs are DIFFERENT.', 'highlight');
-          addLine('        That\'s a gate called XOR \u2014 exclusive OR."', 'highlight');
+          addLine('NEXUS: "Now the SUM column: 0, 1, 1, 0. Look at when', 'highlight');
+          addLine('        SUM is 1 \u2014 it\'s 1 when A and B are DIFFERENT.', 'highlight');
+          addLine('        When they\'re the same (both 0 or both 1), SUM is 0."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "So: SUM = A XOR B, CARRY = A AND B."', 'highlight');
+          addLine('NEXUS: "That pattern has a name: XOR. Exclusive OR.', 'highlight');
+          addLine('        Regular OR says \'at least one.\' XOR says \'exactly', 'highlight');
+          addLine('        one \u2014 not both.\'"', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "Let\'s verify. What is 1 + 1 using these gates?"', 'highlight');
-          addLine('  SUM = 1 XOR 1 = ?  (are they different? no \u2192 0)', 'info');
-          addLine('  CARRY = 1 AND 1 = ?  (both 1? yes \u2192 1)', 'info');
+          addPre('  Compare:\n    OR:   0,1,1,1   \u2190 1 when at least one is 1\n    XOR:  0,1,1,0   \u2190 1 when EXACTLY one is 1');
+          addLine('', '');
+          addLine('NEXUS: "So SUM = A XOR B, CARRY = A AND B. Two gates,', 'highlight');
+          addLine('        and you have a circuit that adds binary numbers.', 'highlight');
+          addLine('        Here\'s what it looks like:"', 'highlight');
+          addLine('', '');
+          addPre('  THE HALF-ADDER CIRCUIT\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n        A ──\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n            \u2502\n        B ──\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  Two inputs (A, B) \u2192 Two outputs (SUM, CARRY)\n  That\'s the complete circuit.');
+          addLine('', '');
+          addLine('NEXUS: "Let\'s test it. If A=1 and B=1, what does the', 'highlight');
+          addLine('        circuit output?"', 'highlight');
+          addLine('', '');
+          addLine('  1 XOR 1 = ? (same or different? \u2192 same \u2192 0)', 'info');
+          addLine('  1 AND 1 = ? (both 1? \u2192 yes \u2192 1)', 'info');
           addLine('', '');
           addLine('Type: SUM CARRY', 'warning');
           s.adderStep = 1;
         } else {
           sound.denied();
-          addLine('[WRONG] When is carry = 1? Only in the last row. What gate outputs 1 only when BOTH inputs are 1?', 'error');
+          addLine('[WRONG] CARRY is only 1 in the last row \u2014 when BOTH inputs are 1. Which gate does that?', 'error');
         }
-      } else {
+      } else if (s.adderStep === 1) {
         const parts = input.trim().split(/[\s,]+/).map(Number);
         if (parts.length === 2 && parts[0] === 0 && parts[1] === 1) {
           sound.success();
-          addLine('[CORRECT] 1 + 1 = 0 carry 1 = binary 10 = decimal 2.', 'success');
+          addLine('[CORRECT] SUM=0, CARRY=1. That\'s binary 10 = decimal 2.', 'success');
+          addLine('  1 + 1 = 2. The circuit works!', 'success');
           addLine('', '');
-          addLine('NEXUS: "You just built a HALF-ADDER. Two logic gates', 'highlight');
-          addLine('        that add binary numbers. This exact circuit', 'highlight');
-          addLine('        is inside every computer ever made."', 'highlight');
+          addLine('NEXUS: "Let\'s try one more. A=1, B=0:"', 'highlight');
+          addLine('  1 XOR 0 = ? (different? \u2192 yes \u2192 1)', 'info');
+          addLine('  1 AND 0 = ? (both 1? \u2192 no \u2192 0)', 'info');
           addLine('', '');
-          addLine('NEXUS: "Your phone has about 15 BILLION of these,', 'highlight');
-          addLine('        running 3 billion times per second. But each', 'highlight');
-          addLine('        one is exactly what you just built. AND + XOR.', 'highlight');
-          addLine('        Two gates. That\'s a calculator."', 'highlight');
+          addLine('Type: SUM CARRY', 'warning');
+          s.adderStep = 2;
+        } else {
+          sound.denied();
+          addLine('[WRONG] XOR: are 1 and 1 different? No \u2192 0. AND: are both 1? Yes \u2192 1.', 'error');
+        }
+      } else {
+        const parts = input.trim().split(/[\s,]+/).map(Number);
+        if (parts.length === 2 && parts[0] === 1 && parts[1] === 0) {
+          sound.success();
+          addLine('[CORRECT] SUM=1, CARRY=0. That\'s just 1. Because 1+0=1.', 'success');
           addLine('', '');
-          addLine('NEXUS: "Three logic gates \u2014 AND, OR, NOT \u2014 plus XOR', 'highlight');
-          addLine('        which is built from those three. That\'s enough', 'highlight');
-          addLine('        to build a computer. Not metaphorically. Literally.', 'highlight');
-          addLine(`        And you, ${state.hackerName || 'kid'}, just proved it."`, 'highlight');
+          addPre('  THE HALF-ADDER\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n        A ──\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n        B ──\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  This circuit adds any two binary digits.\n  Chain several together and you can add\n  numbers of ANY size.');
+          addLine('', '');
+          addLine('NEXUS: "This is called a HALF-ADDER. It\'s inside every', 'highlight');
+          addLine('        computer ever made. Your phone has about 15', 'highlight');
+          addLine('        BILLION of these, running 3 billion times per', 'highlight');
+          addLine('        second. But each one is exactly what you just', 'highlight');
+          addLine('        built \u2014 an XOR and an AND. Two gates."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "AND, OR, NOT. Three rules. Enough to build XOR.', 'highlight');
+          addLine('        Enough to build a calculator. Enough to build', 'highlight');
+          addLine('        every computer on Earth. Not metaphorically.', 'highlight');
+          addLine(`        Literally. And you, ${state.hackerName || 'kid'}, just proved it."`, 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
           setCurrentInputHandler(() => {
@@ -1769,7 +1804,7 @@ function runLogicPhase() {
           });
         } else {
           sound.denied();
-          addLine('[WRONG] XOR: 1 and 1 are the same, not different, so XOR = 0. AND: both 1, so AND = 1.', 'error');
+          addLine('[WRONG] XOR: are 1 and 0 different? Yes \u2192 1. AND: are both 1? No \u2192 0.', 'error');
         }
       }
     });
