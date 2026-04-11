@@ -49,8 +49,8 @@ export const mission = {
   num: '07',
   title: 'THE ENCRYPTED VAULT',
   name: 'The Encrypted Vault',
-  desc: 'Chain binary, encryption, and logic together to crack a multi-layered vault. Each layer\u2019s answer unlocks the next.',
-  skill: 'SKILL: Chained Attack (Binary + Encryption + Logic)',
+  desc: 'Five layers deep. Binary, math, encryption, logic, and reverse engineering — all chained. Each answer IS the input to the next.',
+  skill: 'SKILL: Chained Attack (Binary + Math + Encryption + Logic + Reverse Engineering)',
   hints: [
     'Each layer uses a skill from a previous mission. Which mission does this layer remind you of?',
     'The output of each layer feeds into the next one. Write down every answer.',
@@ -60,16 +60,11 @@ export const mission = {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[SYSTEM] Encrypted vault detected \u2014 left by the saboteur.', cls: 'system' },
+      { text: '[SYSTEM] Encrypted vault detected — left by the saboteur.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Victor left a vault behind. If the backdoor code', cls: 'highlight' },
-      { text: '        is anywhere, it\u2019s in here. Three layers of', cls: 'highlight' },
-      { text: '        security. Each one uses a different trick you\u2019ve', cls: 'highlight' },
-      { text: '        already learned."', cls: 'highlight' },
-      { text: '', cls: '' },
-      { text: 'NEXUS: "The answer from each layer is the KEY to the next.', cls: 'highlight' },
-      { text: '        That\u2019s a CHAINED ATTACK. Real hackers do this all', cls: 'highlight' },
-      { text: '        the time. Let\u2019s go layer by layer."', cls: 'highlight' },
+      { text: 'NEXUS: "Victor\'s vault. Five layers deep. Each answer', cls: 'highlight' },
+      { text: '        unlocks the next. If you lose track of your', cls: 'highlight' },
+      { text: '        answers, you lose the chain."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -77,6 +72,8 @@ export const mission = {
       { label: 'BINARY' },
       { label: 'CIPHER' },
       { label: 'LOGIC' },
+      { label: 'REVERSE' },
+      { label: 'CODE' },
     ]);
     const terminal = document.getElementById('terminal');
     terminal.appendChild(pipelineEl);
@@ -91,45 +88,47 @@ function runVaultPhase() {
   const s = state.missionState;
 
   if (s.phase === 0) {
-    // Layer 1: Binary → number (becomes the cipher shift)
-    addLine('\u2501\u2501\u2501 Layer 1: Binary Lock \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "First layer. A binary number on the lock."', 'highlight');
+    // ─── Layer 1: Binary decode + variable math ───
+    // a = 1010 (binary) = 10, b = 0011 (binary) = 3, a - b = 7
+    addLine('━━━ Layer 1: Binary Lock ━━━', 'highlight');
+    addLine('NEXUS: "First layer. Two values stored in the vault\'s memory."', 'highlight');
     addLine('', '');
-    addPre('  Lock display:  0 1 1 0\n\n  Places: eights  fours  twos  ones');
+    addPre('  Two values in the vault\'s memory:\n\n    a = 1 0 1 0  (binary)\n    b = 0 0 1 1  (binary)\n\n  Places:  eights  fours  twos  ones\n\n  Compute:  a - b');
     addLine('', '');
-    addLine('What number is this?', 'warning');
+    addLine('What is a - b?', 'warning');
 
+    s.wrongCount = 0;
     setCurrentInputHandler((input) => {
-      // 0110 = 6
-      if (input.trim() === '6') {
+      if (input.trim() === '7') {
         sound.success();
-        updatePipeline(s.pipelineEl, 0, '6');
-        addLine('[LAYER 1 CRACKED] 0110 = 6.', 'success');
-        addLine('NEXUS: "6. Remember that number \u2014 you\u2019ll need it."', 'highlight');
-        s.shiftKey = 6;
+        updatePipeline(s.pipelineEl, 0, '7');
+        addLine('[LAYER 1 CRACKED] 1010 = 10, 0011 = 3, 10 - 3 = 7.', 'success');
+        addLine('NEXUS: "7. Remember that — it\'s the key to the next lock."', 'highlight');
+        s.layer1Answer = 7;
         s.phase = 1;
         addLine('');
         setTimeout(runVaultPhase, 800);
       } else {
         sound.denied();
-        s.wrongCount = (s.wrongCount || 0) + 1;
+        s.wrongCount++;
         if (s.wrongCount >= 2) {
-          addLine('[WRONG] 0 + 4 + 2 + 0 = ?', 'error');
+          addLine('[WRONG] 1010 = 8+0+2+0 = 10. 0011 = 0+0+2+1 = 3. Now subtract.', 'error');
         } else {
-          addLine('[WRONG] Places are eights, fours, twos, ones. Which have a 1?', 'error');
+          addLine('[WRONG] Decode each binary number first. Places are eights, fours, twos, ones.', 'error');
         }
       }
     });
 
   } else if (s.phase === 1) {
-    // Layer 2: Use the number as a Caesar shift to decrypt a word
-    const plainWord = 'OPEN';
-    const shift = s.shiftKey; // 6
-    const encrypted = caesarEncrypt(plainWord, shift);
+    // ─── Layer 2: Caesar cipher using shift = 7 (from Layer 1) ───
+    // Encrypt "CODE" with shift 7: C→J, O→V, D→K, E→L → "JVKL"
+    const plainWord = 'CODE';
+    const shift = s.layer1Answer; // 7
+    const encrypted = caesarEncrypt(plainWord, shift); // "JVKL"
 
-    addLine('\u2501\u2501\u2501 Layer 2: Cipher Lock \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Layer 2 is encrypted. But you just got the key \u2014', 'highlight');
-    addLine(`        the number ${shift}. That\u2019s the Caesar shift."`, 'highlight');
+    addLine('━━━ Layer 2: Cipher Lock ━━━', 'highlight');
+    addLine(`NEXUS: "Layer 2 is encrypted. Your answer from Layer 1 — ${shift} —`, 'highlight');
+    addLine('        that\'s the Caesar shift."', 'highlight');
     addLine('', '');
     addLine(`  Encrypted text:  ${encrypted}`, 'info');
     addLine(`  Shift: ${shift}  (from Layer 1)`, 'info');
@@ -142,9 +141,10 @@ function runVaultPhase() {
     setCurrentInputHandler((input) => {
       if (input.toUpperCase().trim() === plainWord) {
         sound.success();
-        updatePipeline(s.pipelineEl, 1, 'OPEN');
+        updatePipeline(s.pipelineEl, 1, 'CODE');
         addLine(`[LAYER 2 CRACKED] "${plainWord}".`, 'success');
-        addLine('NEXUS: "OPEN. That\u2019s the command for the last lock."', 'highlight');
+        addLine('NEXUS: "CODE. Now count its letters — you\'ll need that next."', 'highlight');
+        s.layer2Answer = plainWord;
         s.phase = 2;
         addLine('');
         setTimeout(runVaultPhase, 800);
@@ -156,44 +156,106 @@ function runVaultPhase() {
           const firstDec = plainWord[0];
           addLine(`[WRONG] First letter: ${firstEnc} shifted back by ${shift} = ${firstDec}. Do the rest.`, 'error');
         } else {
-          addLine('[WRONG] Shift each letter BACKWARD through the alphabet.', 'error');
+          addLine(`[WRONG] Shift each letter BACKWARD by ${shift}. J back 7 = ?`, 'error');
         }
       }
     });
 
   } else if (s.phase === 2) {
-    // Layer 3: Logic gate expression
-    addLine('\u2501\u2501\u2501 Layer 3: Logic Lock \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Final layer. The lock needs a logic computation."', 'highlight');
+    // ─── Layer 3: Logic gates from binary digits of letter count ───
+    // "CODE" has 4 letters. 4 in binary = 0100.
+    // A=0, B=1, C=0, D=0. Compute: B AND (NOT A)
+    // → 1 AND (NOT 0) → 1 AND 1 → 1
+    addLine('━━━ Layer 3: Logic Lock ━━━', 'highlight');
+    addLine(`NEXUS: "The word ${s.layer2Answer} has 4 letters. Convert 4 to binary: 0100."`, 'highlight');
     addLine('', '');
-    addPre('  The vault door runs this circuit:\n\n    A = 1\n    B = 0\n    C = (NOT B) AND A\n\n  What is C?');
+    addPre('  The word CODE has 4 letters.\n  4 in binary = 0 1 0 0\n\n  Read those 4 binary digits as inputs:\n    A = 0    B = 1    C = 0    D = 0\n\n  Compute:  B AND (NOT A)');
     addLine('', '');
-    addLine('NEXUS: "Work inside out. NOT B first, then AND with A."', 'highlight');
-    addLine('', '');
-    addLine('What is C? (0 or 1)', 'warning');
+    addLine('What is the result? (0 or 1)', 'warning');
 
     s.wrongCount = 0;
     setCurrentInputHandler((input) => {
-      // NOT 0 = 1, 1 AND 1 = 1
       if (input.trim() === '1') {
         sound.success();
         updatePipeline(s.pipelineEl, 2, '1');
-        addLine('[LAYER 3 CRACKED] NOT 0 = 1. Then 1 AND 1 = 1. C = 1.', 'success');
+        addLine('[LAYER 3 CRACKED] NOT A = NOT 0 = 1. B AND 1 = 1 AND 1 = 1.', 'success');
+        addLine('NEXUS: "1. One more layer before the final code."', 'highlight');
+        s.layer3Answer = 1;
+        s.phase = 3;
+        addLine('');
+        setTimeout(runVaultPhase, 800);
+      } else {
+        sound.denied();
+        s.wrongCount++;
+        if (s.wrongCount >= 2) {
+          addLine('[WRONG] Step 1: NOT A = NOT 0 = 1. Step 2: B AND 1 = 1 AND 1 = ?', 'error');
+        } else {
+          addLine('[WRONG] Start with NOT A. A is 0. What is NOT 0? Then AND that with B.', 'error');
+        }
+      }
+    });
+
+  } else if (s.phase === 3) {
+    // ─── Layer 4: Reverse engineering ───
+    // x = ?
+    // x = x * 3
+    // x = x - 2
+    // Output: 13
+    // Backward: 13 + 2 = 15, 15 / 3 = 5
+    addLine('━━━ Layer 4: Reverse Lock ━━━', 'highlight');
+    addLine('NEXUS: "The vault\'s final lock runs a program. Work backward."', 'highlight');
+    addLine('', '');
+    addPre('  The vault\'s final lock runs this program:\n\n    x = ?        ← find this\n    x = x * 3\n    x = x - 2\n    Output: 13\n\n  Work backward from the output to find the starting x.');
+    addLine('', '');
+    addLine('What is x?', 'warning');
+
+    s.wrongCount = 0;
+    setCurrentInputHandler((input) => {
+      if (input.trim() === '5') {
+        sound.success();
+        updatePipeline(s.pipelineEl, 3, '5');
+        addLine('[LAYER 4 CRACKED] 13 + 2 = 15. 15 / 3 = 5. x = 5.', 'success');
+        addLine('NEXUS: "5. Now assemble all your answers into the vault code."', 'highlight');
+        s.layer4Answer = 5;
+        s.phase = 4;
+        addLine('');
+        setTimeout(runVaultPhase, 800);
+      } else {
+        sound.denied();
+        s.wrongCount++;
+        if (s.wrongCount >= 2) {
+          addLine('[WRONG] Undo line 3: 13 + 2 = 15. Now undo line 2: 15 / 3 = ?', 'error');
+        } else {
+          addLine('[WRONG] Work backward. The last step was x = x - 2. Undo it: 13 + 2 = ?', 'error');
+        }
+      }
+    });
+
+  } else if (s.phase === 4) {
+    // ─── Layer 5: Assemble the vault code ───
+    // Answers: 7, CODE, 1, 5. Numbers only: 7-1-5 → 715
+    addLine('━━━ Layer 5: Vault Code ━━━', 'highlight');
+    addLine('NEXUS: "You have all the pieces. Time to assemble the vault code."', 'highlight');
+    addLine('', '');
+    addPre('  Your answers through the chain:\n\n    Layer 1:  7\n    Layer 2:  CODE\n    Layer 3:  1\n    Layer 4:  5\n\n  The vault code is the NUMBERS only, in order: 7-1-5');
+    addLine('', '');
+    addLine('Enter the vault code (numbers only, no dashes):', 'warning');
+
+    s.wrongCount = 0;
+    setCurrentInputHandler((input) => {
+      if (input.trim() === '715') {
+        sound.success();
+        updatePipeline(s.pipelineEl, 4, '715');
+        addLine('[VAULT CODE ACCEPTED] 7-1-5.', 'success');
         addLine('', '');
         addLine('[VAULT OPEN]', 'success big');
         addLine('', '');
-        addLine('NEXUS: "Three layers. Binary gave you the key. The key', 'highlight');
-        addLine('        cracked the cipher. The cipher told you the', 'highlight');
-        addLine('        command. The command needed logic to execute."', 'highlight');
+        addLine('NEXUS: "Five layers. Binary, math, encryption, logic, reverse', 'highlight');
+        addLine('        engineering — all chained. That\'s how real security', 'highlight');
+        addLine('        systems work. And you just cracked one."', 'highlight');
         addLine('', '');
-        addLine('NEXUS: "That\u2019s a chained attack. Each skill is a link.', 'highlight');
-        addLine('        Break one, use it to break the next. This is how', 'highlight');
-        addLine('        real breaches work \u2014 not one big hack, but a', 'highlight');
-        addLine('        chain of small ones."', 'highlight');
-        addLine('', '');
-        addLine('NEXUS: "Inside the vault \u2014 it\u2019s the BACKDOOR code.', 'highlight');
-        addLine('        Victor\u2019s way back in. If we can use this in the', 'highlight');
-        addLine('        final hack, we can shut him out permanently."', 'highlight');
+        addLine('NEXUS: "Inside the vault — it\'s Victor\'s backdoor code. We', 'highlight');
+        addLine('        can use this to shut him out in the final hack."', 'highlight');
         addLine('', '');
         addLine('[ Type NEXT to continue ]', 'warning');
         setCurrentInputHandler(() => {
@@ -204,9 +266,9 @@ function runVaultPhase() {
         sound.denied();
         s.wrongCount++;
         if (s.wrongCount >= 2) {
-          addLine('[WRONG] Step 1: NOT B = NOT 0 = 1. Step 2: 1 AND A = 1 AND 1 = ?', 'error');
+          addLine('[WRONG] Take only the numbers from your answers: 7, 1, 5. Combine them.', 'error');
         } else {
-          addLine('[WRONG] Start with NOT B. B is 0. What is NOT 0?', 'error');
+          addLine('[WRONG] Look at your four answers. Which ones are numbers? Put them together.', 'error');
         }
       }
     });
