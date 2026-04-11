@@ -1828,9 +1828,9 @@ function showAndScenario() {
       s.andIdx++;
       if (s.andIdx >= s.andScenarios.length) {
         addLine('', '');
-        addLine('NEXUS: "You just built a TRUTH TABLE for AND. Every', 'highlight');
-        addLine('        possible input, every output. AND means: BOTH', 'highlight');
-        addLine('        must be 1 for the output to be 1."', 'highlight');
+        addLine('NEXUS: "You checked every possibility. AND means:', 'highlight');
+        addLine('        BOTH must be 1 for the answer to be 1.', 'highlight');
+        addLine('        One rule down, two to go."', 'highlight');
         s.phase = 1;
         addLine('');
         setTimeout(runLogicPhase, 800);
