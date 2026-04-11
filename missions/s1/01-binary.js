@@ -9,6 +9,18 @@ import {
 
 import { renderPixelGrid } from '../helpers.js';
 
+function addReplayButton(container, animationFn) {
+  const btn = document.createElement('span');
+  btn.textContent = '[ replay ]';
+  btn.style.cssText = 'color: var(--cyan, #00ffff); cursor: pointer; font-size: 11px; opacity: 0.6; transition: opacity 0.2s; margin-top: 4px; display: inline-block;';
+  btn.onmouseenter = () => btn.style.opacity = '1';
+  btn.onmouseleave = () => btn.style.opacity = '0.6';
+  btn.onclick = () => animationFn();
+  container.appendChild(btn);
+  const terminal = document.getElementById('terminal');
+  if (terminal) terminal.scrollTop = terminal.scrollHeight;
+}
+
 export const mission = {
   id: 0,
   num: '01',
@@ -69,18 +81,7 @@ async function animateBinaryBreakdown() {
     el.textContent = c.label;
     el.style.cssText = 'padding:6px 2px;color:#00ff41;font-size:11px;border:1px solid #005a15;border-radius:3px;transition:border-color 0.3s;';
     grid.appendChild(el);
-    return el;
-  });
 
-  // Multiplier row
-  const multCells = columns.map(c => {
-    const el = document.createElement('div');
-    el.className = 'col';
-    el.textContent = c.multiplier;
-    el.style.cssText = 'padding:4px 2px;color:#888;font-size:12px;border:1px solid #005a15;border-radius:3px;transition:border-color 0.3s;';
-    grid.appendChild(el);
-    return el;
-  });
 
   // Digit row
   const digitCells = columns.map(c => {
@@ -89,8 +90,6 @@ async function animateBinaryBreakdown() {
     el.textContent = String(c.digit);
     el.style.cssText = `padding:8px 2px;font-size:20px;font-weight:bold;color:${c.digit ? '#00ff41' : '#333'};border:1px solid #005a15;border-radius:3px;transition:all 0.3s;`;
     grid.appendChild(el);
-    return el;
-  });
 
   // Result row (initially empty dashes)
   const resultCells = columns.map(() => {
@@ -99,8 +98,6 @@ async function animateBinaryBreakdown() {
     el.textContent = '-';
     el.style.cssText = 'padding:8px 2px;font-size:16px;font-weight:bold;color:#333;border:1px solid #005a15;border-radius:3px;transition:all 0.3s;';
     grid.appendChild(el);
-    return el;
-  });
 
   // Total row
   const totalEl = document.createElement('div');
@@ -121,7 +118,6 @@ async function animateBinaryBreakdown() {
 
     // Highlight the column
     headerCells[i].style.borderColor = '#00ff41';
-    multCells[i].style.borderColor = '#00ff41';
     digitCells[i].style.borderColor = '#00ff41';
     resultCells[i].style.borderColor = '#00ff41';
 
@@ -136,11 +132,10 @@ async function animateBinaryBreakdown() {
       totalEl.textContent = 'Total: ' + runningTotal;
       totalEl.style.color = '#00ff41';
     } else {
-      // Show "skip" in red
-      resultCells[i].textContent = 'skip';
-      resultCells[i].style.color = '#ff3333';
-      resultCells[i].style.fontSize = '10px';
-      digitCells[i].style.color = '#1a1a1a';
+      // Zero column — just dim it
+      resultCells[i].textContent = '-';
+      resultCells[i].style.color = '#333';
+      digitCells[i].style.color = '#333';
     }
 
     termEl.scrollTop = termEl.scrollHeight;
@@ -148,7 +143,6 @@ async function animateBinaryBreakdown() {
 
     // Dim the column after processing (except result stays)
     headerCells[i].style.borderColor = '#005a15';
-    multCells[i].style.borderColor = '#005a15';
     digitCells[i].style.borderColor = '#005a15';
     resultCells[i].style.borderColor = '#005a15';
   }
