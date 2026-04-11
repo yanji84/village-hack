@@ -800,15 +800,15 @@ function startMission(id) {
 
   // Mission-specific input placeholders
   const placeholders = {
-    0: 'Type the password...',
-    1: 'Type your answer...',
-    2: 'UP / DOWN / LEFT / RIGHT',
+    0: 'Type your answer...',
+    1: 'e.g. RIGHT RIGHT DOWN DOWN LEFT',
+    2: 'Type your answer...',
     3: 'Type gate inputs (e.g. 1 0)...',
     4: 'Type the decoded message...',
     5: 'Type the line number with the bug...',
     6: 'Type a SQL query...',
     7: 'Type your answer...',
-    8: 'Type a password...',
+    8: 'Type your answer...',
     9: 'Type your answer...',
     10: 'e.g. REPEAT 3 RIGHT, REPEAT 2 UP',
     11: 'Type your answer...',
