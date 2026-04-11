@@ -7,7 +7,7 @@ import {
 } from '../../engine.js';
 
 export const mission = {
-  id: 9,
+  id: 8,
   num: 'S2-01',
   title: 'PASSWORD SECURITY',
   name: 'Password Security',
@@ -182,7 +182,7 @@ function runS2M1Phase() {
         addLine('          are the foundations of real-world password', 'purple');
         addLine('          security."', 'purple');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(9), 1200);
+        setTimeout(() => completeMission(8), 1200);
       } else {
         sound.denied();
         addLine(`[REJECTED] Failed: ${failed.map(f => f.msg).join(', ')}`, 'error');

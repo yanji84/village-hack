@@ -9,7 +9,7 @@ import {
 import { caesarEncrypt } from '../helpers.js';
 
 export const mission = {
-  id: 13,
+  id: 12,
   num: 'S2-05',
   title: 'CRYPTANALYSIS',
   name: 'Cryptanalysis',
@@ -145,7 +145,7 @@ function runS2M5Phase() {
         addLine('You just used the SAME technique that broke Nazi codes in WWII.', 'success');
         addLine('Cryptanalysis complete!', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(13), 1500);
+        setTimeout(() => completeMission(12), 1500);
       } else {
         sound.denied();
         addLine(`[WRONG] Formula: shift = most_common_cipher_letter - E`, 'error');

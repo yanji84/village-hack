@@ -332,14 +332,14 @@ function saveState() {
   if (state.seenS2Intro) localStorage.setItem('vh_s2_intro', '1');
 }
 
-function s1Count() { return state.completed.filter(i => i < 9).length; }
-function s2Count() { return state.completed.filter(i => i >= 9).length; }
+function s1Count() { return state.completed.filter(i => i < 8).length; }
+function s2Count() { return state.completed.filter(i => i >= 8).length; }
 function completedCount() { return state.completed.length; }
 function isCompleted(id) { return state.completed.includes(id); }
-function s1AllDone() { return s1Count() === 9; }
+function s1AllDone() { return s1Count() === 8; }
 function isUnlocked(id) {
   if (id === 0) return true;
-  if (id === 9) return s1AllDone(); // first S2 mission unlocks after all S1 done
+  if (id === 8) return s1AllDone(); // first S2 mission unlocks after all S1 done
   return state.completed.includes(id - 1);
 }
 
@@ -682,7 +682,7 @@ function showHub() {
   grid.appendChild(s1Banner);
 
   // ── Season 1 missions (0-7) ──
-  MISSIONS.filter(m => m.id < 9).forEach(m => renderMissionCard(grid, m));
+  MISSIONS.filter(m => m.id < 8).forEach(m => renderMissionCard(grid, m));
 
   // ── Season 2 (only show if S1 all done) ──
   if (s1AllDone()) {
@@ -692,14 +692,14 @@ function showHub() {
     s2Banner.innerHTML = `SEASON 2: HARD MODE<span class="tagline">// Advanced training — the real hacker stuff //</span>`;
     grid.appendChild(s2Banner);
 
-    MISSIONS.filter(m => m.id >= 9).forEach(m => renderMissionCard(grid, m));
+    MISSIONS.filter(m => m.id >= 8).forEach(m => renderMissionCard(grid, m));
   }
 }
 
 function renderMissionCard(grid, m) {
   const card = document.createElement('div');
   card.className = 'mission-card';
-  if (m.id >= 9) card.classList.add('s2');
+  if (m.id >= 8) card.classList.add('s2');
 
   const unlocked = isUnlocked(m.id);
   const done = isCompleted(m.id);
@@ -715,7 +715,7 @@ function renderMissionCard(grid, m) {
       <div class="mission-desc">Complete previous mission to unlock</div>
     `;
   } else {
-    const badge = m.id >= 9 ? '<span class="hard-badge">HARD</span>' : '';
+    const badge = m.id >= 8 ? '<span class="hard-badge">HARD</span>' : '';
     card.innerHTML = `
       <div class="mission-num">MISSION ${m.num}</div>
       <h3>${m.name}${badge}</h3>
@@ -818,23 +818,10 @@ function startMission(id) {
 
   // Mission-specific input placeholders
   const placeholders = {
-    0: 'Type your answer...',
     1: 'Type your program...',
-    2: 'Type your answer...',
-    3: 'Type your answer...',
-    4: 'Type your answer...',
     5: 'Type the decoded message...',
-    6: 'Type the line number with the bug...',
-    7: 'Type a SQL query...',
-    8: 'Type your answer...',
-    9: 'Type your answer...',
-    10: 'Type your answer...',
-    11: 'e.g. REPEAT 3 RIGHT, REPEAT 2 UP',
-    12: 'Type your answer...',
-    13: 'Type your answer...',
-    14: 'Type your answer...',
-    15: 'Type a SQL query...',
-    16: 'Type your answer...',
+    10: 'e.g. REPEAT 3 RIGHT, REPEAT 2 UP',
+    14: 'Type a SQL query...',
   };
   cmdInput.placeholder = placeholders[id] || 'Type command here...';
 
@@ -873,11 +860,11 @@ function completeMission(id) {
   let sub;
   let opts = {};
 
-  if (id === 8) {
+  if (id === 7) {
     title = 'VILLAGE SAVED!';
     sub = `Season 1 complete, ${state.hackerName || 'HACKER'}! Share your badge with a friend, then check the AI's new transmission.`;
     opts.share = 's1';
-  } else if (id === 16) {
+  } else if (id === 15) {
     title = 'LEGEND STATUS';
     color = 'var(--purple)';
     sub = `You defeated the backdoor and became an Elite Hacker, ${state.hackerName || 'HACKER'}. Share your legendary badge!`;
@@ -885,7 +872,7 @@ function completeMission(id) {
   } else if (nextId < MISSIONS.length) {
     const nextM = MISSIONS[nextId];
     sub = `New skill unlocked! Mission ${nextM.num}: ${nextM.name} is now available.`;
-    if (id >= 9) color = 'var(--purple)';
+    if (id >= 8) color = 'var(--purple)';
   } else {
     sub = 'You have completed ALL missions!';
   }

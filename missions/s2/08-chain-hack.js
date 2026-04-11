@@ -9,7 +9,7 @@ import {
 import { caesarEncrypt } from '../helpers.js';
 
 export const mission = {
-  id: 16,
+  id: 15,
   num: 'S2-08',
   title: 'THE CHAIN HACK',
   name: 'The Chain Hack',
@@ -203,7 +203,7 @@ function runChainPhase() {
             { text: '          See you then."', cls: 'purple' },
           ]);
           setCurrentInputHandler(null);
-          setTimeout(() => completeMission(16), 2000);
+          setTimeout(() => completeMission(15), 2000);
         }, 500);
       } else {
         sound.denied();

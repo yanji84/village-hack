@@ -7,7 +7,7 @@ import {
 } from '../../engine.js';
 
 export const mission = {
-  id: 10,
+  id: 9,
   num: 'S2-02',
   title: 'ASCII & BINARY MATH',
   name: 'ASCII & Binary Math',
@@ -148,7 +148,7 @@ function runS2M2Phase() {
         addLine('          engineers do exactly this, every day. Welcome', 'purple');
         addLine('          to the profession."', 'purple');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(10), 1200);
+        setTimeout(() => completeMission(9), 1200);
       } else {
         sound.denied();
         addLine('[WRONG] Convert each hex pair \u2192 decimal \u2192 ASCII letter.', 'error');

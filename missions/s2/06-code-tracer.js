@@ -63,7 +63,7 @@ const tracePuzzles = [
 ];
 
 export const mission = {
-  id: 14,
+  id: 13,
   num: 'S2-06',
   title: 'CODE TRACER',
   name: 'Code Tracer',
@@ -128,7 +128,7 @@ function showTracePuzzle() {
         addLine('');
         addLine('You can now read code like a real programmer!', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(14), 1200);
+        setTimeout(() => completeMission(13), 1200);
       } else {
         addLine('');
         setTimeout(showTracePuzzle, 700);

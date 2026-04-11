@@ -16,9 +16,9 @@ const townDB2 = {
     { id: 6, name: 'Victor', role: 'Stranger' },
   ],
   messages: [
-    { id: 1, sender_id: 2, text: 'hello class', time: '09:00' },
+    { id: 0, sender_id: 2, text: 'hello class', time: '09:00' },
     { id: 2, sender_id: 6, text: 'backdoor ready', time: '02:14' },
-    { id: 3, sender_id: 1, text: 'council meeting at 3pm', time: '10:00' },
+    { id: 3, sender_id: 0, text: 'council meeting at 3pm', time: '10:00' },
     { id: 4, sender_id: 6, text: 'payload installed', time: '02:30' },
     { id: 5, sender_id: 3, text: 'new books arrived', time: '11:00' },
   ],
@@ -68,7 +68,7 @@ const joinChallenges = [
 ];
 
 export const mission = {
-  id: 15,
+  id: 14,
   num: 'S2-07',
   title: 'JOIN INVESTIGATION',
   name: 'JOIN Investigation',
@@ -145,7 +145,7 @@ function showJoinChallenge() {
         addLine('');
         addLine('Investigation complete! Victor identified as the attacker.', 'success big');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(15), 1200);
+        setTimeout(() => completeMission(14), 1200);
       } else {
         addLine('');
         setTimeout(showJoinChallenge, 700);

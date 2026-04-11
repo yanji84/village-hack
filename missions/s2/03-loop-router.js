@@ -38,7 +38,7 @@ const loopMazes = [
 ];
 
 export const mission = {
-  id: 11,
+  id: 10,
   num: 'S2-03',
   title: 'LOOP ROUTER',
   name: 'Loop Router',
@@ -174,7 +174,7 @@ function loadLoopMaze(idx) {
           } else {
             addLine('All mazes solved with loops!', 'success big');
             setCurrentInputHandler(null);
-            setTimeout(() => completeMission(11), 1000);
+            setTimeout(() => completeMission(10), 1000);
           }
           return;
         }

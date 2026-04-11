@@ -7,7 +7,7 @@ import {
 } from '../../engine.js';
 
 export const mission = {
-  id: 12,
+  id: 11,
   num: 'S2-04',
   title: 'CIRCUIT DESIGNER',
   name: 'Circuit Designer',
@@ -156,7 +156,7 @@ function runS2M4Phase() {
         addLine('AI CORE: "From two gates. That is what computer science', 'purple');
         addLine('          really is."', 'purple');
         setCurrentInputHandler(null);
-        setTimeout(() => completeMission(12), 1500);
+        setTimeout(() => completeMission(11), 1500);
       } else {
         sound.denied();
         addLine('[WRONG] Compare the SUM column to each gate\'s output. Which matches?', 'error');
