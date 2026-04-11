@@ -819,7 +819,7 @@ function startMission(id) {
   // Mission-specific input placeholders
   const placeholders = {
     0: 'Type your answer...',
-    1: 'e.g. RIGHT RIGHT DOWN DOWN LEFT',
+    1: 'e.g. R R D D L',
     2: 'Type your answer...',
     3: 'Type gate inputs (e.g. 1 0)...',
     4: 'Type the decoded message...',

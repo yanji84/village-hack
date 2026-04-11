@@ -1036,8 +1036,8 @@ missionRunners[1] = async function() {
     { text: '        type ANYTHING. That\'s what real programmers do \u2014', cls: 'highlight' },
     { text: '        they THINK first, then code."', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: '  Commands: UP  DOWN  LEFT  RIGHT  (or U D L R)', cls: 'info' },
-    { text: '  Example:  RIGHT RIGHT DOWN DOWN LEFT', cls: 'info' },
+    { text: '  Commands: U (up)  D (down)  L (left)  R (right)', cls: 'info' },
+    { text: '  Example:  R R D D L', cls: 'info' },
     { text: '', cls: '' },
   ]);
 
