@@ -869,9 +869,10 @@ function runBinaryPhase() {
           addLine('[WRONG] Look at where the green blocks are. What letter shape?', 'error');
         }
       } else {
-        if (input.toUpperCase().trim() === 'ARROW') {
+        const pixelGuess = input.toUpperCase().trim();
+        if (['ARROW', 'BOW', 'POINTER', 'RIGHT', 'PLAY', 'TRIANGLE'].includes(pixelGuess)) {
           sound.success();
-          addLine('[CORRECT] An arrow! \u2192', 'success');
+          addLine('[CORRECT] It\'s an arrow pointing right! \u2192', 'success');
           addLine('', '');
           addLine('NEXUS: "Same binary. Same 0s and 1s. But this time it was', 'highlight');
           addLine('        a picture, not a number or a letter. The DATA', 'highlight');
