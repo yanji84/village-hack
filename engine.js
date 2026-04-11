@@ -529,10 +529,18 @@ function showOverlay(text, sub, color, callback, opts = {}) {
 // ============================================================
 // BOOT SEQUENCE
 // ============================================================
+let _skipBoot = false;
+
 async function bootSequence() {
   const bootText = $('boot-text');
   bootText.innerHTML = '';
   $('start-prompt').style.display = 'none';
+  _skipBoot = false;
+
+  // Show skip button for boot
+  const skipBootBtn = $('skip-boot-btn');
+  if (skipBootBtn) skipBootBtn.style.display = 'inline-block';
+
   const name = (state.hackerName || 'ROOKIE').toUpperCase();
   const lines = [
     'VILLAGE HACK TERMINAL v2.1',
@@ -558,20 +566,35 @@ async function bootSequence() {
   ];
 
   for (let i = 0; i < lines.length; i++) {
+    if (_skipBoot) {
+      // Dump remaining lines instantly
+      const div = document.createElement('div');
+      if (i === lines.length - 1) div.className = 'cursor-line';
+      div.textContent = lines[i];
+      bootText.appendChild(div);
+      continue;
+    }
     const div = document.createElement('div');
     if (i === lines.length - 1) div.className = 'cursor-line';
     bootText.appendChild(div);
 
     for (let j = 0; j < lines[i].length; j++) {
+      if (_skipBoot) {
+        div.textContent = lines[i];
+        break;
+      }
       div.textContent = lines[i].substring(0, j + 1);
       if (j % 2 === 0) sound.typeBeep();
       await sleep(20);
     }
-    if (lines[i].includes('OK')) sound.bootBeep();
-    if (lines[i].includes('WARNING')) sound.error();
-    await sleep(100);
+    if (!_skipBoot) {
+      if (lines[i].includes('OK')) sound.bootBeep();
+      if (lines[i].includes('WARNING')) sound.error();
+      await sleep(100);
+    }
   }
 
+  if (skipBootBtn) skipBootBtn.style.display = 'none';
   $('start-prompt').style.display = 'block';
 }
 
@@ -990,6 +1013,15 @@ function boot() {
     sound.click();
     _skipTyping = true;
   };
+
+  // Skip boot button
+  const skipBootEl = $('skip-boot-btn');
+  if (skipBootEl) {
+    skipBootEl.onclick = () => {
+      sound.click();
+      _skipBoot = true;
+    };
+  }
 
   // Save Progress button
   $('save-btn').onclick = async () => {
