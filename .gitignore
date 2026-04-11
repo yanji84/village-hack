@@ -1,0 +1,18 @@
+# Data files (contain user emails/saves - don't commit)
+signups.jsonl
+saves.jsonl
+badges.jsonl
+
+# Backup files
+index-monolith-backup.html
+index-v1-original.html
+
+# Server logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store

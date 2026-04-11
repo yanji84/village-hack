@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Village Hack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* fonts loaded async via link tags in head */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #00ff41;
+  --dark-green: #00aa2a;
+  --dim-green: #005a15;
+  --bg: #0a0a0a;
+  --panel-bg: #0d1117;
+  --red: #ff3333;
+  --yellow: #ffdd33;
+  --cyan: #00ffff;
+  --orange: #ff8800;
+  --purple: #cc66ff;
+  --blue: #3399ff;
+}
+
+body {
+  background: var(--bg);
+  color: var(--green);
+  font-family: 'Fira Mono', monospace;
+  height: 100vh;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* CRT scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.15) 2px,
+    rgba(0,0,0,0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Glow effect */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0,255,65,0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ===== SCREENS ===== */
+.screen {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ===== BOOT SCREEN ===== */
+#boot-screen {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#boot-text {
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 700px;
+  text-align: left;
+}
+
+#boot-text .cursor-line::after {
+  content: '\2588';
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
+
+#start-prompt {
+  display: none;
+  margin-top: 30px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+#pre-boot-prompt {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* Mute button */
+#mute-btn {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 10000;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  user-select: none;
+}
+#mute-btn:hover { opacity: 1; }
+#mute-btn.muted { opacity: 0.25; }
+
+/* ===== HUB SCREEN ===== */
+#hub-screen { gap: 20px; }
+
+.hub-header {
+  text-align: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--dim-green);
+}
+
+.hub-header h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px;
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green);
+  margin-bottom: 8px;
+}
+
+.hub-header .subtitle {
+  font-size: 12px;
+  color: var(--dark-green);
+}
+
+.hub-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.hub-stats span { color: var(--dark-green); }
+.hub-stats .val { color: var(--green); }
+
+.missions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+  padding: 10px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.mission-card {
+  border: 1px solid var(--dim-green);
+  background: var(--panel-bg);
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-card:hover:not(.locked) {
+  border-color: var(--green);
+  box-shadow: 0 0 15px rgba(0,255,65,0.15);
+  transform: translateY(-2px);
+}
+
+.mission-card.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.mission-card.completed {
+  border-color: var(--dark-green);
+}
+
+.mission-card.completed::after {
+  content: 'COMPLETE';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 9px;
+  color: var(--green);
+  border: 1px solid var(--green);
+  padding: 2px 6px;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.mission-card .mission-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--dim-green);
+  margin-bottom: 8px;
+}
+
+.mission-card h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: var(--green);
+}
+
+.mission-card .mission-desc {
+  font-size: 12px;
+  color: var(--dark-green);
+  line-height: 1.5;
+}
+
+.mission-card .mission-skill {
+  margin-top: 10px;
+  font-size: 10px;
+  color: var(--cyan);
+}
+
+.mission-card .lock-icon {
+  font-size: 24px;
+  text-align: center;
+  padding: 10px;
+  color: var(--dim-green);
+}
+
+/* ===== MISSION SCREEN ===== */
+#mission-screen {
+  gap: 0;
+}
+
+.mission-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--dim-green);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.mission-topbar .back-btn {
+  cursor: pointer;
+  color: var(--dark-green);
+  transition: color 0.2s;
+}
+.mission-topbar .back-btn:hover { color: var(--green); }
+
+.mission-topbar .mission-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+}
+
+.mission-topbar .hint-btn {
+  cursor: pointer;
+  color: var(--yellow);
+  transition: opacity 0.2s;
+}
+.mission-topbar .hint-btn:hover { opacity: 0.7; }
+.mission-topbar .skip-btn {
+  cursor: pointer;
+  color: var(--cyan);
+  margin-right: 16px;
+  font-size: 11px;
+  transition: opacity 0.2s;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.mission-topbar .skip-btn:hover { opacity: 0.7; }
+
+.mission-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Terminal area */
+.terminal {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  font-size: 14px;
+  line-height: 1.7;
+  scroll-behavior: smooth;
+}
+
+.terminal .line { margin-bottom: 2px; }
+.terminal .system { color: var(--cyan); }
+.terminal .error { color: var(--red); }
+.terminal .success { color: var(--green); font-weight: bold; }
+.terminal .warning { color: var(--yellow); }
+.terminal .info { color: var(--dark-green); }
+.terminal .highlight { color: var(--orange); }
+.terminal .purple { color: var(--purple); }
+.terminal .bold { font-weight: bold; }
+.terminal .big {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  padding: 10px 0;
+  text-shadow: 0 0 15px currentColor;
+}
+
+.terminal pre {
+  background: rgba(0,255,65,0.05);
+  border: 1px solid var(--dim-green);
+  padding: 10px;
+  margin: 8px 0;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Input line */
+.input-area {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-top: 1px solid var(--dim-green);
+  background: var(--panel-bg);
+  flex-shrink: 0;
+}
+
+.input-area .prompt-symbol {
+  color: var(--green);
+  margin-right: 8px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.input-area input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--green);
+  font-family: 'Fira Mono', monospace;
+  font-size: 14px;
+  outline: none;
+  caret-color: var(--green);
+}
+
+.input-area input::placeholder {
+  color: var(--dim-green);
+}
+
+/* ===== MAZE SPECIFIC ===== */
+.maze-display {
+  display: inline-block;
+  line-height: 1.3;
+  font-size: 16px;
+  letter-spacing: 2px;
+  white-space: pre;
+  font-family: 'Fira Mono', monospace;
+  margin: 12px 0;
+}
+
+.maze-display .wall { color: var(--dim-green); }
+.maze-display .player { color: var(--yellow); font-weight: bold; }
+.maze-display .goal { color: var(--red); font-weight: bold; animation: pulse 1s infinite; }
+.maze-display .path { color: #1a3a1a; }
+.maze-display .visited { color: var(--dark-green); }
+
+/* ===== LOGIC GATES ===== */
+.gate-display {
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 10px;
+  border: 1px solid var(--dim-green);
+  margin: 8px 0;
+  background: rgba(0,255,65,0.02);
+}
+
+/* ===== ACCESS GRANTED OVERLAY ===== */
+#overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9000;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+#overlay.active { display: flex; }
+
+#overlay .big-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  text-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+  animation: glitchIn 0.5s ease;
+}
+
+#overlay .sub-text {
+  font-size: 14px;
+  color: var(--dark-green);
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+#overlay .continue-btn {
+  margin-top: 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+  cursor: pointer;
+}
+
+#overlay .overlay-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#overlay .share-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  padding: 12px 18px;
+  border: 2px solid var(--green);
+  background: rgba(0,255,65,0.1);
+  color: var(--green);
+  cursor: pointer;
+  text-shadow: 0 0 10px var(--green);
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+#overlay .share-btn:hover {
+  background: var(--green);
+  color: #000;
+  text-shadow: none;
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(0,255,65,0.5);
+}
+
+#overlay .share-btn.purple {
+  border-color: var(--purple);
+  color: var(--purple);
+  text-shadow: 0 0 10px var(--purple);
+  background: rgba(204,102,255,0.1);
+}
+
+#overlay .share-btn.purple:hover {
+  background: var(--purple);
+  color: #000;
+  text-shadow: none;
+  box-shadow: 0 0 30px rgba(204,102,255,0.5);
+}
+
+#overlay .share-result {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--dim-green);
+  border-radius: 4px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 13px;
+  color: var(--green);
+  max-width: 90vw;
+  word-break: break-all;
+  display: none;
+}
+#overlay .share-result.active { display: block; }
+#overlay .share-result .copy-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--dark-green);
+}
+
+@keyframes glitchIn {
+  0% { transform: scale(0.5) skewX(20deg); opacity: 0; filter: blur(10px); }
+  50% { transform: scale(1.1) skewX(-5deg); opacity: 1; filter: blur(2px); }
+  100% { transform: scale(1) skewX(0); filter: blur(0); }
+}
+
+/* ===== DATABASE TABLE (for SQL mission) ===== */
+.db-table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 12px;
+  width: 100%;
+  max-width: 500px;
+}
+.db-table th, .db-table td {
+  border: 1px solid var(--dim-green);
+  padding: 5px 10px;
+  text-align: left;
+}
+.db-table th {
+  background: rgba(0,255,65,0.1);
+  color: var(--cyan);
+}
+
+/* ===== NAME ENTRY SCREEN ===== */
+#name-screen {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 25px;
+}
+
+#name-screen .name-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px;
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green);
+}
+
+#name-screen .name-sub {
+  font-size: 13px;
+  color: var(--dark-green);
+  max-width: 500px;
+  line-height: 1.7;
+}
+
+#name-screen .name-input-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--green);
+  padding: 12px 18px;
+  background: rgba(0,255,65,0.05);
+  box-shadow: 0 0 25px rgba(0,255,65,0.15);
+}
+
+#name-screen .name-input-box .prompt-symbol {
+  color: var(--green);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#name-input {
+  background: transparent;
+  border: none;
+  color: var(--green);
+  font-family: 'Fira Mono', monospace;
+  font-size: 18px;
+  outline: none;
+  width: 280px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+#name-input::placeholder {
+  color: var(--dim-green);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+#name-screen .name-hint {
+  font-size: 11px;
+  color: var(--dim-green);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ===== SEASON BANNER ===== */
+.season-banner {
+  text-align: center;
+  padding: 15px 10px 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin-top: 20px;
+  border-top: 1px solid var(--dim-green);
+}
+
+.season-banner.s1 { color: var(--green); }
+.season-banner.s2 {
+  color: var(--purple);
+  text-shadow: 0 0 15px var(--purple);
+}
+
+.season-banner .tagline {
+  display: block;
+  margin-top: 6px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  color: var(--dark-green);
+}
+
+.season-banner.s2 .tagline { color: #7744aa; }
+
+/* S2 mission cards */
+.mission-card.s2 {
+  border-color: #4a1a66;
+}
+.mission-card.s2:hover:not(.locked) {
+  border-color: var(--purple);
+  box-shadow: 0 0 15px rgba(204,102,255,0.2);
+}
+.mission-card.s2 h3 { color: var(--purple); }
+.mission-card.s2 .mission-num { color: #6a2a88; }
+.mission-card.s2 .mission-skill { color: #ff88ff; }
+.mission-card.s2.completed { border-color: #6a2a88; }
+.mission-card.s2.completed::after {
+  content: 'HARD MODE \u2713';
+  color: var(--purple);
+  border-color: var(--purple);
+}
+.mission-card.s2 .hard-badge {
+  display: inline-block;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--purple);
+  border: 1px solid var(--purple);
+  padding: 2px 5px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--dim-green); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--dark-green); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .missions-grid { grid-template-columns: 1fr; padding: 10px; }
+  .hub-header h1 { font-size: 14px; }
+  #overlay .big-text { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAME ENTRY SCREEN -->
+<div id="name-screen" class="screen active">
+  <div class="name-title">VILLAGE HACK</div>
+  <div class="name-sub">
+    // HACKER IDENTIFICATION REQUIRED //<br>
+    Every hacker needs a codename. What do you want to be called?
+  </div>
+  <div class="name-input-box">
+    <span class="prompt-symbol">&gt;</span>
+    <input type="text" id="name-input" placeholder="Enter hacker name..." maxlength="16" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="name-hint">[ TYPE YOUR NAME AND PRESS ENTER ]</div>
+  <div style="margin-top: 20px;">
+    <a id="load-code-link" style="color: var(--dark-green); font-size: 12px; cursor: pointer; text-decoration: underline;">Already have a save code? Load progress</a>
+  </div>
+</div>
+
+<!-- BOOT SCREEN -->
+<div id="boot-screen" class="screen">
+  <div id="boot-text"></div>
+  <div id="start-prompt">[ PRESS ANY KEY TO BEGIN ]</div>
+</div>
+
+<!-- Mute button -->
+<div id="mute-btn" title="Toggle Sound">&#x1f50a;</div>
+
+<!-- HUB SCREEN -->
+<div id="hub-screen" class="screen">
+  <div class="hub-header">
+    <h1>VILLAGE HACK</h1>
+    <div class="subtitle">// Hacker Training Terminal v2.1 //</div>
+  </div>
+  <div class="hub-stats">
+    <span>Agent: <span class="val" id="agent-name">ROOKIE</span></span>
+    <span>Missions Complete: <span class="val" id="missions-done">0</span>/16</span>
+    <span>Rank: <span class="val" id="rank">Script Kiddie</span></span>
+    <span class="save-btn" id="save-btn" style="cursor:pointer;color:var(--cyan);text-decoration:underline">[ Save Progress ]</span>
+  </div>
+  <div class="missions-grid" id="missions-grid"></div>
+</div>
+
+<!-- MISSION SCREEN -->
+<div id="mission-screen" class="screen">
+  <div class="mission-topbar">
+    <span class="back-btn" id="back-btn">&lt; ABORT MISSION</span>
+    <span class="mission-title" id="mission-title-bar">MISSION 01</span>
+    <span>
+      <span class="skip-btn" id="skip-btn" style="display:none">[ SKIP &raquo; ]</span>
+      <span class="hint-btn" id="hint-btn">[ HINT ]</span>
+    </span>
+  </div>
+  <div class="mission-body">
+    <div class="terminal" id="terminal"></div>
+    <div class="input-area">
+      <span class="prompt-symbol">$&gt;</span>
+      <input type="text" id="cmd-input" placeholder="Type command here..." autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY (Access Granted, etc) -->
+<div id="overlay">
+  <div class="big-text" id="overlay-text"></div>
+  <div class="sub-text" id="overlay-sub"></div>
+  <div class="overlay-actions">
+    <button class="share-btn" id="overlay-share-btn" style="display:none">SHARE MY BADGE</button>
+    <div class="continue-btn" id="overlay-btn">[ CONTINUE ]</div>
+  </div>
+  <div class="share-result" id="overlay-share-result"></div>
+</div>
+
+<script type="module">
+import { boot } from './engine.js';
+boot();
+</script>
+</body>
+</html>

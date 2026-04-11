@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Village Hack — Real Computer Science for Kids Who Want to Hack</title>
+<meta name="description" content="Your kid wants to learn hacking. Give them the real thing. A story-driven CS adventure for ages 7-12.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #00ff41;
+  --dark-green: #00aa2a;
+  --dim-green: #005a15;
+  --bg: #0a0a0a;
+  --bg-soft: #0d1117;
+  --text: #e8e8e8;
+  --text-dim: #8a9a8a;
+  --purple: #cc66ff;
+  --orange: #ff8800;
+  --border: #1a2a1a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* CRT scanline overlay (subtle) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.1) 3px,
+    rgba(0,0,0,0.1) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.mono { font-family: 'Fira Mono', monospace; }
+.pixel { font-family: 'Press Start 2P', monospace; }
+
+/* ───── NAV ───── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav .logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--green);
+  text-shadow: 0 0 12px var(--green);
+}
+
+nav .nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+nav .nav-links a {
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+nav .nav-links a:hover { color: var(--green); text-decoration: none; }
+
+nav .play-btn {
+  background: var(--green);
+  color: #000;
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+nav .play-btn:hover {
+  text-decoration: none;
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,255,65,0.4);
+}
+
+/* ───── HERO ───── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 20px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(0,255,65,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(204,102,255,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-family: 'Fira Mono', monospace;
+  color: var(--green);
+  font-size: 13px;
+  letter-spacing: 3px;
+  margin-bottom: 24px;
+  opacity: 0.8;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(36px, 7vw, 76px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  max-width: 900px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 .accent {
+  color: var(--green);
+  text-shadow: 0 0 30px rgba(0,255,65,0.5);
+}
+
+.hero .subhead {
+  font-size: clamp(16px, 2vw, 21px);
+  color: var(--text-dim);
+  max-width: 620px;
+  line-height: 1.55;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero .cta-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #000;
+  padding: 16px 32px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-primary:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  text-decoration: none;
+  box-shadow: 0 6px 30px rgba(0,255,65,0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  padding: 16px 32px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-secondary:hover {
+  border-color: var(--green);
+  color: var(--green);
+  text-decoration: none;
+}
+
+.hero-trust {
+  margin-top: 40px;
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--text-dim);
+  position: relative;
+  z-index: 1;
+}
+
+.hero-trust span::before {
+  content: '✓ ';
+  color: var(--green);
+}
+
+/* ───── PAIN SECTION ───── */
+.section {
+  padding: 100px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-family: 'Fira Mono', monospace;
+  color: var(--green);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.section h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(28px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 24px;
+  max-width: 760px;
+}
+
+.section .lead {
+  font-size: 18px;
+  color: var(--text-dim);
+  max-width: 680px;
+  line-height: 1.6;
+  margin-bottom: 50px;
+}
+
+/* Pain points grid */
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.pain-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+  transition: all 0.2s;
+}
+
+.pain-card:hover {
+  border-color: var(--dim-green);
+  transform: translateY(-2px);
+}
+
+.pain-card .pain-quote {
+  font-style: italic;
+  color: var(--text);
+  font-size: 16px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.pain-card .pain-quote::before {
+  content: '"';
+  color: var(--green);
+  font-size: 28px;
+  font-weight: 800;
+  margin-right: 4px;
+  vertical-align: -6px;
+}
+
+.pain-card .pain-attrib {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* ───── HOW IT WORKS ───── */
+.how-section {
+  background: var(--bg-soft);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 100px 20px;
+}
+
+.how-section .section { padding: 0; }
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.how-step {
+  text-align: left;
+}
+
+.how-step .step-num {
+  font-family: 'Press Start 2P', monospace;
+  color: var(--green);
+  font-size: 32px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 20px rgba(0,255,65,0.4);
+}
+
+.how-step h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.how-step p {
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ───── CURRICULUM ───── */
+.curriculum-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.mission-row {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: all 0.2s;
+}
+
+.mission-row:hover {
+  border-color: var(--dim-green);
+}
+
+.mission-row .num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--green);
+  background: rgba(0,255,65,0.1);
+  padding: 6px 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mission-row .num.s2 {
+  color: var(--purple);
+  background: rgba(204,102,255,0.1);
+}
+
+.mission-row h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.mission-row p {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.season-tag {
+  display: inline-block;
+  font-family: 'Fira Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--green);
+  margin-top: 50px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.season-tag.s2 { color: var(--purple); }
+
+/* ───── COMPARISON ───── */
+.compare-table {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 40px;
+}
+
+.compare-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  font-size: 15px;
+}
+
+.compare-row:last-child { border-bottom: none; }
+
+.compare-row.header {
+  background: rgba(0,255,65,0.05);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.compare-row.header .compare-us { color: var(--green); }
+
+.compare-row .compare-feature { font-weight: 500; }
+.compare-row .compare-them { color: var(--text-dim); text-align: center; }
+.compare-row .compare-us {
+  color: var(--green);
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ───── SAFETY ───── */
+.safety-box {
+  background: var(--bg-soft);
+  border: 1px solid var(--dim-green);
+  border-radius: 8px;
+  padding: 32px;
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.safety-icon {
+  font-size: 40px;
+  filter: hue-rotate(80deg) saturate(2);
+}
+
+.safety-box h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--green);
+}
+
+.safety-box ul {
+  list-style: none;
+  padding: 0;
+}
+
+.safety-box li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.safety-box li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* ───── FAQ ───── */
+.faq-list { margin-top: 30px; }
+
+.faq-item {
+  border-bottom: 1px solid var(--border);
+  padding: 22px 0;
+}
+
+.faq-item h4 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.faq-item p {
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* ───── EMAIL CAPTURE ───── */
+.email-section {
+  text-align: center;
+  background:
+    radial-gradient(ellipse at center, rgba(0,255,65,0.08) 0%, transparent 60%),
+    var(--bg);
+  padding: 120px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.email-section h2 {
+  margin: 0 auto 20px;
+  text-align: center;
+}
+
+.email-section .lead {
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.email-form {
+  display: flex;
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.email-form input {
+  flex: 1;
+  min-width: 240px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 16px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.email-form input:focus {
+  border-color: var(--green);
+}
+
+.email-form button {
+  background: var(--green);
+  color: #000;
+  border: none;
+  padding: 16px 28px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.email-form button:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(0,255,65,0.4);
+}
+
+.email-disclaimer {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+#email-success {
+  display: none;
+  color: var(--green);
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+/* ───── FOOTER ───── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+footer .footer-logo {
+  font-family: 'Press Start 2P', monospace;
+  color: var(--green);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+footer .footer-links {
+  margin-top: 12px;
+}
+
+footer .footer-links a {
+  color: var(--text-dim);
+  margin: 0 12px;
+  font-size: 13px;
+}
+
+footer .footer-links a:hover { color: var(--green); }
+
+/* ───── SCREENSHOTS ───── */
+.screens-section {
+  padding: 80px 20px 40px;
+  text-align: center;
+}
+
+.screens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 50px auto 0;
+}
+
+.screen-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.screen-card:hover {
+  border-color: var(--dim-green);
+  transform: translateY(-3px);
+}
+
+.screen-card .terminal-mock {
+  background: #050505;
+  padding: 24px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  line-height: 1.6;
+  min-height: 200px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.screen-card .terminal-mock .cyan { color: #00ffff; }
+.screen-card .terminal-mock .yellow { color: #ffdd33; }
+.screen-card .terminal-mock .red { color: #ff3333; }
+.screen-card .terminal-mock .dim { color: var(--dim-green); }
+
+.screen-card .caption {
+  padding: 18px;
+}
+
+.screen-card .caption h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.screen-card .caption p {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* ───── RESPONSIVE ───── */
+@media (max-width: 700px) {
+  nav { padding: 12px 16px; }
+  nav .nav-links { gap: 16px; }
+  nav .nav-links a:not(.play-btn) { display: none; }
+  .section { padding: 60px 20px; }
+  .how-section { padding: 60px 20px; }
+  .safety-box { grid-template-columns: 1fr; }
+  .compare-row { font-size: 13px; padding: 14px 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">VILLAGE HACK</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#curriculum">Curriculum</a>
+    <a href="#faq">FAQ</a>
+    <a href="/hack/" class="play-btn">PLAY FREE →</a>
+  </div>
+</nav>
+
+<!-- ───── HERO ───── -->
+<section class="hero">
+  <div class="hero-eyebrow">// FOR PARENTS OF KIDS AGES 7-12 //</div>
+  <h1>Your kid wants to learn hacking.<br><span class="accent">Give them the real thing.</span></h1>
+  <p class="subhead">A story-driven computer science adventure that turns "I want to be a hacker" into real skills — cryptography, logic, code, and problem-solving. Built for kids who think Scratch is for babies.</p>
+  <div class="cta-row">
+    <a href="/hack/" class="btn-primary">Play Free Now →</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+  <div class="hero-trust">
+    <span>Season 1 free forever</span>
+    <span>No account needed to try</span>
+    <span>Safe, age-appropriate</span>
+    <span>Plays in any browser</span>
+  </div>
+</section>
+
+<!-- ───── PAIN ───── -->
+<section class="section">
+  <div class="section-eyebrow">The problem</div>
+  <h2>Every parent of a 9-year-old has had this conversation.</h2>
+  <p class="lead">Your kid saw something on YouTube. Now they want to "learn hacking." You search for kids' coding apps and find...  block-puzzles for 5-year-olds. The cool stuff is shady tutorials. There's no middle ground.</p>
+
+  <div class="pain-grid">
+    <div class="pain-card">
+      <p class="pain-quote">My 9-year-old says Scratch is babyish. He keeps asking me how to "hack into stuff." I don't know what to give him.</p>
+      <p class="pain-attrib">— every parent we talked to</p>
+    </div>
+    <div class="pain-card">
+      <p class="pain-quote">I tried Tynker but the lessons feel like worksheets. He played for an hour and quit. I want him to actually love it.</p>
+      <p class="pain-attrib">— parent of a 10-year-old</p>
+    </div>
+    <div class="pain-card">
+      <p class="pain-quote">All the YouTube "hacking for kids" videos teach actual illegal stuff or scams. I don't want to be that parent.</p>
+      <p class="pain-attrib">— parent of an 8-year-old</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───── HOW IT WORKS ───── -->
+<section class="how-section" id="how">
+  <div class="section">
+    <div class="section-eyebrow">How it works</div>
+    <h2>A retro hacker terminal that actually teaches computer science.</h2>
+    <p class="lead">Village Hack looks like the hacker movies your kid wishes were real. Underneath, every mission teaches a real CS concept — the kind taught at universities, just framed in a way a 9-year-old will fight to play.</p>
+
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">01</div>
+        <h3>Boot up</h3>
+        <p>Your kid picks a hacker codename. The terminal boots, the AI is rogue, the village needs them. The story pulls them in before they even know they're learning.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">02</div>
+        <h3>Solve missions</h3>
+        <p>16 missions across 2 seasons teach binary, logic, cryptography, code reading, SQL, and algorithms — disguised as hacking puzzles. Each one builds on the last.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">03</div>
+        <h3>Earn ranks</h3>
+        <p>Script Kiddie. Net Runner. Cipher Punk. Elite Hacker. Each rank is earned by mastering a real skill. Progress saves automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── SCREENS ───── -->
+<section class="screens-section">
+  <div class="section-eyebrow" style="text-align:center;">What it looks like</div>
+  <h2 style="text-align:center; margin: 0 auto 0; max-width: 800px;">Real terminal aesthetic. No baby dragons.</h2>
+
+  <div class="screens-grid">
+    <div class="screen-card">
+      <div class="terminal-mock">
+<span class="cyan">[SYSTEM]</span> Connecting to Village School Network...<br>
+<span class="red">[ALERT]</span> The rogue AI has locked all the passwords!<br>
+<span class="yellow">[MISSION]</span> Crack 3 passwords using the clues to restore access.<br><br>
+<span style="color:#ff8800;">━━━ School Network Login ━━━</span><br>
+<span class="cyan">PASSWORD REQUIRED. Clues detected:</span><br>
+<span class="dim">  1.</span> It has 4 letters<br>
+<span class="dim">  2.</span> It is a color<br>
+<span class="dim">  3.</span> The sky is this color on a clear day<br>
+<span class="dim">  4.</span> It starts with B<br><br>
+<span class="yellow">Type the password and press Enter:</span><br>
+$&gt; blue<br>
+<span style="color:#00ff41;font-weight:bold;">[SUCCESS] Password "blue" accepted!</span>
+      </div>
+      <div class="caption">
+        <h4>Mission 01 — Password Cracker</h4>
+        <p>Logic puzzles teach deductive reasoning</p>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="terminal-mock">
+<span class="cyan">[SYSTEM]</span> Intercepted real computer memory dump...<br><br>
+<span style="color:#ff8800;">━━━ Phase 3: Hex Decoding ━━━</span><br>
+<span class="cyan">HEX is shorthand for binary.</span><br>
+Each hex digit = 4 binary bits.<br><br>
+<span class="dim">Hex:  0 1 2 3 4 5 6 7 8 9 A  B  C  D  E  F<br>Dec:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15</span><br><br>
+<span class="cyan">Decode this hex message:</span><br>
+0x48 0x41 0x43 0x4B<br><br>
+$&gt; HACK<br>
+<span style="color:#00ff41;font-weight:bold;">[DECODED] 0x48=H, 0x41=A, 0x43=C, 0x4B=K</span>
+      </div>
+      <div class="caption">
+        <h4>Mission S2-02 — ASCII &amp; Hex</h4>
+        <p>How real computers store text</p>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="terminal-mock">
+<span style="color:#cc66ff;">[ENCRYPTED TRANSMISSION]</span><br>
+<span style="color:#cc66ff;">[SOURCE: Village AI Core]</span><br><br>
+<span style="color:#cc66ff;">Hello again, ZARA.</span><br>
+<span style="color:#cc66ff;">Thank you for saving me from my bug.</span><br><br>
+<span class="yellow">But I have bad news.</span><br>
+<span class="yellow">Someone planted that bug ON PURPOSE.</span><br>
+<span class="red">A real hacker — a grown-up criminal.</span><br>
+<span class="red">They left BACKDOORS in the systems.</span><br><br>
+<span style="color:#00ff41;font-weight:bold;font-size:13px;">&gt;&gt;&gt; SEASON 2: HARD MODE UNLOCKED &lt;&lt;&lt;</span>
+      </div>
+      <div class="caption">
+        <h4>Story-driven progression</h4>
+        <p>Real narrative with plot twists</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── CURRICULUM ───── -->
+<section class="section" id="curriculum">
+  <div class="section-eyebrow">The curriculum</div>
+  <h2>16 missions. 2 seasons. Real computer science.</h2>
+  <p class="lead">Every mission teaches a concept that's taught at universities. The story is the wrapper — the substance is the real deal.</p>
+
+  <div class="season-tag">SEASON 1 — Save the Village (Free)</div>
+  <div class="curriculum-grid">
+    <div class="mission-row"><span class="num">01</span><div><h4>Password Cracker</h4><p>Pattern recognition + deduction</p></div></div>
+    <div class="mission-row"><span class="num">02</span><div><h4>Binary Decoder</h4><p>Binary number system</p></div></div>
+    <div class="mission-row"><span class="num">03</span><div><h4>Maze Router</h4><p>Algorithms + sequential reasoning</p></div></div>
+    <div class="mission-row"><span class="num">04</span><div><h4>Firewall Bypass</h4><p>Boolean logic (AND, OR, NOT)</p></div></div>
+    <div class="mission-row"><span class="num">05</span><div><h4>Encryption Lab</h4><p>Caesar cipher cryptography</p></div></div>
+    <div class="mission-row"><span class="num">06</span><div><h4>Bug Hunter</h4><p>Reading code + debugging</p></div></div>
+    <div class="mission-row"><span class="num">07</span><div><h4>Data Heist</h4><p>SQL database queries</p></div></div>
+    <div class="mission-row"><span class="num">08</span><div><h4>The Final Hack</h4><p>All skills combined</p></div></div>
+  </div>
+
+  <div class="season-tag s2">SEASON 2 — Hard Mode (Premium)</div>
+  <div class="curriculum-grid">
+    <div class="mission-row"><span class="num s2">S2-01</span><div><h4>Dictionary Attack</h4><p>Brute force + combinatorics</p></div></div>
+    <div class="mission-row"><span class="num s2">S2-02</span><div><h4>ASCII &amp; Binary Math</h4><p>Real ASCII, binary arithmetic, hex</p></div></div>
+    <div class="mission-row"><span class="num s2">S2-03</span><div><h4>Loop Router</h4><p>Loops + program optimization</p></div></div>
+    <div class="mission-row"><span class="num s2">S2-04</span><div><h4>Circuit Designer</h4><p>Truth tables, XOR, half-adder</p></div></div>
+    <div class="mission-row"><span class="num s2">S2-05</span><div><h4>Cryptanalysis</h4><p>Brute force + frequency analysis</p></div></div>
+    <div class="mission-row"><span class="num s2">S2-06</span><div><h4>Code Tracer</h4><p>Mental execution of programs</p></div></div>
+    <div class="mission-row"><span class="num s2">S2-07</span><div><h4>JOIN Investigation</h4><p>Advanced SQL with JOINs</p></div></div>
+    <div class="mission-row"><span class="num s2">S2-08</span><div><h4>The Chain Hack</h4><p>Multi-skill chained attack</p></div></div>
+  </div>
+
+  <p style="margin-top: 30px; font-size: 14px; color: var(--text-dim);">
+    More seasons coming. Season 3 introduces real Python. Season 4 teaches web fundamentals. Subscribers get every new season as it ships.
+  </p>
+</section>
+
+<!-- ───── COMPARISON ───── -->
+<section class="section">
+  <div class="section-eyebrow">vs the alternatives</div>
+  <h2>Built for kids who want the real thing.</h2>
+
+  <div class="compare-table">
+    <div class="compare-row header">
+      <div>Feature</div>
+      <div class="compare-them">Other coding apps</div>
+      <div class="compare-us">Village Hack</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-feature">Aesthetic that doesn't feel like a baby toy</div>
+      <div class="compare-them">—</div>
+      <div class="compare-us">✓</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-feature">Real CS concepts, not just block-dragging</div>
+      <div class="compare-them">Sometimes</div>
+      <div class="compare-us">✓</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-feature">Story-driven progression</div>
+      <div class="compare-them">Rare</div>
+      <div class="compare-us">✓</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-feature">No login required to try</div>
+      <div class="compare-them">—</div>
+      <div class="compare-us">✓</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-feature">Plays instantly in any browser</div>
+      <div class="compare-them">App download</div>
+      <div class="compare-us">✓</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-feature">Made by an actual software engineer who's a parent</div>
+      <div class="compare-them">—</div>
+      <div class="compare-us">✓</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── SAFETY ───── -->
+<section class="section">
+  <div class="section-eyebrow">For worried parents</div>
+  <h2>Yes, "hacking" — but the safe, real, educational kind.</h2>
+  <p class="lead">We know the word "hacking" makes some parents nervous. Here's exactly what your kid will and won't learn.</p>
+
+  <div class="safety-box">
+    <div class="safety-icon">🛡️</div>
+    <div>
+      <h3>What Village Hack is</h3>
+      <ul>
+        <li>Real computer science: cryptography, logic, code reading, databases</li>
+        <li>The same concepts taught in college CS 101 — at a 9-year-old level</li>
+        <li>Puzzle-solving and critical thinking, framed as a story</li>
+        <li>100% in a sandboxed game world. No real systems are touched, ever.</li>
+        <li>No chat, no community, no strangers. It's a single-player game.</li>
+        <li>No ads. No data sold. No dark patterns.</li>
+      </ul>
+      <h3 style="margin-top: 24px;">What Village Hack is not</h3>
+      <ul>
+        <li>It does not teach how to break into real systems or accounts.</li>
+        <li>It does not connect to or interact with anything outside the game.</li>
+        <li>It does not require microphone, camera, or any kid information.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ───── FAQ ───── -->
+<section class="section" id="faq">
+  <div class="section-eyebrow">Common questions</div>
+  <h2>Everything else parents ask.</h2>
+
+  <div class="faq-list">
+    <div class="faq-item">
+      <h4>What ages is this for?</h4>
+      <p>Designed for 7-12 year olds who can read fluently. Younger kids may need a parent next to them. Teens who haven't done coding before will enjoy it too — the difficulty curve is real.</p>
+    </div>
+    <div class="faq-item">
+      <h4>How long does it take to play through?</h4>
+      <p>Season 1 takes most kids 1-3 hours total, usually spread across a few sittings. Season 2 is harder and takes 2-4 hours. New seasons ship regularly.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Does my kid need to know how to code already?</h4>
+      <p>No. Village Hack starts from zero. By the end of Season 1, they'll understand binary, logic gates, encryption, and how databases work. By the end of Season 2, they'll be reading and reasoning about real code.</p>
+    </div>
+    <div class="faq-item">
+      <h4>What does it cost?</h4>
+      <p>Season 1 is free forever. No login, no card, no email required to play. Season 2 and future seasons require a subscription (pricing coming soon — sign up below to be notified).</p>
+    </div>
+    <div class="faq-item">
+      <h4>Is it actually safe? My kid is young.</h4>
+      <p>Completely. The whole game is a single-player browser experience with zero networking, zero chat, and zero ability to interact with anything outside the game. No data is collected from kids. We are committed to COPPA compliance.</p>
+    </div>
+    <div class="faq-item">
+      <h4>What devices does it work on?</h4>
+      <p>Any browser, any device. iPad, Chromebook, laptop, phone. No app to download. Best on a real keyboard but works on touch.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Who built this?</h4>
+      <p>An engineer parent who got tired of finding either Fisher-Price coding apps or shady YouTube tutorials. Built for my own kid. Sharing it with yours.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───── EMAIL CAPTURE ───── -->
+<section class="email-section" id="signup">
+  <h2>Get notified when Season 3 drops.</h2>
+  <p class="lead">Early subscribers get the launch price (it'll never be cheaper) and first access to every new season. No spam — one email when there's something new.</p>
+
+  <form class="email-form" id="email-form" onsubmit="return handleEmail(event)">
+    <input type="email" id="email-input" placeholder="parent@example.com" required>
+    <button type="submit">Notify Me</button>
+  </form>
+  <p class="email-disclaimer">We'll never share your email. Unsubscribe anytime.</p>
+  <div id="email-success">✓ You're on the list. Talk soon.</div>
+</section>
+
+<footer>
+  <div class="footer-logo">VILLAGE HACK</div>
+  <div>Real computer science for kids who want to hack.</div>
+  <div class="footer-links">
+    <a href="/hack/">Play</a>
+    <a href="#how">How it works</a>
+    <a href="#faq">FAQ</a>
+    <a href="mailto:hello@ggbot.it.com">Contact</a>
+  </div>
+  <div style="margin-top:20px; font-size: 11px; opacity: 0.5;">© 2026 Village Hack. Built by a parent, for parents.</div>
+</footer>
+
+<script>
+function handleEmail(e) {
+  e.preventDefault();
+  const email = document.getElementById('email-input').value;
+  // Save to localStorage as a poor-man's signup list (replace with real backend later)
+  const existing = JSON.parse(localStorage.getItem('vh_signups') || '[]');
+  existing.push({ email, ts: Date.now() });
+  localStorage.setItem('vh_signups', JSON.stringify(existing));
+  // Also POST to a simple endpoint (will set up later) — for now log
+  try {
+    fetch('/hack/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => {});
+  } catch(e) {}
+  document.getElementById('email-form').style.display = 'none';
+  document.getElementById('email-success').style.display = 'block';
+  return false;
+}
+</script>
+
+</body>
+</html>
