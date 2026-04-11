@@ -150,9 +150,9 @@ const MISSIONS = [
 // ============================================================
 const missionHints = {
   0: [
-    'Each position has a VALUE. Reading right to left: 1, 2, 4, 8. What values have a 1 above them?',
-    'Add up ONLY the positions where there is a 1. Ignore the zeros.',
-    'For the pixel grid: squint at the green squares. What letter or shape do they form?',
+    'It works just like regular numbers. The places are: ones, twos, fours, eights. Which places have a 1?',
+    'Multiply each digit by its place value, then add them all up. Zeros contribute nothing.',
+    'For the pixel grid: step back and look at which squares are green. What letter do they form?',
   ],
   1: [
     'Trace your program step by step with your finger on the maze BEFORE you submit.',
@@ -683,20 +683,31 @@ function runBinaryPhase() {
 
   if (s.phase === 0) {
     // Phase 1: Learn binary-to-decimal
-    addLine('\u2501\u2501\u2501 Phase 1: Reading Binary Numbers \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Each digit in binary is called a BIT. Each bit is a', 'highlight');
-    addLine('        position, and each position has a VALUE. The values', 'highlight');
-    addLine('        DOUBLE every time you move left."', 'highlight');
+    addLine('\u2501\u2501\u2501 Reading Binary Numbers \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "You already know how regular numbers work. Take 352:', 'highlight');
+    addLine('        the 2 is in the ONES place. The 5 is in the TENS', 'highlight');
+    addLine('        place. The 3 is in the HUNDREDS place. Each place', 'highlight');
+    addLine('        is 10 times bigger than the one to its right."', 'highlight');
     addLine('', '');
 
-    addPre('     Position:  8  4  2  1\n     Binary:    1  0  1  0\n\n     The 8 and 2 positions have 1s.\n     The 4 and 1 positions have 0s.\n     Grab the 8 and the 2. Ignore the rest.\n     8 + 2 = 10.');
+    addPre('  Regular numbers (base 10):\n\n    Places:  hundreds   tens   ones\n                \u00d7100    \u00d710    \u00d71\n    Digits:     3        5      2\n\n    3\u00d7100 + 5\u00d710 + 2\u00d71 = 352');
 
     addLine('', '');
-    addLine('NEXUS: "Where you see a 1, grab that value. Where you see a', 'highlight');
-    addLine('        0, walk past. Add up what you grabbed."', 'highlight');
+    addLine('NEXUS: "Binary works the EXACT same way \u2014 except each', 'highlight');
+    addLine('        place is 2 times bigger, not 10. So instead of', 'highlight');
+    addLine('        ones, tens, hundreds... it goes:', 'highlight');
+    addLine('        ones, twos, fours, eights."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Try it. What number is 0011?"', 'highlight');
-    addLine('(Positions: 8, 4, 2, 1 \u2014 reading right to left)', 'info');
+
+    addPre('  Binary (base 2):\n\n    Places:  eights  fours  twos  ones\n               \u00d78     \u00d74    \u00d72    \u00d71\n    Digits:    1      0      1     0\n\n    1\u00d78 + 0\u00d74 + 1\u00d72 + 0\u00d71 = 10');
+
+    addLine('', '');
+    addLine('NEXUS: "Same idea. Multiply each digit by its place, add', 'highlight');
+    addLine('        them up. A 1 means you COUNT that place. A 0 means', 'highlight');
+    addLine('        you SKIP it."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Your turn. What number is 0011?"', 'highlight');
+    addLine('(Places: eights, fours, twos, ones)', 'info');
 
     const steps = [
       { q: '0011', a: '3', explain: '0+0+2+1 = 3. You got it!' },
@@ -722,7 +733,7 @@ function runBinaryPhase() {
         }
       } else {
         sound.denied();
-        addLine('[WRONG] Add positions with a 1. Positions: 8, 4, 2, 1.', 'error');
+        addLine('[WRONG] Multiply each digit by its place (8, 4, 2, 1) and add up.', 'error');
       }
     });
 
@@ -737,8 +748,9 @@ function runBinaryPhase() {
     addLine('NEXUS: "So a letter is really just a binary number wearing a', 'highlight');
     addLine('        disguise. Decode the number, look up the letter."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "With more letters, we need 5-bit positions:', 'highlight');
-    addLine('        16, 8, 4, 2, 1. Same doubling rule."', 'highlight');
+    addLine('NEXUS: "With bigger numbers, we add one more place to the', 'highlight');
+    addLine('        left: sixteens, eights, fours, twos, ones. Same', 'highlight');
+    addLine('        doubling rule."', 'highlight');
     addLine('', '');
 
     // H=8, E=5, L=12, P=16 → HELP
@@ -751,7 +763,7 @@ function runBinaryPhase() {
     addLine('NEXUS: "I intercepted a transmission from the rogue AI. Four', 'highlight');
     addLine('        letters, each stored in 5 bits. Decode them."', 'highlight');
     addLine('', '');
-    addPre('Positions: 16  8  4  2  1\n\n' + binaryCodes.map((b, i) => `Letter ${i+1}:  ${b.split('').join('  ')}  = ?`).join('\n') + '\n\n  A=1  B=2  C=3  D=4  E=5  F=6  G=7  H=8  I=9\n  J=10 K=11 L=12 M=13 N=14 O=15 P=16 Q=17 R=18');
+    addPre('  Places: sixteens  eights  fours  twos  ones\n              \u00d716      \u00d78     \u00d74    \u00d72    \u00d71\n\n' + binaryCodes.map((b, i) => `  Letter ${i+1}:    ${b.split('').join('       ')}     = ?`).join('\n') + '\n\n  A=1  B=2  C=3  D=4  E=5  F=6  G=7  H=8  I=9\n  J=10 K=11 L=12 M=13 N=14 O=15 P=16 Q=17 R=18');
     addLine('', '');
     addLine('Type the decoded word:', 'warning');
 
