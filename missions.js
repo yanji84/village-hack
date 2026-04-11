@@ -1195,10 +1195,14 @@ missionRunners[2] = async function() {
   state.missionState = { phase: 0, hintIdx: 0 };
 
   await typeLines([
-    { text: '[SYSTEM] AI memory banks partially accessible.', cls: 'system' },
+    { text: '[SYSTEM] Accessing AI memory system.', cls: 'system' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "You can store data and give instructions. But how', cls: 'highlight' },
-    { text: '        does a computer REMEMBER things? Watch."', cls: 'highlight' },
+    { text: 'NEXUS: "You keep score in games, right? You start at 0...', cls: 'highlight' },
+    { text: '        score a point... now it\'s 1... another... 2. The', cls: 'highlight' },
+    { text: '        number changes but the LABEL stays the same: score."', cls: 'highlight' },
+    { text: '', cls: '' },
+    { text: 'NEXUS: "That\'s what a VARIABLE is. A name that holds a', cls: 'highlight' },
+    { text: '        value. The value can change. The name stays."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
 
@@ -1216,22 +1220,17 @@ function runVariablesPhase() {
 
   if (s.phase === 0) {
     // Phase 1: The box metaphor — visual
-    addLine('NEXUS: "Imagine a box with a label on it:"', 'highlight');
+    addLine('NEXUS: "In code, it looks like this:"', 'highlight');
     addLine('', '');
-    addPre(renderBox('score', ''));
-    addLine('', '');
-    addLine('NEXUS: "I write: score = 0"', 'highlight');
-    addLine('', '');
+    addLine('    score = 0', 'info');
     addPre(renderBox('score', '0'));
     addLine('', '');
-    addLine('NEXUS: "Now I write: score = 10"', 'highlight');
-    addLine('', '');
+    addLine('    score = 10', 'info');
     addPre(renderBox('score', '10'));
     addLine('', '');
-    addLine('NEXUS: "The 0 is GONE. Replaced. The box only holds ONE', 'highlight');
-    addLine('        thing at a time. The old value is erased forever."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "This box is called a VARIABLE. Named storage."', 'highlight');
+    addLine('NEXUS: "The 0 is GONE. Replaced. A variable only holds ONE', 'highlight');
+    addLine('        value at a time. When a new value goes in, the old', 'highlight');
+    addLine('        one is erased."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "Quick check. I run these two lines:"', 'highlight');
     addPre('  1  age = 7\n  2  age = 9');
