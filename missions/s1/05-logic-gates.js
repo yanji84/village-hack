@@ -4,7 +4,227 @@ import {
   addLine, addPre, typeLines,
   setCurrentInputHandler,
   completeMission,
+  sleep,
 } from '../../engine.js';
+
+/* ── Gate Widget helpers ─────────────────────────────────── */
+
+function createGateWidget(gateType) {
+  const w = document.createElement('div');
+  w.className = 'gate-widget';
+  Object.assign(w.style, {
+    display: 'flex', alignItems: 'center', gap: '8px',
+    margin: '10px 0', fontFamily: 'monospace',
+  });
+
+  const ioStyle = (label) => {
+    const el = document.createElement('div');
+    el.className = 'gate-io';
+    el.dataset.label = label;
+    el.textContent = '0';
+    Object.assign(el.style, {
+      width: '36px', height: '36px', borderRadius: '50%',
+      border: '2px solid #333', background: '#111',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      color: '#00ff41', fontSize: '14px', fontWeight: 'bold',
+      transition: 'all 0.3s', position: 'relative',
+    });
+    return el;
+  };
+
+  const arrow = () => {
+    const a = document.createElement('div');
+    a.className = 'gate-arrow';
+    a.textContent = '→';
+    a.style.color = '#005a15';
+    a.style.fontSize = '18px';
+    return a;
+  };
+
+  const inputs = document.createElement('div');
+  inputs.className = 'gate-inputs';
+  Object.assign(inputs.style, { display: 'flex', flexDirection: 'column', gap: '4px' });
+
+  const isSingle = gateType === 'NOT';
+  const inputA = ioStyle('A');
+  inputs.appendChild(inputA);
+  let inputB = null;
+  if (!isSingle) {
+    inputB = ioStyle('B');
+    inputs.appendChild(inputB);
+  }
+
+  const box = document.createElement('div');
+  box.className = 'gate-box';
+  box.textContent = gateType;
+  Object.assign(box.style, {
+    border: '2px solid #00aa2a', padding: '8px 16px', borderRadius: '4px',
+    fontWeight: 'bold', color: '#00ff41', transition: 'box-shadow 0.3s',
+  });
+
+  const output = ioStyle('OUT');
+  output.className = 'gate-io gate-output';
+  output.textContent = '?';
+
+  w.appendChild(inputs);
+  w.appendChild(arrow());
+  w.appendChild(box);
+  w.appendChild(arrow());
+  w.appendChild(output);
+
+  w._inputA = inputA;
+  w._inputB = inputB;
+  w._box = box;
+  w._output = output;
+  return w;
+}
+
+function setIoValue(el, val) {
+  el.textContent = String(val);
+  if (val === 1) {
+    el.style.background = '#00ff41';
+    el.style.borderColor = '#00ff41';
+    el.style.boxShadow = '0 0 8px #00ff41';
+    el.style.color = '#000';
+  } else {
+    el.style.background = '#111';
+    el.style.borderColor = '#333';
+    el.style.boxShadow = 'none';
+    el.style.color = '#00ff41';
+  }
+}
+
+function updateGateWidget(widget, a, b, output, animate) {
+  setIoValue(widget._inputA, a);
+  if (widget._inputB) setIoValue(widget._inputB, b);
+  if (!animate) {
+    if (output !== null && output !== undefined) setIoValue(widget._output, output);
+    return;
+  }
+  // animation: pulse the gate box, then light output after delay
+  widget._output.textContent = '?';
+  widget._output.style.background = '#111';
+  widget._output.style.borderColor = '#333';
+  widget._output.style.boxShadow = 'none';
+  widget._box.style.boxShadow = '0 0 12px #00ff41';
+  setTimeout(() => {
+    widget._box.style.boxShadow = 'none';
+    setIoValue(widget._output, output);
+  }, 350);
+}
+
+/* ── Half-Adder visual ──────────────────────────────────── */
+
+function createHalfAdder() {
+  const ha = document.createElement('div');
+  ha.className = 'half-adder';
+  Object.assign(ha.style, {
+    display: 'grid', gridTemplateRows: 'auto auto', gap: '4px',
+    margin: '12px 0', fontFamily: 'monospace',
+  });
+
+  const makeRow = (gateName, outputLabel) => {
+    const row = document.createElement('div');
+    Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '8px' });
+
+    const inp = document.createElement('span');
+    inp.className = 'ha-input';
+    inp.textContent = gateName === 'XOR' ? 'A=?' : 'B=?';
+    Object.assign(inp.style, { color: '#00ff41', minWidth: '36px' });
+
+    const wire1 = document.createElement('span');
+    wire1.className = 'ha-wire';
+    wire1.textContent = '────';
+    Object.assign(wire1.style, {
+      color: '#333', transition: 'color 0.3s',
+      backgroundClip: 'text', WebkitBackgroundClip: 'text',
+    });
+
+    const gate = document.createElement('span');
+    gate.className = 'ha-gate';
+    gate.textContent = gateName;
+    Object.assign(gate.style, {
+      border: '1px solid #00aa2a', padding: '2px 8px', borderRadius: '3px',
+      color: '#00ff41', fontWeight: 'bold', transition: 'box-shadow 0.3s',
+    });
+
+    const wire2 = document.createElement('span');
+    wire2.className = 'ha-wire';
+    wire2.textContent = '────';
+    Object.assign(wire2.style, { color: '#333', transition: 'color 0.3s' });
+
+    const out = document.createElement('span');
+    out.className = 'ha-output';
+    out.textContent = `${outputLabel}=?`;
+    Object.assign(out.style, { color: '#555', fontWeight: 'bold', transition: 'color 0.3s' });
+
+    row.appendChild(inp);
+    row.appendChild(wire1);
+    row.appendChild(gate);
+    row.appendChild(wire2);
+    row.appendChild(out);
+
+    return { row, inp, wire1, gate, wire2, out };
+  };
+
+  const xorRow = makeRow('XOR', 'SUM');
+  const andRow = makeRow('AND', 'CARRY');
+
+  ha.appendChild(xorRow.row);
+  ha.appendChild(andRow.row);
+
+  ha._xor = xorRow;
+  ha._and = andRow;
+  return ha;
+}
+
+async function animateHalfAdder(ha, a, b, sum, carry) {
+  const terminal = document.getElementById('terminal');
+  // Set inputs
+  ha._xor.inp.textContent = `A=${a}`;
+  ha._and.inp.textContent = `B=${b}`;
+  ha._xor.inp.style.color = a ? '#00ff41' : '#555';
+  ha._and.inp.style.color = b ? '#00ff41' : '#555';
+
+  // Animate wires (step 1: input wires light up)
+  await sleep(200);
+  ha._xor.wire1.style.color = '#00ff41';
+  ha._and.wire1.style.color = '#00ff41';
+
+  // Gates pulse
+  await sleep(200);
+  ha._xor.gate.style.boxShadow = '0 0 8px #00ff41';
+  ha._and.gate.style.boxShadow = '0 0 8px #00ff41';
+
+  // Output wires
+  await sleep(200);
+  ha._xor.gate.style.boxShadow = 'none';
+  ha._and.gate.style.boxShadow = 'none';
+  ha._xor.wire2.style.color = '#00ff41';
+  ha._and.wire2.style.color = '#00ff41';
+
+  // Outputs
+  await sleep(200);
+  ha._xor.out.textContent = `SUM=${sum}`;
+  ha._xor.out.style.color = sum ? '#00ff41' : '#555';
+  ha._and.out.textContent = `CARRY=${carry}`;
+  ha._and.out.style.color = carry ? '#00ff41' : '#555';
+
+  if (terminal) terminal.scrollTop = terminal.scrollHeight;
+}
+
+function resetHalfAdder(ha) {
+  ha._xor.inp.textContent = 'A=?'; ha._xor.inp.style.color = '#00ff41';
+  ha._and.inp.textContent = 'B=?'; ha._and.inp.style.color = '#00ff41';
+  [ha._xor, ha._and].forEach(r => {
+    r.wire1.style.color = '#333';
+    r.wire2.style.color = '#333';
+    r.gate.style.boxShadow = 'none';
+    r.out.style.color = '#555';
+  });
+  ha._xor.out.textContent = 'SUM=?';
+  ha._and.out.textContent = 'CARRY=?';
+}
 
 const gatePuzzles = [
   {
@@ -99,6 +319,11 @@ function runLogicPhase() {
     ];
     s.andIdx = 0;
     s.andScenarios = andScenarios;
+    // Create AND gate widget
+    s.andWidget = createGateWidget('AND');
+    const terminal = document.getElementById('terminal');
+    terminal.appendChild(s.andWidget);
+    terminal.scrollTop = terminal.scrollHeight;
     showAndScenario();
 
   } else if (s.phase === 1) {
@@ -117,6 +342,11 @@ function runLogicPhase() {
     ];
     s.orIdx = 0;
     s.orScenarios = orScenarios;
+    // Create OR gate widget
+    s.orWidget = createGateWidget('OR');
+    const terminal = document.getElementById('terminal');
+    terminal.appendChild(s.orWidget);
+    terminal.scrollTop = terminal.scrollHeight;
     showOrScenario();
 
   } else if (s.phase === 2) {
@@ -125,6 +355,12 @@ function runLogicPhase() {
     addLine('NEXUS: "Simplest one. NOT just flips the answer.', 'highlight');
     addLine('        Raining? Stay inside. NOT raining? Go outside."', 'highlight');
     addLine('', '');
+    // Create NOT gate widget
+    s.notWidget = createGateWidget('NOT');
+    const terminalNot = document.getElementById('terminal');
+    terminalNot.appendChild(s.notWidget);
+    terminalNot.scrollTop = terminalNot.scrollHeight;
+
     addLine('  If raining = 1, what is NOT raining?', 'warning');
 
     s.notStep = 0;
@@ -133,6 +369,7 @@ function runLogicPhase() {
       if (s.notStep === 0) {
         if (n === 0) {
           sound.success();
+          if (s.notWidget) updateGateWidget(s.notWidget, 1, 0, 0, true);
           addLine('[CORRECT] NOT 1 = 0. Flip it.', 'success');
           addLine('', '');
           addLine('  If raining = 0, what is NOT raining?', 'warning');
@@ -144,6 +381,7 @@ function runLogicPhase() {
       } else {
         if (n === 1) {
           sound.success();
+          if (s.notWidget) updateGateWidget(s.notWidget, 0, 0, 1, true);
           addLine('[CORRECT] NOT 0 = 1.', 'success');
           addLine('', '');
           addLine('NEXUS: "NOT just flips: 1\u21920, 0\u21921. That\'s the whole rule."', 'highlight');
@@ -257,6 +495,11 @@ function runLogicPhase() {
           addLine('        you have a circuit that adds binary numbers:"', 'highlight');
           addLine('', '');
           addPre('  THE HALF-ADDER CIRCUIT\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n        A \u2500\u2500\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n            \u2502\n        B \u2500\u2500\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  Two inputs (A, B) \u2192 Two outputs (SUM, CARRY)');
+          // Create half-adder visual
+          s.halfAdder = createHalfAdder();
+          const haTerminal = document.getElementById('terminal');
+          haTerminal.appendChild(s.halfAdder);
+          haTerminal.scrollTop = haTerminal.scrollHeight;
           addLine('', '');
           addLine('NEXUS: "Let\'s test it. A=1, B=1:"', 'highlight');
           addLine('  XOR: are 1 and 1 different? \u2192 SUM = ?', 'info');
@@ -279,6 +522,8 @@ function runLogicPhase() {
         const parts = input.trim().split(/[\s,]+/).map(Number);
         if (parts.length === 2 && parts[0] === 0 && parts[1] === 1) {
           sound.success();
+          // Animate half-adder: A=1, B=1 -> SUM=0, CARRY=1
+          if (s.halfAdder) animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
           addLine('[CORRECT] SUM=0, CARRY=1. Binary 10 = decimal 2.', 'success');
           addLine('  1 + 1 = 2. The circuit works!', 'success');
           addLine('', '');
@@ -296,6 +541,11 @@ function runLogicPhase() {
         const parts = input.trim().split(/[\s,]+/).map(Number);
         if (parts.length === 2 && parts[0] === 1 && parts[1] === 0) {
           sound.success();
+          // Animate half-adder: A=1, B=0 -> SUM=1, CARRY=0
+          if (s.halfAdder) {
+            resetHalfAdder(s.halfAdder);
+            animateHalfAdder(s.halfAdder, 1, 0, 1, 0);
+          }
           addLine('[CORRECT] SUM=1, CARRY=0. That\'s just 1. Because 1+0=1.', 'success');
           addLine('', '');
           addPre('  THE HALF-ADDER\n  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n        A \u2500\u2500\u252c\u2500\u2500 [XOR] \u2500\u2500\u25ba SUM\n        B \u2500\u2500\u253c\u2500\u2500 [AND] \u2500\u2500\u25ba CARRY\n\n  This circuit adds any two binary digits.\n  Chain several together and you can add\n  numbers of ANY size.');
@@ -337,6 +587,10 @@ function showAndScenario() {
   const hwLabel = sc.hw ? 'YES' : 'NO';
   const roomLabel = sc.room ? 'YES' : 'NO';
 
+  // Update gate widget inputs (no animation yet)
+  if (s.andWidget) updateGateWidget(s.andWidget, sc.hw, sc.room, null, false);
+  if (s.andWidget) { s.andWidget._output.textContent = '?'; s.andWidget._output.style.background = '#111'; s.andWidget._output.style.borderColor = '#333'; s.andWidget._output.style.boxShadow = 'none'; }
+
   addLine(`  Homework: ${hwLabel} (${sc.hw})   Room clean: ${roomLabel} (${sc.room})`, 'info');
   addLine('  Can you go outside? (1=yes, 0=no)', 'warning');
 
@@ -344,6 +598,8 @@ function showAndScenario() {
     const n = parseInt(input.trim());
     if (n === sc.answer) {
       sound.success();
+      // Animate the gate widget on correct answer
+      if (s.andWidget) updateGateWidget(s.andWidget, sc.hw, sc.room, sc.answer, true);
       addLine(`  [CORRECT] ${sc.hw} AND ${sc.room} = ${sc.answer}`, 'success');
       s.andIdx++;
       if (s.andIdx >= s.andScenarios.length) {
@@ -375,6 +631,10 @@ function showOrScenario() {
   const vegLabel = sc.veg ? 'YES' : 'NO';
   const fruitLabel = sc.fruit ? 'YES' : 'NO';
 
+  // Update gate widget inputs
+  if (s.orWidget) updateGateWidget(s.orWidget, sc.veg, sc.fruit, null, false);
+  if (s.orWidget) { s.orWidget._output.textContent = '?'; s.orWidget._output.style.background = '#111'; s.orWidget._output.style.borderColor = '#333'; s.orWidget._output.style.boxShadow = 'none'; }
+
   addLine(`  Veggies: ${vegLabel} (${sc.veg})   Fruit: ${fruitLabel} (${sc.fruit})`, 'info');
   addLine('  Dessert? (1=yes, 0=no)', 'warning');
 
@@ -382,6 +642,8 @@ function showOrScenario() {
     const n = parseInt(input.trim());
     if (n === sc.answer) {
       sound.success();
+      // Animate the gate widget on correct answer
+      if (s.orWidget) updateGateWidget(s.orWidget, sc.veg, sc.fruit, sc.answer, true);
       addLine(`  [CORRECT] ${sc.veg} OR ${sc.fruit} = ${sc.answer}`, 'success');
       s.orIdx++;
       if (s.orIdx >= s.orScenarios.length) {

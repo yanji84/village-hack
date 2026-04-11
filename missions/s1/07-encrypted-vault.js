@@ -8,6 +8,42 @@ import {
 
 import { caesarEncrypt } from '../helpers.js';
 
+function createPipeline(steps) {
+  const container = document.createElement('div');
+  container.style.cssText = 'display:flex;align-items:center;gap:0;margin:12px 0;padding:8px;border:1px solid #1a2a1a;border-radius:4px;background:#050505;';
+  steps.forEach((step, i) => {
+    const box = document.createElement('div');
+    box.className = 'pipe-box';
+    box.textContent = step.label;
+    box.style.cssText = 'border:1px solid #333;padding:4px 10px;border-radius:3px;font-size:11px;color:#333;font-family:"Fira Mono",monospace;transition:all 0.4s ease;white-space:nowrap;';
+    container.appendChild(box);
+    if (i < steps.length - 1) {
+      const arrow = document.createElement('div');
+      arrow.className = 'pipe-arrow';
+      arrow.textContent = '──→';
+      arrow.style.cssText = 'color:#333;margin:0 4px;font-size:12px;font-family:"Fira Mono",monospace;transition:all 0.4s ease;white-space:nowrap;';
+      container.appendChild(arrow);
+    }
+  });
+  return container;
+}
+
+function updatePipeline(pipelineEl, stepIndex, answer) {
+  const boxes = pipelineEl.querySelectorAll('.pipe-box');
+  const arrows = pipelineEl.querySelectorAll('.pipe-arrow');
+  const box = boxes[stepIndex];
+  if (box) {
+    box.style.borderColor = '#00ff41';
+    box.style.color = '#00ff41';
+    box.style.boxShadow = '0 0 6px rgba(0,255,65,0.3)';
+  }
+  if (stepIndex > 0 && arrows[stepIndex - 1]) {
+    const arrow = arrows[stepIndex - 1];
+    arrow.style.color = '#00ff41';
+    arrow.textContent = `─${answer}─→`;
+  }
+}
+
 export const mission = {
   id: 6,
   num: '07',
@@ -37,6 +73,16 @@ export const mission = {
       { text: '', cls: '' },
     ]);
 
+    const pipelineEl = createPipeline([
+      { label: 'BINARY' },
+      { label: 'CIPHER' },
+      { label: 'LOGIC' },
+    ]);
+    const terminal = document.getElementById('terminal');
+    terminal.appendChild(pipelineEl);
+    terminal.scrollTop = terminal.scrollHeight;
+    state.missionState.pipelineEl = pipelineEl;
+
     runVaultPhase();
   },
 };
@@ -57,6 +103,7 @@ function runVaultPhase() {
       // 0110 = 6
       if (input.trim() === '6') {
         sound.success();
+        updatePipeline(s.pipelineEl, 0, '6');
         addLine('[LAYER 1 CRACKED] 0110 = 6.', 'success');
         addLine('NEXUS: "6. Remember that number \u2014 you\u2019ll need it."', 'highlight');
         s.shiftKey = 6;
@@ -95,6 +142,7 @@ function runVaultPhase() {
     setCurrentInputHandler((input) => {
       if (input.toUpperCase().trim() === plainWord) {
         sound.success();
+        updatePipeline(s.pipelineEl, 1, 'OPEN');
         addLine(`[LAYER 2 CRACKED] "${plainWord}".`, 'success');
         addLine('NEXUS: "OPEN. That\u2019s the command for the last lock."', 'highlight');
         s.phase = 2;
@@ -129,6 +177,7 @@ function runVaultPhase() {
       // NOT 0 = 1, 1 AND 1 = 1
       if (input.trim() === '1') {
         sound.success();
+        updatePipeline(s.pipelineEl, 2, '1');
         addLine('[LAYER 3 CRACKED] NOT 0 = 1. Then 1 AND 1 = 1. C = 1.', 'success');
         addLine('', '');
         addLine('[VAULT OPEN]', 'success big');

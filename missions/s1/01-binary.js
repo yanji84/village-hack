@@ -4,6 +4,7 @@ import {
   addLine, addPre, typeLines,
   setCurrentInputHandler,
   completeMission,
+  sleep,
 } from '../../engine.js';
 
 import { renderPixelGrid } from '../helpers.js';
@@ -46,7 +47,124 @@ export const mission = {
   },
 };
 
-function runBinaryPhase() {
+async function animateBinaryBreakdown() {
+  const termEl = document.getElementById('terminal');
+
+  const columns = [
+    { label: 'eights', multiplier: '\u00d78', digit: 1, value: 8 },
+    { label: 'fours',  multiplier: '\u00d74', digit: 0, value: 4 },
+    { label: 'twos',   multiplier: '\u00d72', digit: 1, value: 2 },
+    { label: 'ones',   multiplier: '\u00d71', digit: 0, value: 1 },
+  ];
+
+  // Build the grid container
+  const grid = document.createElement('div');
+  grid.className = 'binary-breakdown';
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,70px);gap:4px;padding:14px;margin:12px 0;background:#0d1117;border:1px solid #005a15;border-radius:4px;font-family:monospace;text-align:center;';
+
+  // Header row
+  const headerCells = columns.map(c => {
+    const el = document.createElement('div');
+    el.className = 'col';
+    el.textContent = c.label;
+    el.style.cssText = 'padding:6px 2px;color:#00ff41;font-size:11px;border:1px solid #005a15;border-radius:3px;transition:border-color 0.3s;';
+    grid.appendChild(el);
+    return el;
+  });
+
+  // Multiplier row
+  const multCells = columns.map(c => {
+    const el = document.createElement('div');
+    el.className = 'col';
+    el.textContent = c.multiplier;
+    el.style.cssText = 'padding:4px 2px;color:#888;font-size:12px;border:1px solid #005a15;border-radius:3px;transition:border-color 0.3s;';
+    grid.appendChild(el);
+    return el;
+  });
+
+  // Digit row
+  const digitCells = columns.map(c => {
+    const el = document.createElement('div');
+    el.className = 'col digit';
+    el.textContent = String(c.digit);
+    el.style.cssText = `padding:8px 2px;font-size:20px;font-weight:bold;color:${c.digit ? '#00ff41' : '#333'};border:1px solid #005a15;border-radius:3px;transition:all 0.3s;`;
+    grid.appendChild(el);
+    return el;
+  });
+
+  // Result row (initially empty dashes)
+  const resultCells = columns.map(() => {
+    const el = document.createElement('div');
+    el.className = 'col result';
+    el.textContent = '-';
+    el.style.cssText = 'padding:8px 2px;font-size:16px;font-weight:bold;color:#333;border:1px solid #005a15;border-radius:3px;transition:all 0.3s;';
+    grid.appendChild(el);
+    return el;
+  });
+
+  // Total row
+  const totalEl = document.createElement('div');
+  totalEl.className = 'total';
+  totalEl.style.cssText = 'grid-column:1/-1;padding:10px;font-size:18px;color:#555;border:1px solid #005a15;border-radius:3px;transition:all 0.4s;';
+  totalEl.textContent = 'Total: ...';
+  grid.appendChild(totalEl);
+
+  termEl.appendChild(grid);
+  termEl.scrollTop = termEl.scrollHeight;
+
+  // Animate column by column
+  let runningTotal = 0;
+  await sleep(300);
+
+  for (let i = 0; i < columns.length; i++) {
+    const col = columns[i];
+
+    // Highlight the column
+    headerCells[i].style.borderColor = '#00ff41';
+    multCells[i].style.borderColor = '#00ff41';
+    digitCells[i].style.borderColor = '#00ff41';
+    resultCells[i].style.borderColor = '#00ff41';
+
+    await sleep(200);
+
+    if (col.digit === 1) {
+      // Show the value, update total
+      runningTotal += col.value;
+      resultCells[i].textContent = String(col.value);
+      resultCells[i].style.color = '#00ff41';
+      resultCells[i].style.textShadow = '0 0 6px #00ff41';
+      totalEl.textContent = 'Total: ' + runningTotal;
+      totalEl.style.color = '#00ff41';
+    } else {
+      // Show "skip" in red
+      resultCells[i].textContent = 'skip';
+      resultCells[i].style.color = '#ff3333';
+      resultCells[i].style.fontSize = '10px';
+      digitCells[i].style.color = '#1a1a1a';
+    }
+
+    termEl.scrollTop = termEl.scrollHeight;
+    await sleep(600);
+
+    // Dim the column after processing (except result stays)
+    headerCells[i].style.borderColor = '#005a15';
+    multCells[i].style.borderColor = '#005a15';
+    digitCells[i].style.borderColor = '#005a15';
+    resultCells[i].style.borderColor = '#005a15';
+  }
+
+  // Final total pulse
+  totalEl.textContent = 'Total: ' + runningTotal;
+  totalEl.style.color = '#00ff41';
+  totalEl.style.fontSize = '20px';
+  totalEl.style.fontWeight = 'bold';
+  totalEl.style.textShadow = '0 0 8px #00ff41, 0 0 16px #00aa2a';
+  totalEl.style.borderColor = '#00ff41';
+  termEl.scrollTop = termEl.scrollHeight;
+  await sleep(600);
+}
+
+async function runBinaryPhase() {
   const s = state.missionState;
 
   if (s.phase === 0) {
@@ -62,8 +180,11 @@ function runBinaryPhase() {
     addLine('NEXUS: "Let me walk you through one."', 'highlight');
     addLine('', '');
 
-    addPre('          eights  fours  twos  ones\n            \u00d78     \u00d74    \u00d72    \u00d71\n\n            1      0      1     0\n\n   1 means COUNT that place. 0 means SKIP it.\n\n   eights: 1 \u2192 count it  \u2192  8\n   fours:  0 \u2192 skip      \u2192  0\n   twos:   1 \u2192 count it  \u2192  2\n   ones:   0 \u2192 skip      \u2192  0\n                            \u2500\u2500\u2500\n                 Total:     10');
+    await animateBinaryBreakdown();
 
+    addLine('', '');
+    addLine('NEXUS: "Where you see a 1, grab that value. Where you see a', 'highlight');
+    addLine('        0, skip it. Add up what you grabbed."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "Your turn. Same idea. What number is 0110?"', 'highlight');
     addLine('', '');

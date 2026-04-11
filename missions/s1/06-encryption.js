@@ -1,12 +1,134 @@
 // missions/s1/06-encryption.js
 import {
   state, sound,
-  addLine, typeLines,
+  $, addLine, typeLines,
   setPhaseProgress, setCurrentInputHandler,
   completeMission,
 } from '../../engine.js';
 
 import { caesarEncrypt } from '../helpers.js';
+
+// --- Dual Alphabet Strip helpers ---
+
+function createCipherStrip(shift) {
+  const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  // Cipher alphabet: each plain letter was shifted forward by `shift` to encrypt.
+  // So the cipher row shows the shifted alphabet.
+  const cipherAlpha = ALPHA.split('').map((_, i) => ALPHA[(i + shift) % 26]);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'cipher-strip';
+  wrap.style.cssText = 'margin:12px 0; font-family:"Fira Mono",monospace; font-size:13px;';
+
+  const cellStyle = 'width:24px;height:28px;display:flex;align-items:center;justify-content:center;'
+    + 'border:1px solid #1a2a1a;border-radius:2px;color:#005a15;transition:all 0.2s;flex-shrink:0;';
+
+  // Encrypted label
+  const labelEnc = document.createElement('div');
+  labelEnc.style.cssText = 'color:#666;font-size:10px;margin-bottom:2px;';
+  labelEnc.textContent = 'ENCRYPTED:';
+  wrap.appendChild(labelEnc);
+
+  // Cipher row (top)
+  const cipherRow = document.createElement('div');
+  cipherRow.className = 'cipher-row';
+  cipherRow.style.cssText = 'display:flex;gap:2px;overflow-x:auto;';
+  for (let i = 0; i < 26; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cipher-cell cipher-enc';
+    cell.dataset.letter = cipherAlpha[i];
+    cell.dataset.idx = i;
+    cell.style.cssText = cellStyle;
+    cell.textContent = cipherAlpha[i];
+    cipherRow.appendChild(cell);
+  }
+  wrap.appendChild(cipherRow);
+
+  // Plain label
+  const labelPlain = document.createElement('div');
+  labelPlain.style.cssText = 'color:#666;font-size:10px;margin:4px 0 2px;';
+  labelPlain.textContent = 'DECRYPTS TO:';
+  wrap.appendChild(labelPlain);
+
+  // Plain row (bottom)
+  const plainRow = document.createElement('div');
+  plainRow.className = 'plain-row';
+  plainRow.style.cssText = 'display:flex;gap:2px;overflow-x:auto;';
+  for (let i = 0; i < 26; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cipher-cell cipher-plain';
+    cell.dataset.letter = ALPHA[i];
+    cell.dataset.idx = i;
+    cell.style.cssText = cellStyle;
+    cell.textContent = ALPHA[i];
+    plainRow.appendChild(cell);
+  }
+  wrap.appendChild(plainRow);
+
+  // Hint line
+  const hint = document.createElement('div');
+  hint.style.cssText = 'color:#666;font-size:10px;margin-top:4px;';
+  hint.textContent = '\u2191 Find the encrypted letter on top \u2192 read the letter below it';
+  wrap.appendChild(hint);
+
+  return wrap;
+}
+
+function highlightCipherLetter(strip, encryptedLetter) {
+  // Clear previous highlights
+  strip.querySelectorAll('.cipher-cell').forEach(cell => {
+    cell.style.background = '';
+    cell.style.color = '#005a15';
+    cell.style.borderColor = '#1a2a1a';
+    cell.style.fontWeight = '';
+  });
+
+  // Remove old arrow if any
+  const oldArrow = strip.querySelector('.cipher-arrow');
+  if (oldArrow) oldArrow.remove();
+
+  if (!encryptedLetter) return;
+
+  const letter = encryptedLetter.toUpperCase();
+  if (letter < 'A' || letter > 'Z') return;
+
+  // Find and highlight the encrypted letter on the top row
+  const encCell = strip.querySelector(`.cipher-enc[data-letter="${letter}"]`);
+  if (encCell) {
+    encCell.style.background = 'rgba(255,136,0,0.2)';
+    encCell.style.color = '#ff8800';
+    encCell.style.borderColor = '#ff8800';
+    encCell.style.fontWeight = 'bold';
+
+    // The plain cell at the same index is the decrypted letter
+    const idx = encCell.dataset.idx;
+    const plainCell = strip.querySelector(`.cipher-plain[data-idx="${idx}"]`);
+    if (plainCell) {
+      plainCell.style.background = 'rgba(0,255,65,0.2)';
+      plainCell.style.color = '#00ff41';
+      plainCell.style.borderColor = '#00ff41';
+      plainCell.style.fontWeight = 'bold';
+
+      // Add a connecting arrow between the rows
+      const arrow = document.createElement('div');
+      arrow.className = 'cipher-arrow';
+      arrow.style.cssText = 'display:flex;gap:2px;pointer-events:none;';
+      // Build spacer cells so the arrow aligns with the column
+      for (let i = 0; i < 26; i++) {
+        const spacer = document.createElement('div');
+        spacer.style.cssText = 'width:24px;height:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;';
+        if (String(i) === idx) {
+          spacer.textContent = '\u2502';
+          spacer.style.color = '#00ff41';
+        }
+        arrow.appendChild(spacer);
+      }
+      // Insert the arrow connector right before the plain row
+      const plainRow = strip.querySelector('.plain-row');
+      strip.insertBefore(arrow, plainRow);
+    }
+  }
+}
 
 const cipherPuzzles = [
   {
@@ -86,7 +208,13 @@ function showCipherPuzzle() {
   addLine(`Encrypted: <span class="highlight">${encrypted}</span>`);
   addLine(`Shift: <span class="highlight">${p.shift}</span>`);
   addLine('');
-  addLine('ALPHABET: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z', 'info');
+
+  // Create and append the dual cipher strip
+  const strip = createCipherStrip(p.shift);
+  const term = $('terminal');
+  term.appendChild(strip);
+  term.scrollTop = term.scrollHeight;
+
   addLine('');
   addLine('Type the decoded message:', 'warning');
 
@@ -120,6 +248,12 @@ function showCipherPuzzle() {
       addLine('[WRONG] Check the direction you\'re moving through the alphabet.', 'error');
       addLine('NEXUS: "The cipher walked the letters FORWARD. You need to', 'highlight');
       addLine('        walk them the other way. Same number of steps."', 'highlight');
+      // Highlight the first encrypted letter on the strip as a hint
+      const firstEncLetter = encrypted.replace(/\s/g, '').charAt(0);
+      if (firstEncLetter) {
+        highlightCipherLetter(strip, firstEncLetter);
+        addLine(`NEXUS: "Look at the strip \u2014 find <span class="highlight">${firstEncLetter}</span> on top, read the letter below it."`, 'highlight');
+      }
     }
   });
 }

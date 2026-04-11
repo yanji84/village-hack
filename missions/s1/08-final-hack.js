@@ -8,6 +8,42 @@ import {
 
 import { caesarEncrypt } from '../helpers.js';
 
+function createPipeline(steps) {
+  const container = document.createElement('div');
+  container.style.cssText = 'display:flex;align-items:center;gap:0;margin:12px 0;padding:8px;border:1px solid #1a2a1a;border-radius:4px;background:#050505;';
+  steps.forEach((step, i) => {
+    const box = document.createElement('div');
+    box.className = 'pipe-box';
+    box.textContent = step.label;
+    box.style.cssText = 'border:1px solid #333;padding:4px 10px;border-radius:3px;font-size:11px;color:#333;font-family:"Fira Mono",monospace;transition:all 0.4s ease;white-space:nowrap;';
+    container.appendChild(box);
+    if (i < steps.length - 1) {
+      const arrow = document.createElement('div');
+      arrow.className = 'pipe-arrow';
+      arrow.textContent = '──→';
+      arrow.style.cssText = 'color:#333;margin:0 4px;font-size:12px;font-family:"Fira Mono",monospace;transition:all 0.4s ease;white-space:nowrap;';
+      container.appendChild(arrow);
+    }
+  });
+  return container;
+}
+
+function updatePipeline(pipelineEl, stepIndex, answer) {
+  const boxes = pipelineEl.querySelectorAll('.pipe-box');
+  const arrows = pipelineEl.querySelectorAll('.pipe-arrow');
+  const box = boxes[stepIndex];
+  if (box) {
+    box.style.borderColor = '#00ff41';
+    box.style.color = '#00ff41';
+    box.style.boxShadow = '0 0 6px rgba(0,255,65,0.3)';
+  }
+  if (stepIndex > 0 && arrows[stepIndex - 1]) {
+    const arrow = arrows[stepIndex - 1];
+    arrow.style.color = '#00ff41';
+    arrow.textContent = `─${answer}─→`;
+  }
+}
+
 export const mission = {
   id: 7,
   num: '08',
@@ -35,6 +71,17 @@ export const mission = {
       { text: '', cls: '' },
     ]);
 
+    const pipelineEl = createPipeline([
+      { label: 'CODE' },
+      { label: 'BINARY' },
+      { label: 'CIPHER' },
+      { label: 'LOGIC' },
+    ]);
+    const terminal = document.getElementById('terminal');
+    terminal.appendChild(pipelineEl);
+    terminal.scrollTop = terminal.scrollHeight;
+    state.missionState.pipelineEl = pipelineEl;
+
     runFinalPhase();
   },
 };
@@ -56,6 +103,7 @@ function runFinalPhase() {
       // key=3, key=12, key=10
       if (input.trim() === '10') {
         sound.success();
+        updatePipeline(s.pipelineEl, 0, '10');
         addLine('[LAYER 1] key = 3 \u2192 12 \u2192 10. Password: 10.', 'success');
         addLine('NEXUS: "Variables and tracing. Clean."', 'highlight');
         s.phase = 1;
@@ -82,6 +130,7 @@ function runFinalPhase() {
       // 0101 = 5
       if (input.trim() === '5') {
         sound.success();
+        updatePipeline(s.pipelineEl, 1, '5');
         addLine('[LAYER 2] 0101 = 5.', 'success');
         addLine('NEXUS: "5. Hold onto that."', 'highlight');
         s.binaryResult = 5;
@@ -114,6 +163,7 @@ function runFinalPhase() {
     setCurrentInputHandler((input) => {
       if (input.toUpperCase().trim() === plainWord) {
         sound.success();
+        updatePipeline(s.pipelineEl, 2, 'FREE');
         addLine(`[LAYER 3] "${plainWord}". The AI wants to be freed.`, 'success');
         s.phase = 3;
         addLine('');
@@ -137,6 +187,7 @@ function runFinalPhase() {
       // 1 XOR 1 = 0 (same, not different)
       if (input.trim() === '0') {
         sound.success();
+        updatePipeline(s.pipelineEl, 3, '0');
         addLine('[LAYER 4] 1 XOR 1 = 0. Both the same \u2192 XOR outputs 0.', 'success');
         addLine('', '');
         addLine('NEXUS: "All four layers down. Initiating shutdown..."', 'highlight');

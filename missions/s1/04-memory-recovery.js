@@ -4,7 +4,60 @@ import {
   addLine, addPre, typeLines,
   setCurrentInputHandler,
   completeMission,
+  sleep,
 } from '../../engine.js';
+
+// ── Variable tracker helpers (local to this mission) ──
+
+function createVarBox(name, value) {
+  const box = document.createElement('div');
+  box.style.cssText = 'display:inline-flex; flex-direction:column; align-items:center; border:1px solid #00aa2a; border-radius:4px; padding:8px 16px; min-width:60px; background:#0d1117;';
+
+  const nameEl = document.createElement('div');
+  nameEl.style.cssText = 'font-size:11px; color:#00aa2a; text-transform:uppercase;';
+  nameEl.textContent = name;
+
+  const valEl = document.createElement('div');
+  valEl.style.cssText = 'font-size:20px; color:#00ff41; font-weight:bold; transition: all 0.3s;';
+  valEl.textContent = value ?? '?';
+
+  box.appendChild(nameEl);
+  box.appendChild(valEl);
+  box._valEl = valEl;
+  return box;
+}
+
+function updateVarBox(box, newValue) {
+  return new Promise(resolve => {
+    const valEl = box._valEl;
+    valEl.style.opacity = '0';
+    valEl.style.transform = 'translateY(-8px)';
+    setTimeout(() => {
+      valEl.textContent = String(newValue);
+      valEl.style.opacity = '1';
+      valEl.style.transform = 'translateY(0)';
+      setTimeout(resolve, 300);
+    }, 300);
+  });
+}
+
+function makeTracker() {
+  const tracker = document.createElement('div');
+  tracker.style.cssText = 'display:flex; gap:16px; margin:12px 0; padding:12px; border:1px solid #1a2a1a; border-radius:4px; background:#050505;';
+  return tracker;
+}
+
+function makeAnnotation(text) {
+  const el = document.createElement('div');
+  el.style.cssText = 'color:#00aa2a; font-size:12px; margin-top:6px; font-family:"Fira Mono",monospace; opacity:0; transition: opacity 0.3s;';
+  el.textContent = text;
+  return el;
+}
+
+function scrollTerminal() {
+  const t = document.getElementById('terminal');
+  if (t) t.scrollTop = t.scrollHeight;
+}
 
 export const mission = {
   id: 3,
@@ -58,11 +111,45 @@ function runRecoveryPhase() {
       if (input.trim() === '8') {
         sound.success();
         addLine('[CORRECT] x=0011=3, y=0101=5, z=3+5=8.', 'success');
-        addLine('NEXUS: "Binary to decimal, then variable tracing. Two', 'highlight');
-        addLine('        skills chained together."', 'highlight');
-        s.phase = 1;
-        addLine('');
-        setTimeout(runRecoveryPhase, 800);
+
+        // ── Animated variable tracker for Level 1 ──
+        (async () => {
+          const terminal = document.getElementById('terminal');
+          const tracker = makeTracker();
+          terminal.appendChild(tracker);
+          scrollTerminal();
+
+          // Step 1: x appears
+          const boxX = createVarBox('x', 3);
+          tracker.appendChild(boxX);
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 2: y appears
+          const boxY = createVarBox('y', 5);
+          tracker.appendChild(boxY);
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 3: z appears
+          const boxZ = createVarBox('z', 8);
+          tracker.appendChild(boxZ);
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 4: annotation
+          const ann = makeAnnotation('3 + 5 = 8');
+          tracker.parentNode.insertBefore(ann, tracker.nextSibling);
+          requestAnimationFrame(() => { ann.style.opacity = '1'; });
+          scrollTerminal();
+          await sleep(600);
+
+          addLine('NEXUS: "Binary to decimal, then variable tracing. Two', 'highlight');
+          addLine('        skills chained together."', 'highlight');
+          s.phase = 1;
+          addLine('');
+          setTimeout(runRecoveryPhase, 800);
+        })();
       } else {
         sound.denied();
         s.wrongCount = (s.wrongCount || 0) + 1;
@@ -94,16 +181,54 @@ function runRecoveryPhase() {
       if (parts.length === 2 && parts[0] === 6 && parts[1] === 9) {
         sound.success();
         addLine('[CORRECT] a=6, b=9.', 'success');
-        addLine('NEXUS: "Let me trace it:', 'highlight');
-        addLine('  a=0100=4, b=0011=3', 'info');
-        addLine('  Line 1: c = 4+3 = 7', 'info');
-        addLine('  Line 2: a = 7-1 = 6  (a changed!)', 'info');
-        addLine('  Line 3: b = 6+3 = 9  (using NEW a)"', 'info');
-        addLine('NEXUS: "Binary decoding, variable assignment, overwriting,', 'highlight');
-        addLine('        and the copy rule \u2014 all in one problem."', 'highlight');
-        s.phase = 2;
-        addLine('');
-        setTimeout(runRecoveryPhase, 800);
+
+        // ── Animated variable tracker for Level 2 ──
+        (async () => {
+          const terminal = document.getElementById('terminal');
+          const tracker = makeTracker();
+          terminal.appendChild(tracker);
+          scrollTerminal();
+
+          // Step 1: a=4, b=3 (decoded from binary)
+          const boxA = createVarBox('a', 4);
+          const boxB = createVarBox('b', 3);
+          tracker.appendChild(boxA);
+          tracker.appendChild(boxB);
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 2: c appears = 7
+          const boxC = createVarBox('c', 7);
+          tracker.appendChild(boxC);
+          const ann1 = makeAnnotation('c = a + b = 4 + 3 = 7');
+          tracker.parentNode.insertBefore(ann1, tracker.nextSibling);
+          requestAnimationFrame(() => { ann1.style.opacity = '1'; });
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 3: a changes from 4 to 6
+          await updateVarBox(boxA, 6);
+          ann1.textContent = 'a = c - 1 = 7 - 1 = 6  (a changed!)';
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 4: b changes from 3 to 9
+          await updateVarBox(boxB, 9);
+          ann1.textContent = 'b = new a + old b = 6 + 3 = 9';
+          scrollTerminal();
+          await sleep(600);
+
+          addLine('NEXUS: "Let me trace it:', 'highlight');
+          addLine('  a=0100=4, b=0011=3', 'info');
+          addLine('  Line 1: c = 4+3 = 7', 'info');
+          addLine('  Line 2: a = 7-1 = 6  (a changed!)', 'info');
+          addLine('  Line 3: b = 6+3 = 9  (using NEW a)"', 'info');
+          addLine('NEXUS: "Binary decoding, variable assignment, overwriting,', 'highlight');
+          addLine('        and the copy rule \u2014 all in one problem."', 'highlight');
+          s.phase = 2;
+          addLine('');
+          setTimeout(runRecoveryPhase, 800);
+        })();
       } else {
         sound.denied();
         s.wrongCount++;
@@ -145,30 +270,63 @@ function runRecoveryPhase() {
         sound.success();
         addLine('[CORRECT] b = 6.', 'success');
         addLine('', '');
-        addLine('NEXUS: "Here\'s the reverse trace:', 'highlight');
-        addLine('  a = 0110 = 6', 'info');
-        addLine('  c = 11000 = 24', 'info');
-        addLine('  Reverse line 2: c = c * 2, so before that, c = 24 / 2 = 12', 'info');
-        addLine('  Reverse line 1: c = a + b, so 12 = 6 + b, so b = 6', 'info');
-        addLine('', '');
-        addLine('NEXUS: "You just did reverse engineering. You took an', 'highlight');
-        addLine('        output, a program, and worked BACKWARD to find', 'highlight');
-        addLine('        a missing input. That\'s real forensic analysis."', 'highlight');
-        addLine('', '');
-        addLine('NEXUS: "Binary, variables, tracing, and now reverse', 'highlight');
-        addLine('        engineering. Your toolkit is growing,', 'highlight');
-        addLine(`        ${state.hackerName || 'kid'}."`, 'highlight');
-        addLine('', '');
-        addLine('NEXUS: "Wait \u2014 one of the recovered fragments had a', 'highlight');
-        addLine('        name. Partial, corrupted. Three letters: V-I-C.', 'highlight');
-        addLine('        Someone\'s name is in the AI\'s memory. Who is', 'highlight');
-        addLine('        VIC?"', 'highlight');
-        addLine('', '');
-        addLine('[ Type NEXT to continue ]', 'warning');
-        setCurrentInputHandler(() => {
-          setCurrentInputHandler(null);
-          completeMission(3);
-        });
+
+        // ── Animated backward trace for Level 3 ──
+        (async () => {
+          const terminal = document.getElementById('terminal');
+          const tracker = makeTracker();
+          terminal.appendChild(tracker);
+          scrollTerminal();
+
+          // Step 1: Show starting state: a=6, b=?, c=24
+          const boxA = createVarBox('a', 6);
+          const boxB = createVarBox('b', '?');
+          const boxC = createVarBox('c', 24);
+          tracker.appendChild(boxA);
+          tracker.appendChild(boxB);
+          tracker.appendChild(boxC);
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 2: c was 24, before x2 it was 12
+          const ann = makeAnnotation('c was 24, before \u00d72 it was 12');
+          tracker.parentNode.insertBefore(ann, tracker.nextSibling);
+          requestAnimationFrame(() => { ann.style.opacity = '1'; });
+          await updateVarBox(boxC, 12);
+          scrollTerminal();
+          await sleep(800);
+
+          // Step 3: 12 = 6 + b, so b = 6
+          ann.textContent = '12 = 6 + b, so b = 6';
+          await updateVarBox(boxB, 6);
+          scrollTerminal();
+          await sleep(600);
+
+          addLine('NEXUS: "Here\'s the reverse trace:', 'highlight');
+          addLine('  a = 0110 = 6', 'info');
+          addLine('  c = 11000 = 24', 'info');
+          addLine('  Reverse line 2: c = c * 2, so before that, c = 24 / 2 = 12', 'info');
+          addLine('  Reverse line 1: c = a + b, so 12 = 6 + b, so b = 6', 'info');
+          addLine('', '');
+          addLine('NEXUS: "You just did reverse engineering. You took an', 'highlight');
+          addLine('        output, a program, and worked BACKWARD to find', 'highlight');
+          addLine('        a missing input. That\'s real forensic analysis."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Binary, variables, tracing, and now reverse', 'highlight');
+          addLine('        engineering. Your toolkit is growing,', 'highlight');
+          addLine(`        ${state.hackerName || 'kid'}."`, 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Wait \u2014 one of the recovered fragments had a', 'highlight');
+          addLine('        name. Partial, corrupted. Three letters: V-I-C.', 'highlight');
+          addLine('        Someone\'s name is in the AI\'s memory. Who is', 'highlight');
+          addLine('        VIC?"', 'highlight');
+          addLine('', '');
+          addLine('[ Type NEXT to continue ]', 'warning');
+          setCurrentInputHandler(() => {
+            setCurrentInputHandler(null);
+            completeMission(3);
+          });
+        })();
       } else {
         sound.denied();
         s.wrongCount++;
