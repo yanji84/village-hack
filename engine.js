@@ -822,7 +822,7 @@ function startMission(id) {
     1: 'Type your program...',
     2: 'Type your answer...',
     3: 'Type your answer...',
-    4: 'Type gate inputs (e.g. 1 0)...',
+    4: 'Type your answer...',
     5: 'Type the decoded message...',
     6: 'Type the line number with the bug...',
     7: 'Type a SQL query...',
