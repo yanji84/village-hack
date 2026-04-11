@@ -63,10 +63,13 @@ export const mission = {
     await typeLines([
       { text: '[TRAFFIC CONTROL OFFLINE] Firewall blocking access.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Computers don\'t just store data and follow steps.', cls: 'highlight' },
-      { text: '        They make DECISIONS. And every decision a computer', cls: 'highlight' },
-      { text: '        makes comes down to three simple rules. You already', cls: 'highlight' },
-      { text: '        know them \u2014 you just don\'t know their names yet."', cls: 'highlight' },
+      { text: 'NEXUS: "The AI\'s decision system is exposed. If someone', cls: 'highlight' },
+      { text: '        sabotaged it, the gates will show us HOW. But', cls: 'highlight' },
+      { text: '        first you need to learn how computers decide."', cls: 'highlight' },
+      { text: '', cls: '' },
+      { text: 'NEXUS: "Every decision a computer makes comes down to', cls: 'highlight' },
+      { text: '        three simple rules. You already know them \u2014', cls: 'highlight' },
+      { text: '        you just don\'t know their names yet."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -307,6 +310,12 @@ function runLogicPhase() {
           addLine('        Enough to build a calculator. Enough to build', 'highlight');
           addLine('        every computer on Earth. Not metaphorically.', 'highlight');
           addLine(`        Literally. And you, ${state.hackerName || 'kid'}, just proved it."`, 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Look at this \u2014 the AI\'s math circuits are FINE.', 'highlight');
+          addLine('        Its adder works perfectly. But its DECISION gates', 'highlight');
+          addLine('        were rewired. Someone changed the AI\'s logic from', 'highlight');
+          addLine('        the outside. This wasn\'t a malfunction. It was', 'highlight');
+          addLine('        sabotage."', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
           setCurrentInputHandler(() => {

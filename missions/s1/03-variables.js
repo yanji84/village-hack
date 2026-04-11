@@ -24,7 +24,11 @@ export const mission = {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[SYSTEM] Accessing AI memory system.', cls: 'system' },
+      { text: '[SYSTEM] Partial access to AI memory granted.', cls: 'system' },
+      { text: '', cls: '' },
+      { text: 'NEXUS: "I got partial access to the AI\'s memory. But to', cls: 'highlight' },
+      { text: '        read it, you need to understand how computers', cls: 'highlight' },
+      { text: '        remember things. They use VARIABLES."', cls: 'highlight' },
       { text: '', cls: '' },
       { text: 'NEXUS: "You keep score in games, right? You start at 0...', cls: 'highlight' },
       { text: '        score a point... now it\'s 1... another... 2. The', cls: 'highlight' },
@@ -195,6 +199,11 @@ function runVariablesPhase() {
         addLine('        INSTRUCTIONS (programs) \u2014 how they do things.', 'highlight');
         addLine('        MEMORY (variables) \u2014 how they remember things.', 'highlight');
         addLine('        Everything in CS is built from these three."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "One more thing. I found something in the AI\'s', 'highlight');
+        addLine('        memory. A counter variable, incrementing since', 'highlight');
+        addLine('        the attack started. It\'s counting something.', 'highlight');
+        addLine('        I don\'t know what yet."', 'highlight');
         addLine('', '');
         addLine('[ Type NEXT to continue ]', 'warning');
         setCurrentInputHandler(() => {

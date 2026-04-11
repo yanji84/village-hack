@@ -24,16 +24,16 @@ export const mission = {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[SYSTEM] Encrypted vault detected in AI subsystem.', cls: 'system' },
+      { text: '[SYSTEM] Encrypted vault detected \u2014 left by the saboteur.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "This vault has three layers of security. Each one', cls: 'highlight' },
-      { text: '        uses a different trick you\u2019ve already learned. But', cls: 'highlight' },
-      { text: '        here\u2019s the catch \u2014 the answer from each layer is', cls: 'highlight' },
-      { text: '        the KEY to the next one."', cls: 'highlight' },
+      { text: 'NEXUS: "Victor left a vault behind. If the backdoor code', cls: 'highlight' },
+      { text: '        is anywhere, it\u2019s in here. Three layers of', cls: 'highlight' },
+      { text: '        security. Each one uses a different trick you\u2019ve', cls: 'highlight' },
+      { text: '        already learned."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "This is called a CHAINED ATTACK. Real hackers do', cls: 'highlight' },
-      { text: '        this all the time \u2014 crack one thing, use it to', cls: 'highlight' },
-      { text: '        crack the next. Let\u2019s go layer by layer."', cls: 'highlight' },
+      { text: 'NEXUS: "The answer from each layer is the KEY to the next.', cls: 'highlight' },
+      { text: '        That\u2019s a CHAINED ATTACK. Real hackers do this all', cls: 'highlight' },
+      { text: '        the time. Let\u2019s go layer by layer."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -141,6 +141,10 @@ function runVaultPhase() {
         addLine('        Break one, use it to break the next. This is how', 'highlight');
         addLine('        real breaches work \u2014 not one big hack, but a', 'highlight');
         addLine('        chain of small ones."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Inside the vault \u2014 it\u2019s the BACKDOOR code.', 'highlight');
+        addLine('        Victor\u2019s way back in. If we can use this in the', 'highlight');
+        addLine('        final hack, we can shut him out permanently."', 'highlight');
         addLine('', '');
         addLine('[ Type NEXT to continue ]', 'warning');
         setCurrentInputHandler(() => {

@@ -42,7 +42,11 @@ export const mission = {
     state.missionState = { cipherIdx: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[COMMS INTERCEPT] All town radio encrypted.', cls: 'system' },
+      { text: '[COMMS INTERCEPT] Encrypted messages found in attack traffic.', cls: 'system' },
+      { text: '', cls: '' },
+      { text: 'NEXUS: "We found encrypted messages hidden in the AI\'s', cls: 'highlight' },
+      { text: '        attack traffic. Someone was communicating through', cls: 'highlight' },
+      { text: '        it. To read them, you need to crack the cipher."', cls: 'highlight' },
       { text: '', cls: '' },
       { text: 'NEXUS: "Two thousand years ago, Julius Caesar had a problem.', cls: 'highlight' },
       { text: '        He had to send battle orders across enemy territory.', cls: 'highlight' },
@@ -93,10 +97,20 @@ function showCipherPuzzle() {
       s.cipherIdx++;
       if (s.cipherIdx >= cipherPuzzles.length) {
         addLine('');
-        addLine('All messages decoded! The AI is calling for help: "SAVE US"', 'success');
-        addLine('Wait... the AI wants to be SAVED? This changes everything!', 'success big');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(5), 1000);
+        addLine('All messages decoded! The final message: "SAVE US"', 'success');
+        addLine('', '');
+        addLine('NEXUS: "SAVE US... that\'s not the AI attacking. That\'s', 'highlight');
+        addLine('        the AI BEGGING for help. Through the only channel', 'highlight');
+        addLine('        it could still use \u2014 encrypted messages hidden', 'highlight');
+        addLine('        in its own attack traffic. It was crying for', 'highlight');
+        addLine('        help this whole time."', 'highlight');
+        addLine('', '');
+        addLine('[ Type NEXT to continue ]', 'warning');
+        setCurrentInputHandler(() => {
+          setCurrentInputHandler(null);
+          completeMission(5);
+        });
+        return;
       } else {
         addLine('\nDecrypted! Next message incoming...', 'info');
         setTimeout(showCipherPuzzle, 600);

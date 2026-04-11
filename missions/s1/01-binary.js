@@ -120,8 +120,8 @@ function runBinaryPhase() {
         addLine(`[DECODED] The signal says: "${secretWord}"`, 'success');
         addLine('', '');
         addLine('NEXUS: "...HELP? The rogue AI is asking for HELP?', 'highlight');
-        addLine('        That doesn\'t make sense. Something\'s wrong here.', 'highlight');
-        addLine('        File that away \u2014 we\'ll come back to it."', 'highlight');
+        addLine('        That doesn\'t make sense. Something\'s off.', 'highlight');
+        addLine('        I\'ll look into it. For now, let\'s keep going."', 'highlight');
         s.phase = 2;
         addLine('');
         setTimeout(runBinaryPhase, 1000);

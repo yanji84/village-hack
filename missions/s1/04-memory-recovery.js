@@ -22,13 +22,12 @@ export const mission = {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[SYSTEM] Partial memory dump recovered from AI core.', cls: 'system' },
+      { text: '[SYSTEM] Deeper memory fragments recovered from AI core.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "We pulled fragments of the AI\'s memory before it', cls: 'highlight' },
-      { text: '        locked us out. But the data is raw \u2014 variables', cls: 'highlight' },
-      { text: '        stored in binary. We need to decode it, trace', cls: 'highlight' },
-      { text: '        what the programs were doing, and recover the', cls: 'highlight' },
-      { text: '        missing pieces."', cls: 'highlight' },
+      { text: 'NEXUS: "We pulled deeper fragments of the AI\'s memory.', cls: 'highlight' },
+      { text: '        Binary data mixed with program traces. Whatever', cls: 'highlight' },
+      { text: '        that counter is tracking, the answer might be', cls: 'highlight' },
+      { text: '        in here."', cls: 'highlight' },
       { text: '', cls: '' },
       { text: 'NEXUS: "This is digital forensics. Everything you\'ve', cls: 'highlight' },
       { text: '        learned so far, working together."', cls: 'highlight' },
@@ -159,6 +158,11 @@ function runRecoveryPhase() {
         addLine('NEXUS: "Binary, variables, tracing, and now reverse', 'highlight');
         addLine('        engineering. Your toolkit is growing,', 'highlight');
         addLine(`        ${state.hackerName || 'kid'}."`, 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Wait \u2014 one of the recovered fragments had a', 'highlight');
+        addLine('        name. Partial, corrupted. Three letters: V-I-C.', 'highlight');
+        addLine('        Someone\'s name is in the AI\'s memory. Who is', 'highlight');
+        addLine('        VIC?"', 'highlight');
         addLine('', '');
         addLine('[ Type NEXT to continue ]', 'warning');
         setCurrentInputHandler(() => {

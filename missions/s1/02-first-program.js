@@ -70,13 +70,14 @@ export const mission = {
     state.missionState = { levelIdx: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[SYSTEM] Village network offline. Manual routing required.', cls: 'system' },
+      { text: '[SYSTEM] Village network offline. Data packets stuck.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Time to make the computer DO something. I\'ll give', cls: 'highlight' },
-      { text: '        you a grid. You write the instructions. Let\'s start', cls: 'highlight' },
-      { text: '        small."', cls: 'highlight' },
+      { text: 'NEXUS: "The village network is down. Data packets are', cls: 'highlight' },
+      { text: '        jammed in the routing grid. We need to manually', cls: 'highlight' },
+      { text: '        guide them through. Time to write your first', cls: 'highlight' },
+      { text: '        programs."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: '@ is the robot. X is the goal.', cls: 'info' },
+      { text: '@ is the data packet. X is the destination.', cls: 'info' },
       { text: 'Commands: U (up)  D (down)  L (left)  R (right)', cls: 'info' },
       { text: '', cls: '' },
     ]);
@@ -211,6 +212,11 @@ function loadProgramLevel(idx) {
         addLine('        them. That\'s what every programmer does, every', 'highlight');
         addLine('        day. The programs get longer. The idea stays', 'highlight');
         addLine('        the same."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "While you were routing, I ran a diagnostic. The', 'highlight');
+        addLine('        AI didn\'t DESTROY the network \u2014 it was trying to', 'highlight');
+        addLine('        ISOLATE something. Like it was quarantining a', 'highlight');
+        addLine('        virus. Why would a rogue AI do that?"', 'highlight');
         addLine('', '');
         addLine('[ Type NEXT to continue ]', 'warning');
         setCurrentInputHandler(() => {
