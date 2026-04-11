@@ -330,6 +330,27 @@ function saveState() {
   localStorage.setItem('vh_completed', JSON.stringify(state.completed));
   if (state.hackerName) localStorage.setItem('vh_name', state.hackerName);
   if (state.seenS2Intro) localStorage.setItem('vh_s2_intro', '1');
+  // Save mid-mission progress
+  if (state.currentMission !== null && state.missionState) {
+    const midSave = {
+      mission: state.currentMission,
+      phase: state.missionState.phase || 0,
+      levelIdx: state.missionState.levelIdx || 0,
+      currentRow: state.missionState.currentRow || 0,
+    };
+    localStorage.setItem('vh_midmission', JSON.stringify(midSave));
+  }
+}
+
+function clearMidMissionSave() {
+  localStorage.removeItem('vh_midmission');
+}
+
+function getMidMissionSave() {
+  try {
+    const raw = localStorage.getItem('vh_midmission');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
 }
 
 function s1Count() { return state.completed.filter(i => i < 8).length; }
@@ -669,6 +690,34 @@ function showHub() {
   showScreen('hub');
   $('agent-name').textContent = state.hackerName || 'ROOKIE';
   $('missions-done').textContent = completedCount();
+
+  // Check for mid-mission save and offer to resume
+  const midSave = getMidMissionSave();
+  if (midSave && midSave.mission !== undefined && !isCompleted(midSave.mission)) {
+    const m = MISSIONS.find(m => m.id === midSave.mission);
+    if (m) {
+      const resumeBar = document.createElement('div');
+      resumeBar.style.cssText = 'text-align:center;padding:8px;margin-bottom:8px;background:rgba(0,255,255,0.05);border:1px solid var(--cyan,#0ff);border-radius:4px;font-size:13px;';
+      resumeBar.innerHTML = `<span style="color:var(--cyan,#0ff)">Continue Mission ${m.num}: ${m.name}?</span> `;
+      const resumeBtn = document.createElement('span');
+      resumeBtn.textContent = '[ Resume ]';
+      resumeBtn.style.cssText = 'color:var(--green,#0f0);cursor:pointer;text-decoration:underline;margin-left:8px;';
+      resumeBtn.onclick = () => {
+        startMission(midSave.mission);
+      };
+      const dismissBtn = document.createElement('span');
+      dismissBtn.textContent = '[ Dismiss ]';
+      dismissBtn.style.cssText = 'color:#555;cursor:pointer;margin-left:8px;font-size:11px;';
+      dismissBtn.onclick = () => {
+        clearMidMissionSave();
+        resumeBar.remove();
+      };
+      resumeBar.appendChild(resumeBtn);
+      resumeBar.appendChild(dismissBtn);
+      const grid = $('missions-grid');
+      grid.parentNode.insertBefore(resumeBar, grid);
+    }
+  }
   $('rank').textContent = RANKS[Math.min(completedCount(), RANKS.length - 1)];
 
   const grid = $('missions-grid');
@@ -837,6 +886,8 @@ function startMission(id) {
         sound.keyClick();
         cmdInput.value = '';
         _currentInputHandler(val);
+        // Auto-save mid-mission progress after each interaction
+        saveState();
       }
     } else {
       sound.keyClick();
@@ -850,8 +901,9 @@ function startMission(id) {
 function completeMission(id) {
   if (!state.completed.includes(id)) {
     state.completed.push(id);
-    saveState();
   }
+  clearMidMissionSave();
+  saveState();
   sound.accessGranted();
 
   const nextId = id + 1;
