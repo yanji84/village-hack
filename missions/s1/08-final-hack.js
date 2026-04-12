@@ -440,15 +440,9 @@ async function runPhase1a() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 1: Conditionals \u2014 Programs Choose \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Victor\u2019s program makes DECISIONS. At certain points,', 'highlight');
-  addLine('        the code looks at a value and asks: is this true?', 'highlight');
-  addLine('        Based on the answer, it takes one of two paths."', 'highlight');
-  addLine('', '');
-  addLine('NEXUS: "This is called a CONDITIONAL \u2014 an if/else statement.', 'highlight');
-  addLine('        Imagine you\u2019re at a fork in a road with a sign', 'highlight');
-  addLine('        that asks a yes-or-no question. If the answer is YES,', 'highlight');
-  addLine('        you go left. If NO, you go right. You can NEVER take', 'highlight');
-  addLine('        both paths \u2014 you always pick exactly one."', 'highlight');
+  addLine('NEXUS: "Victor\u2019s program makes DECISIONS. Picture a fork', 'highlight');
+  addLine('        in a road with a yes-or-no sign. YES \u2192 go left.', 'highlight');
+  addLine('        NO \u2192 go right. You can NEVER take both paths."', 'highlight');
   addLine('', '');
 
   // DEMO: guided walkthrough with animation
@@ -540,11 +534,9 @@ function runPhase1b() {
   setPhaseProgress(2, 7);
   addLine('\u2501\u2501\u2501 Puzzle 1b: Changing Variables \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "This one\u2019s trickier. Two things to notice:', 'highlight');
-  addLine('        First, a and b are set up BEFORE the fork.', 'highlight');
-  addLine('        Second, the last line (result = a + 1) is NOT', 'highlight');
-  addLine('        indented under if or else \u2014 that means it runs', 'highlight');
-  addLine('        no matter what. It\u2019s AFTER the fork rejoins."', 'highlight');
+  addLine('NEXUS: "Trickier now. Watch the LAST line \u2014 it\u2019s NOT', 'highlight');
+  addLine('        indented under if or else. That means it runs', 'highlight');
+  addLine('        no matter what. It\u2019s after the fork rejoins."', 'highlight');
   addLine('', '');
 
   addPre('  a = 4\n  b = a * 2\n  if b > a:\n      a = b\n  result = a + 1   \u2190 always runs');
@@ -593,26 +585,16 @@ async function runPhase2a() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 2: Loops \u2014 Programs Repeat \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Conditionals let programs CHOOSE a path. But Victor\u2019s', 'highlight');
-  addLine('        shutdown code also uses LOOPS \u2014 code that REPEATS', 'highlight');
-  addLine('        the same instructions over and over."', 'highlight');
-  addLine('', '');
-  addLine('NEXUS: "Think of it like doing laps on a track. Before each', 'highlight');
-  addLine('        lap, you check: should I keep going? If YES, you run', 'highlight');
-  addLine('        the lap and come back to ask again. If NO, you stop."', 'highlight');
-  addLine('', '');
-  addLine('NEXUS: "A while loop is exactly that. The computer checks a', 'highlight');
-  addLine('        condition BEFORE each pass. TRUE means \u2018do another', 'highlight');
-  addLine('        lap.\u2019 FALSE means \u2018stop right here.\u2019', 'highlight');
-  addLine('        Watch this one carefully:"', 'highlight');
+  addLine('NEXUS: "Now for Victor\u2019s second weapon: LOOPS \u2014 code that', 'highlight');
+  addLine('        REPEATS. Like laps on a track. Before each lap, the', 'highlight');
+  addLine('        computer asks: should I keep going? YES \u2192 run the', 'highlight');
+  addLine('        lap again. NO \u2192 stop right here. Watch:"', 'highlight');
   addLine('', '');
 
   addPre('  x = 0\n  while x < 4:\n      x = x + 1');
 
   addLine('', '');
-  addLine('NEXUS: "Each row below is one trip through the loop.', 'highlight');
-  addLine('        Green check = condition true, loop runs again.', 'highlight');
-  addLine('        Red X = condition false, loop stops. Watch:"', 'highlight');
+  addLine('NEXUS: "Green check = keep looping. Red X = stop."', 'highlight');
   addLine('', '');
 
   // Animated variable trace
@@ -748,17 +730,12 @@ function runPhase3a() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 3: The Shutdown Program \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "This is Victor\u2019s actual shutdown program. It uses', 'highlight');
-  addLine('        EVERYTHING at once: a loop with a conditional INSIDE.', 'highlight');
-  addLine('        Each time the loop repeats, the if-check decides', 'highlight');
-  addLine('        whether to change code. You need to trace every', 'highlight');
-  addLine('        pass to know when code actually changes."', 'highlight');
+  addLine('NEXUS: "This is Victor\u2019s ACTUAL shutdown program. A loop', 'highlight');
+  addLine('        with a conditional INSIDE. Each lap, the if-check', 'highlight');
+  addLine('        decides whether code changes. Trace every pass."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "One tricky detail: > means STRICTLY greater than.', 'highlight');
-  addLine('        So 5 > 5 is FALSE \u2014 they\u2019re equal, not greater.', 'highlight');
-  addLine('        But 6 > 5 is TRUE. Watch for that."', 'highlight');
-  addLine('', '');
-  addLine('NEXUS: "Trace it step by step to find the first digit:"', 'highlight');
+  addLine('NEXUS: "Careful: > means STRICTLY greater. 5 > 5 is FALSE \u2014', 'highlight');
+  addLine('        equal isn\u2019t greater. Find the first digit:"', 'highlight');
   addLine('', '');
 
   addPre('  code = 0\n  x = 1\n  while x <= 8:\n      if x > 5:\n          code = code + 1\n      x = x + 2');
