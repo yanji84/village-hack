@@ -106,6 +106,117 @@ async function animateLoop(terminal, varUpdates) {
   }
 }
 
+// ── Conditional execution animation ──
+
+async function animateConditional(terminal, trace) {
+  // trace: { lines: [...], highlights: [{lineIdx, color, label}...] }
+  const container = document.createElement('div');
+  container.style.cssText = 'margin:10px 0;padding:10px 14px;border:1px solid #1a2a1a;border-radius:4px;background:#050505;font-family:"Fira Mono",monospace;font-size:13px;line-height:1.8;';
+
+  const header = document.createElement('div');
+  header.style.cssText = 'color:#00aa2a;font-size:11px;margin-bottom:8px;letter-spacing:1px;';
+  header.textContent = 'STEP-BY-STEP EXECUTION:';
+  container.appendChild(header);
+
+  // Render all code lines dimmed
+  const lineEls = trace.lines.map((text, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:2px 6px;border-radius:3px;color:#555;transition:all 0.3s;display:flex;align-items:center;gap:10px;';
+    const code = document.createElement('span');
+    code.textContent = text;
+    div.appendChild(code);
+    const note = document.createElement('span');
+    note.style.cssText = 'font-size:11px;color:#555;transition:all 0.3s;';
+    div._note = note;
+    div.appendChild(note);
+    container.appendChild(div);
+    return div;
+  });
+
+  terminal.appendChild(container);
+  terminal.scrollTop = terminal.scrollHeight;
+
+  // Animate highlights one at a time
+  for (const step of trace.highlights) {
+    await sleep(500);
+    const el = lineEls[step.lineIdx];
+    el.style.color = step.color || '#00ff41';
+    if (step.bg) el.style.background = step.bg;
+    if (step.label) {
+      el._note.textContent = step.label;
+      el._note.style.color = step.color || '#00ff41';
+    }
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+  await sleep(300);
+}
+
+// ── Loop+conditional combined animation ──
+
+async function animateLoopWithConditional(terminal, iterations) {
+  // iterations: [{ vars: {}, condition: string, condResult: bool, ifCheck?: string, ifResult?: bool, action?: string }]
+  const container = document.createElement('div');
+  container.style.cssText = 'margin:10px 0;padding:10px 14px;border:1px solid #1a2a1a;border-radius:4px;background:#050505;font-family:"Fira Mono",monospace;';
+
+  const header = document.createElement('div');
+  header.style.cssText = 'color:#00aa2a;font-size:11px;margin-bottom:8px;letter-spacing:1px;';
+  header.textContent = 'LOOP EXECUTION:';
+  container.appendChild(header);
+
+  terminal.appendChild(container);
+  terminal.scrollTop = terminal.scrollHeight;
+
+  for (const iter of iterations) {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin:4px 0;opacity:0;transition:opacity 0.3s;font-size:12px;flex-wrap:wrap;';
+
+    // Variables
+    const varsStr = Object.entries(iter.vars).map(([k,v]) => `${k}=${v}`).join(' ');
+    const varsSpan = document.createElement('span');
+    varsSpan.style.cssText = 'color:#00ccff;min-width:80px;';
+    varsSpan.textContent = varsStr;
+    row.appendChild(varsSpan);
+
+    // While condition
+    const condSpan = document.createElement('span');
+    condSpan.style.cssText = 'color:#aaa;';
+    condSpan.textContent = iter.condition;
+    row.appendChild(condSpan);
+
+    // While result
+    const whileResult = document.createElement('span');
+    whileResult.style.cssText = iter.condResult ? 'color:#00ff41;font-weight:bold;' : 'color:#ff4444;font-weight:bold;';
+    whileResult.textContent = iter.condResult ? '\u2713' : '\u2717 STOP';
+    row.appendChild(whileResult);
+
+    // If check (inside the loop)
+    if (iter.condResult && iter.ifCheck) {
+      const ifSpan = document.createElement('span');
+      ifSpan.style.cssText = 'color:#ff8800;margin-left:8px;';
+      ifSpan.textContent = `\u2502 ${iter.ifCheck}`;
+      row.appendChild(ifSpan);
+
+      const ifResult = document.createElement('span');
+      ifResult.style.cssText = iter.ifResult ? 'color:#00ff41;' : 'color:#666;';
+      ifResult.textContent = iter.ifResult ? '\u2192 YES' : '\u2192 no';
+      row.appendChild(ifResult);
+    }
+
+    // Action taken
+    if (iter.action) {
+      const actionSpan = document.createElement('span');
+      actionSpan.style.cssText = 'color:#cc66ff;margin-left:8px;font-style:italic;';
+      actionSpan.textContent = iter.action;
+      row.appendChild(actionSpan);
+    }
+
+    container.appendChild(row);
+    await sleep(700);
+    row.style.opacity = '1';
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+}
+
 // ── Code display with line highlighting ──
 
 function createCodeBlock(lines) {
@@ -247,14 +358,33 @@ function runPhase1a() {
   setCurrentInputHandler((input) => {
     if (input.trim() === '7') {
       sound.success();
-      addLine('[CORRECT] x=10, 10 > 5 is true, so result = 10 - 3 = 7.', 'success');
-      addLine('', '');
-      addLine('NEXUS: "The computer checked: is 10 > 5? Yes. So it ran the', 'highlight');
-      addLine('        FIRST block and skipped the second. If x were 3, it', 'highlight');
-      addLine('        would have skipped the first and run the second."', 'highlight');
-      addLine('', '');
-      s.phase = 1;
-      setTimeout(runPhase, 800);
+      addLine('[CORRECT]', 'success');
+      // Animate the execution path
+      const terminal = document.getElementById('terminal');
+      (async () => {
+        await animateConditional(terminal, {
+          lines: [
+            'x = 10',
+            'if x > 5:          \u2190 check',
+            '    result = x - 3  \u2190 this runs',
+            'else:',
+            '    result = x + 3  \u2190 skipped',
+          ],
+          highlights: [
+            { lineIdx: 0, color: '#00ccff', label: 'x is 10' },
+            { lineIdx: 1, color: '#ffdd33', label: '10 > 5? YES' },
+            { lineIdx: 2, color: '#00ff41', bg: 'rgba(0,255,65,0.1)', label: 'result = 7' },
+            { lineIdx: 3, color: '#333' },
+            { lineIdx: 4, color: '#333', label: 'skipped' },
+          ],
+        });
+        addLine('', '');
+        addLine('NEXUS: "The green line ran. The dim line was skipped. The', 'highlight');
+        addLine('        condition decided which path to take."', 'highlight');
+        addLine('', '');
+        s.phase = 1;
+        setTimeout(runPhase, 800);
+      })();
     } else {
       sound.denied();
       attempts++;
@@ -454,15 +584,27 @@ function runPhase3a() {
     if (input.trim() === '1') {
       sound.success();
       fillCodeSlot(s.codeSlots[0], '1');
-      addLine('[CORRECT] x=1 (skip), x=3 (skip), x=5 (skip), x=7 (7>5! code=1), x=9 (stop).', 'success');
+      addLine('[CORRECT] code = 1. Watch the execution:', 'success');
       addLine('', '');
-      addLine('NEXUS: "One pass through the condition was true. code = 1."', 'highlight');
-      addLine('', '');
-      updateVictorBar(s.victorEl, 75);
-      addLine('NEXUS: "One more program. Almost there."', 'highlight');
-      addLine('', '');
-      s.phase = 5;
-      setTimeout(runPhase, 800);
+      const terminal = document.getElementById('terminal');
+      (async () => {
+        await animateLoopWithConditional(terminal, [
+          { vars: { code: 0, x: 1 }, condition: '1 \u2264 8?', condResult: true, ifCheck: '1 > 5?', ifResult: false, action: 'skip, x\u21923' },
+          { vars: { code: 0, x: 3 }, condition: '3 \u2264 8?', condResult: true, ifCheck: '3 > 5?', ifResult: false, action: 'skip, x\u21925' },
+          { vars: { code: 0, x: 5 }, condition: '5 \u2264 8?', condResult: true, ifCheck: '5 > 5?', ifResult: false, action: 'skip, x\u21927' },
+          { vars: { code: 0, x: 7 }, condition: '7 \u2264 8?', condResult: true, ifCheck: '7 > 5?', ifResult: true, action: 'code\u21921! x\u21929' },
+          { vars: { code: 1, x: 9 }, condition: '9 \u2264 8?', condResult: false },
+        ]);
+        addLine('', '');
+        addLine('NEXUS: "Four passes skipped the if. One pass triggered it.', 'highlight');
+        addLine('        code went from 0 to 1. That\u2019s your first digit."', 'highlight');
+        addLine('', '');
+        updateVictorBar(s.victorEl, 75);
+        addLine('NEXUS: "One more program. Almost there."', 'highlight');
+        addLine('', '');
+        s.phase = 5;
+        setTimeout(runPhase, 800);
+      })();
     } else {
       sound.denied();
       attempts++;
