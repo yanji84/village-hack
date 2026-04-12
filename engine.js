@@ -311,13 +311,6 @@ const sound = new SoundEngine();
 // ============================================================
 // GAME STATE
 // ============================================================
-const RANKS = [
-  'Script Kiddie', 'Pixel Pusher', 'Code Cadet', 'Byte Breaker',
-  'Net Runner', 'Cipher Punk', 'Data Wizard', 'Root Access', 'Elite Hacker',
-  'Phreak', 'Zero Day', 'Shadow Coder', 'Crypto Master',
-  'Query Ninja', 'Kernel Hacker', 'Root Guardian', 'LEGEND'
-];
-
 let state = {
   completed: JSON.parse(localStorage.getItem('vh_completed') || '[]'),
   hackerName: localStorage.getItem('vh_name') || '',
@@ -330,27 +323,6 @@ function saveState() {
   localStorage.setItem('vh_completed', JSON.stringify(state.completed));
   if (state.hackerName) localStorage.setItem('vh_name', state.hackerName);
   if (state.seenS2Intro) localStorage.setItem('vh_s2_intro', '1');
-  // Save mid-mission progress
-  if (state.currentMission !== null && state.missionState) {
-    const midSave = {
-      mission: state.currentMission,
-      phase: state.missionState.phase || 0,
-      levelIdx: state.missionState.levelIdx || 0,
-      currentRow: state.missionState.currentRow || 0,
-    };
-    localStorage.setItem('vh_midmission', JSON.stringify(midSave));
-  }
-}
-
-function clearMidMissionSave() {
-  localStorage.removeItem('vh_midmission');
-}
-
-function getMidMissionSave() {
-  try {
-    const raw = localStorage.getItem('vh_midmission');
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) { return null; }
 }
 
 function s1Count() { return state.completed.filter(i => i < 8).length; }
@@ -507,7 +479,7 @@ function showOverlay(text, sub, color, callback, opts = {}) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: state.hackerName || 'HACKER',
-            rank: RANKS[Math.min(completedCount(), RANKS.length - 1)],
+            rank: 'Hacker',
             s1: s1AllDone(),
             s2: opts.share === 's2',
           }),
@@ -643,40 +615,6 @@ function handleAdvanceToHub() {
 }
 
 // ============================================================
-// NAME ENTRY FLOW
-// ============================================================
-let nameMode = 'name'; // 'name' or 'code'
-
-async function handleLoadCode(code) {
-  const nameInput = $('name-input');
-  // Accept any 6-char alphanumeric; server validates the exact charset
-  if (!/^[A-Z0-9]{6}$/.test(code)) {
-    nameInput.value = '';
-    nameInput.placeholder = 'Invalid code — 6 characters, letters or numbers';
-    return;
-  }
-  try {
-    const res = await fetch('/hack/load/' + code);
-    if (!res.ok) {
-      nameInput.value = '';
-      nameInput.placeholder = 'Code not found. Check and try again.';
-      return;
-    }
-    const data = await res.json();
-    state.hackerName = data.name;
-    state.completed = data.completed || [];
-    state.seenS2Intro = !!data.seenS2Intro;
-    state._saveCode = code;
-    saveState();
-    localStorage.setItem('vh_save_code', code);
-    startBootAnimation();
-  } catch (e) {
-    nameInput.value = '';
-    nameInput.placeholder = 'Network error — try again';
-  }
-}
-
-// ============================================================
 // HUB SCREEN
 // ============================================================
 function showHub() {
@@ -690,35 +628,6 @@ function showHub() {
   showScreen('hub');
   $('agent-name').textContent = state.hackerName || 'ROOKIE';
   $('missions-done').textContent = completedCount();
-
-  // Check for mid-mission save and offer to resume
-  const midSave = getMidMissionSave();
-  if (midSave && midSave.mission !== undefined && !isCompleted(midSave.mission)) {
-    const m = MISSIONS.find(m => m.id === midSave.mission);
-    if (m) {
-      const resumeBar = document.createElement('div');
-      resumeBar.style.cssText = 'text-align:center;padding:8px;margin-bottom:8px;background:rgba(0,255,255,0.05);border:1px solid var(--cyan,#0ff);border-radius:4px;font-size:13px;';
-      resumeBar.innerHTML = `<span style="color:var(--cyan,#0ff)">Continue Mission ${m.num}: ${m.name}?</span> `;
-      const resumeBtn = document.createElement('span');
-      resumeBtn.textContent = '[ Resume ]';
-      resumeBtn.style.cssText = 'color:var(--green,#0f0);cursor:pointer;text-decoration:underline;margin-left:8px;';
-      resumeBtn.onclick = () => {
-        startMission(midSave.mission);
-      };
-      const dismissBtn = document.createElement('span');
-      dismissBtn.textContent = '[ Dismiss ]';
-      dismissBtn.style.cssText = 'color:#555;cursor:pointer;margin-left:8px;font-size:11px;';
-      dismissBtn.onclick = () => {
-        clearMidMissionSave();
-        resumeBar.remove();
-      };
-      resumeBar.appendChild(resumeBtn);
-      resumeBar.appendChild(dismissBtn);
-      const grid = $('missions-grid');
-      grid.parentNode.insertBefore(resumeBar, grid);
-    }
-  }
-  $('rank').textContent = RANKS[Math.min(completedCount(), RANKS.length - 1)];
 
   const grid = $('missions-grid');
   grid.innerHTML = '';
@@ -902,7 +811,6 @@ function completeMission(id) {
   if (!state.completed.includes(id)) {
     state.completed.push(id);
   }
-  clearMidMissionSave();
   saveState();
   sound.accessGranted();
 
@@ -934,23 +842,6 @@ function completeMission(id) {
   }, opts);
 }
 
-function showSaveCodeDialog(code) {
-  showOverlay('SAVE CODE', `Write this down or save it somewhere safe. Enter it on any device to continue your progress.\n\nCode: ${code}`, 'var(--cyan)', () => {});
-  // Tweak the overlay to show the code boldly
-  const sub = $('overlay-sub');
-  sub.innerHTML = `Write this code down — you'll need it to load your progress on any other device.<br><br><span style="font-family:'Press Start 2P',monospace;font-size:28px;color:var(--cyan);text-shadow:0 0 20px var(--cyan);letter-spacing:6px;display:inline-block;padding:16px 24px;border:2px solid var(--cyan);border-radius:4px;margin-top:8px;cursor:pointer" id="save-code-display">${code}</span><br><br><span style="font-size:11px;color:var(--dark-green)">Click the code to copy it</span>`;
-  setTimeout(() => {
-    const display = $('save-code-display');
-    if (display) {
-      display.onclick = () => {
-        navigator.clipboard?.writeText(code).then(() => {
-          display.style.background = 'rgba(0,255,255,0.2)';
-        }).catch(() => {});
-      };
-    }
-  }, 100);
-}
-
 // ============================================================
 // BOOT — called from index.html once DOM is ready
 // ============================================================
@@ -974,10 +865,6 @@ function boot() {
 
   nameInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      if (nameMode === 'code') {
-        handleLoadCode(nameInput.value.trim().toUpperCase());
-        return;
-      }
       const name = nameInput.value.trim().toUpperCase().replace(/[^A-Z0-9_\- ]/g, '').slice(0, 16);
       if (name.length < 2) {
         nameInput.value = '';
@@ -990,31 +877,9 @@ function boot() {
     }
   });
 
-  // Clicking anywhere on the name screen focuses the input (except on link)
+  // Clicking anywhere on the name screen focuses the input
   screens.name.addEventListener('click', (e) => {
-    if (e.target === $('load-code-link')) return;
     if (e.target !== nameInput) nameInput.focus();
-  });
-
-  // Load code link toggles input mode
-  $('load-code-link').addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (nameMode === 'name') {
-      nameMode = 'code';
-      nameInput.value = '';
-      nameInput.placeholder = 'Enter 6-character save code...';
-      nameInput.maxLength = 6;
-      $('load-code-link').textContent = 'Back to new hacker';
-      document.querySelector('.name-sub').innerHTML = '// LOAD SAVED PROGRESS //<br>Enter your 6-character save code.';
-    } else {
-      nameMode = 'name';
-      nameInput.value = state.hackerName || '';
-      nameInput.placeholder = 'Enter hacker name...';
-      nameInput.maxLength = 16;
-      $('load-code-link').textContent = 'Already have a save code? Load progress';
-      document.querySelector('.name-sub').innerHTML = '// HACKER IDENTIFICATION REQUIRED //<br>Every hacker needs a codename. What do you want to be called?';
-    }
-    nameInput.focus();
   });
 
   // Global keydown handler for boot advancement
@@ -1063,39 +928,6 @@ function boot() {
     };
   }
 
-  // Save Progress button
-  $('save-btn').onclick = async () => {
-    sound.click();
-    const btn = $('save-btn');
-    const original = btn.textContent;
-    btn.textContent = '[ Saving... ]';
-    try {
-      const existingCode = localStorage.getItem('vh_save_code') || '';
-      const res = await fetch('/hack/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: state.hackerName || 'ROOKIE',
-          completed: state.completed,
-          seenS2Intro: state.seenS2Intro,
-          code: existingCode,
-        }),
-      });
-      const data = await res.json();
-      if (data.code) {
-        localStorage.setItem('vh_save_code', data.code);
-        showSaveCodeDialog(data.code);
-        btn.textContent = original;
-      } else {
-        btn.textContent = '[ Save failed — retry ]';
-        setTimeout(() => { btn.textContent = original; }, 2000);
-      }
-    } catch (e) {
-      btn.textContent = '[ Network error ]';
-      setTimeout(() => { btn.textContent = original; }, 2000);
-    }
-  };
-
   // Keep focus on input when mission screen is active
   document.addEventListener('click', () => {
     if (screens.mission.classList.contains('active')) {
@@ -1110,7 +942,7 @@ function boot() {
 export {
   boot,
   sound,
-  state, saveState, RANKS,
+  state, saveState,
   s1Count, s2Count, completedCount, isCompleted, s1AllDone, isUnlocked,
   $, showScreen, addLine, addPre, clearTerminal, typeLines,
   showSkipBtn, sleep, setPhaseProgress, escHtml, renderTable, renderMaze,

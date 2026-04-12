@@ -18,12 +18,10 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).parent.resolve()
 SIGNUPS_FILE = ROOT / "signups.jsonl"
 BADGES_FILE = ROOT / "badges.jsonl"
-SAVES_FILE = ROOT / "saves.jsonl"
 PORT = 8180
 
-# Cache loaded badges + saves in memory for fast lookup
+# Cache loaded badges in memory for fast lookup
 _badges_cache = {}
-_saves_cache = {}
 
 
 def load_badges():
@@ -38,29 +36,7 @@ def load_badges():
                 pass
 
 
-def load_saves():
-    if not SAVES_FILE.exists():
-        return
-    with open(SAVES_FILE, "r") as f:
-        for line in f:
-            try:
-                s = json.loads(line)
-                # Keep the most recent save for each code (overwrite on reload)
-                _saves_cache[s["code"]] = s
-            except Exception:
-                pass
-
-
-def human_code():
-    """Generate a human-friendly 6-char code avoiding confusing characters."""
-    # Excludes: 0/O/1/I/L (look alike), 8/B (look alike in pixel fonts),
-    # 6/G (look alike), 5/S (look alike), 2/Z (look alike)
-    alphabet = "ACDEFHJKMNPQRTUVWXY347"
-    return "".join(secrets.choice(alphabet) for _ in range(6))
-
-
 load_badges()
-load_saves()
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -145,34 +121,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             _badges_cache[badge_id] = entry
             return self._send_json(200, {"id": badge_id})
 
-        if path == "/save":
-            data = self._read_json() or {}
-            name = (data.get("name") or "").strip().upper()[:16]
-            if not name or not re.match(r"^[A-Z0-9_\- ]+$", name):
-                return self._send_json(400, {"error": "invalid name"})
-            completed = data.get("completed") or []
-            if not isinstance(completed, list) or len(completed) > 50:
-                return self._send_json(400, {"error": "invalid completed"})
-            completed = [int(x) for x in completed if isinstance(x, (int, float)) and 0 <= int(x) < 50]
-            seen_s2 = bool(data.get("seenS2Intro"))
-            # Reuse existing code if provided, otherwise generate new
-            code = (data.get("code") or "").strip().upper()
-            if not code or not re.match(r"^[A-Z0-9]{6}$", code):
-                code = human_code()
-                while code in _saves_cache:
-                    code = human_code()
-            entry = {
-                "code": code,
-                "name": name,
-                "completed": completed,
-                "seenS2Intro": seen_s2,
-                "ts": int(time.time()),
-            }
-            with open(SAVES_FILE, "a") as f:
-                f.write(json.dumps(entry) + "\n")
-            _saves_cache[code] = entry
-            return self._send_json(200, {"code": code})
-
         return self._send_json(404, {"error": "not found"})
 
     def do_GET(self):
@@ -185,14 +133,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if not badge:
                 return self._send_json(404, {"error": "not found"})
             return self._send_json(200, badge)
-
-        # /load/<code> → JSON save data
-        if path.startswith("/load/"):
-            code = path[len("/load/"):].upper()
-            save = _saves_cache.get(code)
-            if not save:
-                return self._send_json(404, {"error": "save not found"})
-            return self._send_json(200, save)
 
         # /share/<id> → HTML page rendering the badge
         if path.startswith("/share/"):

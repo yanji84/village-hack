@@ -635,6 +635,13 @@ body::before {
   .missions-grid { grid-template-columns: 1fr; padding: 10px; }
   .hub-header h1 { font-size: 14px; }
   #overlay .big-text { font-size: 18px; }
+  .terminal { font-size: 12px; }
+  .input-area input { min-height: 44px; font-size: 16px; }
+  #name-input { width: 100%; font-size: 16px; }
+  .hub-stats { flex-wrap: wrap; gap: 10px; font-size: 11px; }
+  .mission-card { padding: 12px; }
+  .mission-card h3 { font-size: 14px; }
+  body { touch-action: manipulation; }
 }
 </style>
 </head>
@@ -652,9 +659,6 @@ body::before {
     <input type="text" id="name-input" placeholder="Enter hacker name..." maxlength="16" autocomplete="off" spellcheck="false">
   </div>
   <div class="name-hint">[ TYPE YOUR NAME AND PRESS ENTER ]</div>
-  <div style="margin-top: 20px;">
-    <a id="load-code-link" style="color: var(--dark-green); font-size: 12px; cursor: pointer; text-decoration: underline;">Already have a save code? Load progress</a>
-  </div>
 </div>
 
 <!-- BOOT SCREEN -->
@@ -676,8 +680,6 @@ body::before {
   <div class="hub-stats">
     <span>Agent: <span class="val" id="agent-name">ROOKIE</span></span>
     <span>Missions Complete: <span class="val" id="missions-done">0</span>/16</span>
-    <span>Rank: <span class="val" id="rank">Script Kiddie</span></span>
-    <span class="save-btn" id="save-btn" style="cursor:pointer;color:var(--cyan);text-decoration:underline">[ Save Progress ]</span>
   </div>
   <div class="missions-grid" id="missions-grid"></div>
 </div>
