@@ -810,45 +810,58 @@ function runPhase3b() {
   setPhaseProgress(6, 7);
 
   addLine('NEXUS: "Almost there \u2014 one more program to crack.', 'highlight');
-  addLine('        This one\u2019s a straight loop, no if-check inside.', 'highlight');
-  addLine('        Two variables: key starts high and gets smaller,', 'highlight');
-  addLine('        n counts how many times the loop has run.', 'highlight');
-  addLine('        Trace it carefully:"', 'highlight');
+  addLine('        This one\u2019s the hardest yet: a loop with a', 'highlight');
+  addLine('        conditional INSIDE, just like the last one.', 'highlight');
+  addLine('        But this time, != means NOT EQUAL.', 'highlight');
+  addLine('        3 != 3 is FALSE. 1 != 3 is TRUE."', 'highlight');
+  addLine('', '');
+  addLine('NEXUS: "Trace every pass. When does code go up? When', 'highlight');
+  addLine('        does it stay the same? Find the second digit:"', 'highlight');
   addLine('', '');
 
-  addPre('  key = 5\n  n = 0\n  while n < 3:\n      key = key - 1\n      n = n + 1');
+  addPre('  code = 0\n  n = 1\n  while n <= 5:\n      if n != 3:\n          code = code + 1\n      n = n + 2');
 
   addLine('', '');
-  addLine('What is key after the loop ends?', 'warning');
+  addLine('What is code after the loop ends?', 'warning');
 
   let attempts = 0;
   setCurrentInputHandler((input) => {
     if (input.trim() === '2') {
       sound.success();
       fillCodeSlot(s.codeSlots[1], '2');
-      addLine('[CORRECT] n=0: key=4. n=1: key=3. n=2: key=2. n=3 \u2192 stop. key = 2.', 'success');
+      addLine('[CORRECT] code = 2!', 'success');
       addLine('', '');
-      addLine('NEXUS: "The loop ran 3 times, subtracting 1 each pass.', 'highlight');
-      addLine('        5 - 1 - 1 - 1 = 2. Second digit: 2."', 'highlight');
-      addLine('', '');
-      addLine('NEXUS: "Both digits found. Look at the code slots above \u2014', 'highlight');
-      addLine('        the shutdown code is those two digits together."', 'highlight');
-      addLine('', '');
-      updateVictorBar(s.victorEl, 90);
-      addLine('NEXUS: "Victor\u2019s at 90%. This is it. Enter the shutdown', 'highlight');
-      addLine('        code NOW \u2014 before he locks us out forever!"', 'highlight');
-      addLine('', '');
-      s.phase = 6;
-      setTimeout(runPhase, 800);
+      const terminal = document.getElementById('terminal');
+      (async () => {
+        await animateLoopWithConditional(terminal, [
+          { vars: { code: 0, n: 1 }, condition: '1 \u2264 5?', condResult: true, ifCheck: '1 != 3?', ifResult: true, action: 'code\u21921! n\u21923' },
+          { vars: { code: 1, n: 3 }, condition: '3 \u2264 5?', condResult: true, ifCheck: '3 != 3?', ifResult: false, action: 'skip, n\u21925' },
+          { vars: { code: 1, n: 5 }, condition: '5 \u2264 5?', condResult: true, ifCheck: '5 != 3?', ifResult: true, action: 'code\u21922! n\u21927' },
+          { vars: { code: 2, n: 7 }, condition: '7 \u2264 5?', condResult: false },
+        ]);
+        addLine('', '');
+        addLine('NEXUS: "Three passes: n = 1, 3, 5. At n=1 and n=5, the', 'highlight');
+        addLine('        check n != 3 was TRUE, so code went up. But at', 'highlight');
+        addLine('        n=3, 3 != 3 is FALSE \u2014 code DIDN\u2019T change.', 'highlight');
+        addLine('        The conditional skipped ONE pass. Second digit: 2."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Both digits found. Now combine them."', 'highlight');
+        addLine('', '');
+        updateVictorBar(s.victorEl, 90);
+        addLine('NEXUS: "Victor\u2019s at 90%. This is it. Hurry!"', 'highlight');
+        addLine('', '');
+        s.phase = 6;
+        setTimeout(runPhase, 800);
+      })();
     } else {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] NEXUS: "The loop runs while n < 3. Each pass, key loses 1. Start: key=5, n=0. What\u2019s key after pass 1?"', 'error');
+        addLine('[WRONG] NEXUS: "List n\u2019s values: 1, 3, 5 (adding 2 each time). For each, ask: is n NOT equal to 3?"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] NEXUS: "Pass 1: key=4, n=1. Pass 2: key=3, n=2. Pass 3: key=2, n=3. Now n < 3 is false \u2192 stop."', 'error');
+        addLine('[WRONG] NEXUS: "n=1: 1!=3? YES, code\u21921. n=3: 3!=3? NO, skip. n=5: 5!=3? YES, code\u21922. Then n=7, loop stops."', 'error');
       } else {
-        addLine('[WRONG] NEXUS: "Three passes, three subtractions: 5 \u2192 4 \u2192 3 \u2192 2. key = 2."', 'error');
+        addLine('[WRONG] NEXUS: "code goes up twice (at n=1 and n=5) but not at n=3. So code = 2."', 'error');
       }
     }
   });
