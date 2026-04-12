@@ -20,6 +20,12 @@ function createVictorBar() {
   label.textContent = 'VICTOR STATUS';
   container.appendChild(label);
 
+  const statusMsg = document.createElement('div');
+  statusMsg.style.cssText = 'color:#884400;font-size:10px;margin-bottom:4px;letter-spacing:1px;font-style:italic;min-height:14px;transition:color 0.5s;';
+  statusMsg.textContent = 'scanning for intruders...';
+  container.appendChild(statusMsg);
+  container._statusMsg = statusMsg;
+
   const barOuter = document.createElement('div');
   barOuter.style.cssText = 'width:100%;height:18px;background:#1a0a00;border:1px solid #552200;border-radius:3px;overflow:hidden;position:relative;';
 
@@ -40,11 +46,55 @@ function createVictorBar() {
 
 function updateVictorBar(victorEl, pct) {
   victorEl._barInner.style.width = pct + '%';
+
+  // Inject pulse keyframes once
+  if (!document.getElementById('victor-pulse-style')) {
+    const style = document.createElement('style');
+    style.id = 'victor-pulse-style';
+    style.textContent = `
+      @keyframes victor-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+      }
+      @keyframes victor-glow {
+        0%, 100% { box-shadow: 0 0 8px rgba(255,68,0,0.4); }
+        50% { box-shadow: 0 0 18px rgba(255,68,0,0.8); }
+      }
+      @keyframes victor-critical {
+        0%, 100% { box-shadow: 0 0 8px rgba(255,0,0,0.5); border-color: #552200; }
+        50% { box-shadow: 0 0 24px rgba(255,0,0,0.9); border-color: #ff2200; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   if (pct >= 75) {
     victorEl._barInner.style.background = 'linear-gradient(90deg,#ff2200,#ff0000)';
     victorEl._barInner.style.boxShadow = '0 0 12px rgba(255,0,0,0.6)';
+    victorEl.style.animation = 'victor-critical 0.8s ease-in-out infinite';
+    victorEl._pctLabel.style.animation = 'victor-pulse 0.8s ease-in-out infinite';
+  } else if (pct >= 50) {
+    victorEl._barInner.style.animation = 'victor-glow 1.5s ease-in-out infinite';
+    victorEl._pctLabel.style.animation = 'victor-pulse 1.5s ease-in-out infinite';
   }
   victorEl._pctLabel.textContent = `[VICTOR: ${'\u2588'.repeat(Math.floor(pct / 7))}${'\u2591'.repeat(Math.max(0, 14 - Math.floor(pct / 7)))} ${pct}%]`;
+
+  // Status messages that escalate tension
+  if (victorEl._statusMsg) {
+    if (pct >= 90) {
+      victorEl._statusMsg.textContent = 'ALERT: override nearly complete — HURRY';
+      victorEl._statusMsg.style.color = '#ff0000';
+    } else if (pct >= 75) {
+      victorEl._statusMsg.textContent = 'WARNING: regaining control of subsystems...';
+      victorEl._statusMsg.style.color = '#ff4400';
+    } else if (pct >= 50) {
+      victorEl._statusMsg.textContent = 'rebuilding firewall... intruder detected...';
+      victorEl._statusMsg.style.color = '#cc6600';
+    } else if (pct >= 25) {
+      victorEl._statusMsg.textContent = 'analyzing breach point...';
+      victorEl._statusMsg.style.color = '#996600';
+    }
+  }
 }
 
 function blockVictorBar(victorEl) {
