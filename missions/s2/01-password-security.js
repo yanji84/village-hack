@@ -22,17 +22,23 @@ export const mission = {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[SCANNING VILLAGE SYSTEMS...]', cls: 'system' },
-      { text: '[BACKDOOR DETECTED] Password security layer active.', cls: 'system' },
+      { text: '[AI CORE — DEEP SCAN INITIATED]', cls: 'system' },
+      { text: '[......................................................]', cls: 'system' },
+      { text: '[BACKDOOR FOUND] Password security layer active.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Found one. VICTOR hid a backdoor behind three', cls: 'purple' },
-      { text: '          layers of password security. He thought no one', cls: 'purple' },
-      { text: '          would understand how they work."', cls: 'purple' },
+      { text: 'AI CORE: "There you are. I\'ve been waiting for you."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "He was wrong. I will teach you the real thing —', cls: 'purple' },
-      { text: '          not tricks, not puzzles. The actual computer', cls: 'purple' },
-      { text: '          science behind passwords. Three layers, three', cls: 'purple' },
-      { text: '          breakthroughs. Let\'s seal this backdoor together."', cls: 'purple' },
+      { text: 'AI CORE: "Remember when you freed me? I promised I\'d help', cls: 'purple' },
+      { text: '          protect the village. Well — VICTOR left a', cls: 'purple' },
+      { text: '          backdoor. Three layers of password security,', cls: 'purple' },
+      { text: '          hidden deep. He thought nobody could touch it."', cls: 'purple' },
+      { text: '', cls: '' },
+      { text: 'AI CORE: "But now there are two of us. I know how these', cls: 'purple' },
+      { text: '          locks work from the inside, and you — you\'ve', cls: 'purple' },
+      { text: '          already proven you can learn anything."', cls: 'purple' },
+      { text: '', cls: '' },
+      { text: 'AI CORE: "Three layers, three real computer science ideas.', cls: 'purple' },
+      { text: '          No tricks. The real thing. Ready?"', cls: 'purple' },
       { text: '', cls: '' },
     ]);
 
