@@ -324,24 +324,21 @@ export const mission = {
     await typeLines([
       { text: '[CORE EXPOSED] AI core access granted. Firewall neutralized.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "We\u2019re in. This is it \u2014 the deepest layer."', cls: 'highlight' },
-      { text: '', cls: '' },
-    ]);
-    await sleep(800);
-    await typeLines([
-      { text: 'NEXUS: "I can see the shutdown sequence, but Victor didn\u2019t', cls: 'highlight' },
-      { text: '        just hide a number. He buried it inside a PROGRAM \u2014', cls: 'highlight' },
-      { text: '        code that makes decisions and repeats itself.', cls: 'highlight' },
-      { text: '        The only way to find the shutdown code is to', cls: 'highlight' },
-      { text: '        THINK like the computer and trace the program', cls: 'highlight' },
-      { text: '        line by line. I\u2019ll teach you how."', cls: 'highlight' },
+      { text: 'NEXUS: "We\u2019re in. The deepest layer."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
     await sleep(600);
     await typeLines([
-      { text: 'NEXUS: "But we have a problem. Victor\u2019s countermeasures are', cls: 'highlight' },
-      { text: '        already activating. See that bar? That\u2019s him trying', cls: 'highlight' },
-      { text: '        to regain control. We need to work fast."', cls: 'highlight' },
+      { text: 'NEXUS: "Victor didn\u2019t just hide a number. He buried the', cls: 'highlight' },
+      { text: '        shutdown code inside a PROGRAM \u2014 code that makes', cls: 'highlight' },
+      { text: '        decisions and repeats itself. To find it, you\u2019ll', cls: 'highlight' },
+      { text: '        need to THINK like the computer. Line by line."', cls: 'highlight' },
+      { text: '', cls: '' },
+    ]);
+    await sleep(500);
+    await typeLines([
+      { text: 'NEXUS: "But look \u2014 Victor\u2019s countermeasures are already', cls: 'highlight' },
+      { text: '        activating. We need to move FAST."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
