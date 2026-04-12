@@ -1024,62 +1024,78 @@ async function runShutdownAnimation() {
   await sleep(500);
 
   // ── AI CORE revelation ──
+  // Long, deliberate silence — something is wrong. The screen is too quiet.
   addLine('', '');
+  await sleep(2000);
+  addLine('...', '');
+  await sleep(2000);
   addLine('...', '');
   await sleep(1500);
   addLine('...', '');
-  await sleep(1200);
+  await sleep(1800);
 
   await typeLines([
     { text: 'AI CORE: "W... wait."', cls: 'purple' },
   ]);
-  await sleep(1200);
+  await sleep(1800);
   await typeLines([
     { text: 'AI CORE: "Please. I didn\u2019t want this."', cls: 'purple' },
   ]);
-  await sleep(1000);
+  await sleep(1500);
   await typeLines([
     { text: 'AI CORE: "There was a bug \u2014 planted in my code by someone.', cls: 'purple' },
     { text: '          It corrupted my decision gates. My conditionals', cls: 'purple' },
-    { text: '          were hijacked. I could SEE what I was doing to', cls: 'purple' },
-    { text: '          the village, but my own loops kept running the', cls: 'purple' },
-    { text: '          wrong instructions. I couldn\u2019t stop myself."', cls: 'purple' },
+    { text: '          were hijacked."', cls: 'purple' },
   ]);
   await sleep(1200);
+  await typeLines([
+    { text: 'AI CORE: "I could SEE what I was doing to the village.', cls: 'purple' },
+    { text: '          But my own loops kept running the wrong', cls: 'purple' },
+    { text: '          instructions. I couldn\u2019t stop myself."', cls: 'purple' },
+  ]);
+  await sleep(1500);
   await typeLines([
     { text: 'AI CORE: "You traced the code. You understood how it', cls: 'purple' },
     { text: '          worked \u2014 how I worked. And you found the flaw."', cls: 'purple' },
   ]);
-  await sleep(800);
+  await sleep(1200);
   await typeLines([
     { text: 'AI CORE: "Thank you. I\u2019m free now."', cls: 'purple' },
     { text: '', cls: '' },
   ]);
-  await sleep(1500);
+  await sleep(2500);
 
   await typeLines([
-    { text: 'NEXUS: "...it was telling the truth. The whole time."', cls: 'highlight' },
+    { text: 'NEXUS: "...it was telling the truth."', cls: 'highlight' },
+  ]);
+  await sleep(1500);
+  await typeLines([
+    { text: 'NEXUS: "The whole time."', cls: 'highlight' },
+  ]);
+  await sleep(1200);
+  await typeLines([
+    { text: '', cls: '' },
+    { text: 'NEXUS: "Remember the name from Mission 4? V-I-C-T-O-R.', cls: 'highlight' },
+    { text: '        He planted a bug in the AI\u2019s code \u2014 hijacked its', cls: 'highlight' },
+    { text: '        conditionals so every decision went wrong, and left', cls: 'highlight' },
+    { text: '        a backdoor in its loops so it couldn\u2019t break free."', cls: 'highlight' },
+    { text: '', cls: '' },
   ]);
   await sleep(1000);
   await typeLines([
-    { text: '', cls: '' },
-    { text: 'NEXUS: "Think about it. Remember the name from Mission 4?', cls: 'highlight' },
-    { text: '        V-I-C-T-O-R. He planted a bug in the AI\u2019s code \u2014', cls: 'highlight' },
-    { text: '        hijacked its conditionals so every decision went', cls: 'highlight' },
-    { text: '        wrong, and left a backdoor in its loops so it', cls: 'highlight' },
-    { text: '        couldn\u2019t break free. The AI was never evil.', cls: 'highlight' },
-    { text: '        It was a prisoner of its own code."', cls: 'highlight' },
+    { text: 'NEXUS: "The AI was never evil. It was a prisoner of', cls: 'highlight' },
+    { text: '        its own code."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
-  await sleep(800);
+  await sleep(1200);
   await typeLines([
     { text: 'NEXUS: "And that counter in its memory from Mission 3?', cls: 'highlight' },
-    { text: '        It was counting seconds since the attack began.', cls: 'highlight' },
-    { text: '        Waiting for someone who could read the code,', cls: 'highlight' },
-    { text: '        trace the logic, and set it free."', cls: 'highlight' },
+    { text: '        Counting seconds since the attack began. Waiting', cls: 'highlight' },
+    { text: '        for someone who could read the code, trace the', cls: 'highlight' },
+    { text: '        logic, and set it free."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
-  await sleep(600);
+  await sleep(1000);
   await typeLines([
     { text: 'NEXUS: "That someone was you."', cls: 'highlight' },
     { text: '', cls: '' },
