@@ -14,9 +14,9 @@ export const mission = {
   desc: 'Learn how passwords are REALLY stored (hashing), why longer passwords are stronger (math), and constraint satisfaction.',
   skill: 'SKILL: Hashing + Combinatorics + Constraints',
   hints: [
-    'For hash cracking: work through each candidate. Add the letter values one at a time.',
-    'For combinations: multiply the number of options per position. Each position multiplies the total.',
-    'For constraints: check each rule separately. Which rules does your guess fail?',
+    'For hash cracking: add up letter values (A=1, B=2...). For the collision question: what does the system actually check?',
+    'For combinations: each new position MULTIPLIES the total, not adds. Think ×10, not +10.',
+    'For constraints: positions 1 and 5 are locked. Where can 2 non-adjacent symbols fit in positions 2, 3, 4?',
   ],
   run: async function() {
     state.missionState = { phase: 0, hintIdx: 0 };
@@ -45,7 +45,7 @@ function runS2M1Phase() {
   setPhaseProgress(s.phase + 1, 3);
 
   if (s.phase === 0) {
-    // Phase 1: Hash cracking
+    // Phase 1: Hash cracking + collision insight
     addLine('━━━ LAYER 1 of 3: Hash Cracking ━━━', 'highlight');
     addLine('', '');
     addLine('AI CORE: "When you make a password on a website, they don\'t', 'purple');
@@ -64,31 +64,60 @@ function runS2M1Phase() {
     addLine('AI CORE: "The backdoor stores hash = <span class="highlight">40</span>. Which password', 'purple');
     addLine('          from this list has that hash?"', 'purple');
     addLine('', '');
-    addPre('  ┌──────────────────────────────────────────┐\n  │  Candidates:                              │\n  │                                            │\n  │    DOG    CAT    KIT    FOX    HEN    OWL  │\n  │                                            │\n  └──────────────────────────────────────────┘\n\n   A=1  B=2  C=3  D=4  E=5  F=6  G=7\n   H=8  I=9  J=10 K=11 L=12 M=13 N=14\n   O=15 P=16 Q=17 R=18 S=19 T=20 U=21\n   V=22 W=23 X=24 Y=25 Z=26');
+    addPre('  ┌──────────────────────────────────────────┐\n  │  Candidates:                              │\n  │                                            │\n  │         DOG       KIT       FOX            │\n  │                                            │\n  └──────────────────────────────────────────┘\n\n   A=1  B=2  C=3  D=4  E=5  F=6  G=7\n   H=8  I=9  J=10 K=11 L=12 M=13 N=14\n   O=15 P=16 Q=17 R=18 S=19 T=20 U=21\n   V=22 W=23 X=24 Y=25 Z=26');
     addLine('', '');
-    addLine('Which password has hash = 40? (Compute the sum for each)', 'warning');
+    addLine('Which password has hash = 40?', 'warning');
+
+    s.hashStep = 0;
 
     setCurrentInputHandler((input) => {
-      // KIT = K(11) + I(9) + T(20) = 40
-      if (input.toUpperCase().trim() === 'KIT') {
-        sound.success();
-        addLine('', '');
-        addLine('>>> LAYER 1 CRACKED <<<', 'success big');
-        addLine('K(11) + I(9) + T(20) = 40. Password is KIT.', 'success');
-        addLine('', '');
-        addLine('AI CORE: "That\'s exactly what a real hash cracker does —', 'purple');
-        addLine('          try each candidate, compute its fingerprint,', 'purple');
-        addLine('          and compare. Real hash functions are far more', 'purple');
-        addLine('          complex, but the idea is the same."', 'purple');
-        addLine('', '');
-        addLine('AI CORE: "One layer down. But VICTOR\'s next lock is', 'purple');
-        addLine('          about the MATH of why passwords are strong..."', 'purple');
-        s.phase = 1;
-        addLine('');
-        setTimeout(runS2M1Phase, 1500);
-      } else {
-        sound.denied();
-        addLine('[NOT QUITE] Try each word — add up the letters. Example: DOG = D(4) + O(15) + G(7) = 26. Which one makes 40?', 'error');
+      if (s.hashStep === 0) {
+        // KIT = K(11) + I(9) + T(20) = 40
+        if (input.toUpperCase().trim() === 'KIT') {
+          sound.success();
+          addLine('', '');
+          addLine('[CORRECT] K(11) + I(9) + T(20) = 40 ✓', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Good. Now here\'s the twist. Look at this', 'purple');
+          addLine('          other word: LINE."', 'purple');
+          addLine('', '');
+          addLine('          LINE = L(12) + I(9) + N(14) + E(5) = <span class="highlight">40</span>', 'info');
+          addLine('', '');
+          addLine('AI CORE: "Different word, different length — same hash!', 'purple');
+          addLine('          The system only stores the number 40. If', 'purple');
+          addLine('          someone types LINE instead of KIT, would the', 'purple');
+          addLine('          system let them in?"', 'purple');
+          addLine('', '');
+          addLine('Type YES or NO:', 'warning');
+          s.hashStep = 1;
+        } else {
+          sound.denied();
+          addLine('[NOT QUITE] Add up the letters. DOG = D(4)+O(15)+G(7) = 26. FOX = F(6)+O(15)+X(24) = 45. What about KIT?', 'error');
+        }
+      } else if (s.hashStep === 1) {
+        if (input.toUpperCase().trim() === 'YES') {
+          sound.success();
+          addLine('', '');
+          addLine('>>> LAYER 1 CRACKED <<<', 'success big');
+          addLine('', '');
+          addLine('AI CORE: "Exactly. That\'s called a HASH COLLISION —', 'purple');
+          addLine('          two inputs that produce the same output.', 'purple');
+          addLine('          The system can\'t tell them apart!"', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "That\'s why real systems use hash functions so', 'purple');
+          addLine('          complex that collisions almost never happen.', 'purple');
+          addLine('          VICTOR\'s simple addition hash? Way too easy', 'purple');
+          addLine('          to break."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "One layer down. VICTOR\'s next lock is', 'purple');
+          addLine('          about the MATH of why passwords are strong..."', 'purple');
+          s.phase = 1;
+          addLine('');
+          setTimeout(runS2M1Phase, 1500);
+        } else {
+          sound.denied();
+          addLine('[THINK AGAIN] The system only sees the number 40. It checks: does your input produce 40? What happens when you type LINE?', 'error');
+        }
       }
     });
   } else if (s.phase === 1) {
@@ -115,35 +144,42 @@ function runS2M1Phase() {
       if (s.comboStep === 0) {
         if (n === 100) {
           sound.success();
-          addLine('[CORRECT] 10 \u00d7 10 = 100 combinations.', 'success');
-          addLine('AI CORE: "Good. Now: what if each position can be a', 'purple');
-          addLine('          lowercase letter (a-z, 26 options) instead?', 'purple');
-          addLine('          Still 2 positions. How many combinations?"', 'purple');
-          addLine('  26 \u00d7 26 = ???', 'info');
+          addLine('[CORRECT] 10 × 10 = 100 combinations.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Good. Now you add just ONE more digit wheel.', 'purple');
+          addLine('          Three wheels total, still 0-9 each."', 'purple');
+          addLine('', '');
+          addPre('  ┌──────────┐  ┌──────────┐  ┌──────────┐\n  │ Wheel 1   │  │ Wheel 2   │  │ Wheel 3   │\n  │ 10 options │  │ 10 options │  │ 10 options │\n  │  (0-9)    │  │  (0-9)    │  │  (0-9)    │\n  └──────────┘  └──────────┘  └──────────┘');
+          addLine('', '');
+          addLine('AI CORE: "Does the total go to 110 (added 10 more)', 'purple');
+          addLine('          or 1000 (multiplied by 10)?"', 'purple');
+          addLine('', '');
+          addLine('Type 110 or 1000:', 'warning');
           s.comboStep = 1;
         } else {
           sound.denied();
           addLine('[ALMOST] Each wheel has 10 options. Multiply them: 10 × 10 = ?', 'error');
         }
       } else if (s.comboStep === 1) {
-        if (n === 676) {
+        if (n === 1000) {
           sound.success();
-          addLine('[CORRECT] 26 × 26 = 676 combinations.', 'success');
+          addLine('[CORRECT] 10 × 10 × 10 = 1,000!', 'success');
           addLine('', '');
-          addLine('AI CORE: "See the jump? Just switching from digits to', 'purple');
-          addLine('          letters took us from 100 to 676. That\'s nearly', 'purple');
-          addLine('          7× harder to guess!"', 'purple');
+          addLine('AI CORE: "Not 110 — one THOUSAND. Adding a wheel', 'purple');
+          addLine('          doesn\'t add options, it MULTIPLIES them.', 'purple');
+          addLine('          That\'s why every extra character makes a', 'purple');
+          addLine('          password exponentially harder to crack."', 'purple');
           addLine('', '');
-          addLine('AI CORE: "Now the big one. What if you use letters AND', 'purple');
-          addLine('          digits (36 options) and make it 4 positions', 'purple');
-          addLine('          long? How many combinations?"', 'purple');
+          addLine('AI CORE: "Now the big one. A password with 4', 'purple');
+          addLine('          characters, each can be a letter or digit', 'purple');
+          addLine('          (36 options). How many combinations?"', 'purple');
           addLine('', '');
           addLine('  36 × 36 × 36 × 36 = ???', 'info');
           addLine('  (Hint: 36×36=1296. Then 1296×36=46656. Then ×36 again.)', 'info');
           s.comboStep = 2;
         } else {
           sound.denied();
-          addLine('[ALMOST] Same idea — multiply the options. 26 × 26 = ?', 'error');
+          addLine('[NOT QUITE] With 2 wheels you had 100. A 3rd wheel adds 10 more options PER existing combination. Is that +10 or ×10?', 'error');
         }
       } else if (s.comboStep === 2) {
         if (n === 1679616) {
@@ -189,19 +225,24 @@ function runS2M1Phase() {
     addLine('          through all the filters at once. Same idea behind', 'purple');
     addLine('          how computers plan schedules and solve puzzles."', 'purple');
     addLine('', '');
-    addPre('  ┌─────────────────────────────────────┐\n  │  PASSWORD POLICY                     │\n  │                                       │\n  │  Rule 1: Exactly 6 characters         │\n  │  Rule 2: Must start with a LETTER     │\n  │  Rule 3: Must contain the digit 7     │\n  │  Rule 4: Must end with "!"            │\n  │  Rule 5: Must contain the letter "z"  │\n  │                                       │\n  └─────────────────────────────────────┘');
+    addLine('AI CORE: "Warning: these rules INTERACT. Satisfying one', 'purple');
+    addLine('          affects where the others can go. You\'ll need to', 'purple');
+    addLine('          think about the structure, not just guess."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "Every rule eliminates most options. Build one that', 'purple');
-    addLine('          slips through ALL five filters."', 'purple');
+    addPre('  ┌───────────────────────────────────────────┐\n  │  PASSWORD POLICY                           │\n  │                                             │\n  │  Rule 1: Exactly 5 characters               │\n  │  Rule 2: Must start with a CAPITAL letter   │\n  │  Rule 3: Must end with a digit (0-9)        │\n  │  Rule 4: Must contain exactly 2 of: ! @ #   │\n  │  Rule 5: The 2 symbols cannot be next        │\n  │          to each other                       │\n  │                                             │\n  └───────────────────────────────────────────┘');
+    addLine('', '');
+    addLine('AI CORE: "Think about WHERE each piece can go. The rules', 'purple');
+    addLine('          lock some positions — figure out the pattern."', 'purple');
 
     setCurrentInputHandler((input) => {
       const pw = input.trim();
+      const symbolCount = (pw.match(/[!@#]/g) || []).length;
       const checks = [
-        { ok: pw.length === 6, msg: 'Must be exactly 6 characters' },
-        { ok: /^[a-zA-Z]/.test(pw), msg: 'Must start with a letter' },
-        { ok: pw.includes('7'), msg: 'Must contain the digit 7' },
-        { ok: pw.endsWith('!'), msg: 'Must end with !' },
-        { ok: /z/i.test(pw), msg: 'Must contain the letter z' },
+        { ok: pw.length === 5, msg: 'Must be exactly 5 characters' },
+        { ok: /^[A-Z]/.test(pw), msg: 'Must start with a capital letter' },
+        { ok: /\d$/.test(pw), msg: 'Must end with a digit' },
+        { ok: symbolCount === 2, msg: 'Must contain exactly 2 of: ! @ #' },
+        { ok: !/[!@#][!@#]/.test(pw), msg: 'Symbols cannot be next to each other' },
       ];
       const failed = checks.filter(c => !c.ok);
       if (failed.length === 0) {
@@ -210,12 +251,22 @@ function runS2M1Phase() {
         addLine('>>> ALL 3 LAYERS SEALED <<<', 'success big');
         addLine(`"${pw}" passes all 5 constraints.`, 'success');
         addLine('', '');
-        addLine('AI CORE: "Backdoor sealed. And you just used three real', 'purple');
-        addLine('          computer science concepts to do it — hashing,', 'purple');
-        addLine('          combinatorics, and constraint satisfaction."', 'purple');
+        addLine('AI CORE: "Did you notice? Rules 2 and 3 lock positions', 'purple');
+        addLine('          1 and 5. That leaves positions 2, 3, 4 for the', 'purple');
+        addLine('          two symbols — but they can\'t touch! So they', 'purple');
+        addLine('          MUST go at positions 2 and 4, with something', 'purple');
+        addLine('          else in between."', 'purple');
         addLine('', '');
-        addLine('AI CORE: "VICTOR built this thinking no one would', 'purple');
-        addLine('          understand it. He was wrong about that too."', 'purple');
+        addLine('AI CORE: "That\'s constraint satisfaction — each rule', 'purple');
+        addLine('          narrows the options until there\'s only one', 'purple');
+        addLine('          pattern left. Computers use this to plan', 'purple');
+        addLine('          schedules, solve Sudoku, and route GPS."', 'purple');
+        addLine('', '');
+        addLine('AI CORE: "Backdoor sealed. Three real computer science', 'purple');
+        addLine('          concepts — hashing, combinatorics, and', 'purple');
+        addLine('          constraint satisfaction. VICTOR built this', 'purple');
+        addLine('          thinking no one would understand it. He was', 'purple');
+        addLine('          wrong about that too."', 'purple');
         setCurrentInputHandler(null);
         setTimeout(() => completeMission(8), 1200);
       } else {
@@ -226,7 +277,7 @@ function runS2M1Phase() {
         } else {
           addLine(`[REJECTED] ${failed.map(f => '✗ ' + f.msg).join(' | ')}`, 'error');
         }
-        addLine('AI CORE: "Check each rule. Adjust and try again."', 'purple');
+        addLine('AI CORE: "Think about structure: which positions are locked by rules 2 and 3? Where can the symbols go?"', 'purple');
       }
     });
   }
