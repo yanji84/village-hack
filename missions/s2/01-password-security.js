@@ -93,15 +93,17 @@ function runS2M1Phase() {
     });
   } else if (s.phase === 1) {
     // Phase 2: Password strength / combinatorics
-    addLine('\u2501\u2501\u2501 Backdoor #2: Password Strength \u2501\u2501\u2501', 'highlight');
-    addLine('AI CORE: "Before we crack the next backdoor, I need you to', 'purple');
-    addLine('          understand WHY some passwords are harder to crack', 'purple');
-    addLine('          than others. The answer is MATH."', 'purple');
+    addLine('━━━ LAYER 2 of 3: Password Strength ━━━', 'highlight');
     addLine('', '');
-    addLine('AI CORE: "Imagine a lock with 2 digit wheels, each 0-9.', 'purple');
-    addLine('          How many possible combinations are there?"', 'purple');
+    addLine('AI CORE: "VICTOR chose a short, simple password for his', 'purple');
+    addLine('          first lock. Sloppy. But his next layer is about', 'purple');
+    addLine('          WHY longer passwords are harder to crack."', 'purple');
     addLine('', '');
-    addPre('  Digit 1: 10 options (0-9)\n  Digit 2: 10 options (0-9)\n\n  Total = 10 x 10 = ???');
+    addLine('AI CORE: "The answer is math. Picture a combination lock', 'purple');
+    addLine('          with 2 digit wheels, each going from 0-9.', 'purple');
+    addLine('          How many possible combinations?"', 'purple');
+    addLine('', '');
+    addPre('  ┌──────────┐  ┌──────────┐\n  │ Wheel 1   │  │ Wheel 2   │\n  │ 10 options │  │ 10 options │\n  │  (0-9)    │  │  (0-9)    │\n  └──────────┘  └──────────┘\n\n  Total = 10 × 10 = ???');
     addLine('', '');
     addLine('Type the total number of combinations:', 'warning');
 
@@ -121,46 +123,56 @@ function runS2M1Phase() {
           s.comboStep = 1;
         } else {
           sound.denied();
-          addLine('[WRONG] Multiply the options per position. 10 \u00d7 10 = ?', 'error');
+          addLine('[ALMOST] Each wheel has 10 options. Multiply them: 10 × 10 = ?', 'error');
         }
       } else if (s.comboStep === 1) {
         if (n === 676) {
           sound.success();
-          addLine('[CORRECT] 26 \u00d7 26 = 676 combinations.', 'success');
-          addLine('AI CORE: "See the jump? Just letters instead of digits', 'purple');
-          addLine('          and it went from 100 to 676. Nearly 7 times', 'purple');
-          addLine('          harder to brute-force."', 'purple');
+          addLine('[CORRECT] 26 × 26 = 676 combinations.', 'success');
           addLine('', '');
-          addLine('AI CORE: "Now: what if you use letters AND digits (36', 'purple');
-          addLine('          options per position) and make it 4 positions', 'purple');
+          addLine('AI CORE: "See the jump? Just switching from digits to', 'purple');
+          addLine('          letters took us from 100 to 676. That\'s nearly', 'purple');
+          addLine('          7× harder to guess!"', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "Now the big one. What if you use letters AND', 'purple');
+          addLine('          digits (36 options) and make it 4 positions', 'purple');
           addLine('          long? How many combinations?"', 'purple');
-          addLine('  36 \u00d7 36 \u00d7 36 \u00d7 36 = ???', 'info');
-          addLine('(Hint: 36\u00d736=1296. Then 1296\u00d736=46656. Then \u00d736 again.)', 'info');
+          addLine('', '');
+          addLine('  36 × 36 × 36 × 36 = ???', 'info');
+          addLine('  (Hint: 36×36=1296. Then 1296×36=46656. Then ×36 again.)', 'info');
           s.comboStep = 2;
         } else {
           sound.denied();
-          addLine('[WRONG] 26 \u00d7 26 = ?', 'error');
+          addLine('[ALMOST] Same idea — multiply the options. 26 × 26 = ?', 'error');
         }
       } else if (s.comboStep === 2) {
         if (n === 1679616) {
           sound.success();
-          addLine('[CORRECT] 36\u2074 = 1,679,616 combinations!', 'success');
-          addLine('AI CORE: "From 100 to over 1.6 MILLION, just by adding', 'purple');
-          addLine('          two more characters and mixing in letters. This', 'purple');
-          addLine('          is called COMBINATORIAL EXPLOSION."', 'purple');
-          addLine('AI CORE: "This is why longer passwords with mixed', 'purple');
-          addLine('          character types are so much harder to crack.', 'purple');
-          addLine('          Each extra character MULTIPLIES the difficulty.', 'purple');
-          addLine('          It doesn\'t just add to it."', 'purple');
-          addLine('AI CORE: "This math is why a 12-character password takes', 'purple');
-          addLine('          billions of years to brute-force, while a', 'purple');
-          addLine('          4-character one takes seconds."', 'purple');
+          addLine('', '');
+          addLine('>>> LAYER 2 CRACKED <<<', 'success big');
+          addLine('36⁴ = 1,679,616 combinations!', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Look at that. We went from 100 to over', 'purple');
+          addLine('          1.6 MILLION — just by adding two more', 'purple');
+          addLine('          characters and mixing in letters."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "Each extra character MULTIPLIES the total.', 'purple');
+          addLine('          It\'s like adding another wheel to a lock —', 'purple');
+          addLine('          not 10 more combinations, but 10 TIMES more."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "This is why a 4-character password can be', 'purple');
+          addLine('          cracked in seconds, but a 12-character one', 'purple');
+          addLine('          would take billions of years. Same idea,', 'purple');
+          addLine('          bigger numbers."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "One layer left. This one is different — you', 'purple');
+          addLine('          have to BUILD something, not crack it..."', 'purple');
           s.phase = 2;
           addLine('');
-          setTimeout(runS2M1Phase, 1000);
+          setTimeout(runS2M1Phase, 1500);
         } else {
           sound.denied();
-          addLine('[WRONG] 36 \u00d7 36 \u00d7 36 \u00d7 36. Try step by step: 36\u00d736=1296, then \u00d736, then \u00d736.', 'error');
+          addLine('[ALMOST] Go step by step: 36×36=1296, then 1296×36=46656, then ×36 one more time.', 'error');
         }
       }
     });
