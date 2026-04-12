@@ -182,26 +182,34 @@ function runS2M1Phase() {
           addLine('          That\'s why every extra character makes a', 'purple');
           addLine('          password exponentially harder to crack."', 'purple');
           addLine('', '');
-          addLine('AI CORE: "Now the big one. A password with 4', 'purple');
-          addLine('          characters, each can be a letter or digit', 'purple');
-          addLine('          (36 options). How many combinations?"', 'purple');
+          addLine('AI CORE: "Now the big question. A 4-digit PIN using', 'purple');
+          addLine('          only numbers (0-9) has 10×10×10×10 = 10,000', 'purple');
+          addLine('          combinations."', 'purple');
           addLine('', '');
-          addLine('  36 × 36 × 36 × 36 = ???', 'info');
-          addLine('  (Hint: 36×36=1296. Then 1296×36=46656. Then ×36 again.)', 'info');
+          addLine('AI CORE: "But real passwords mix in letters — that\'s 36', 'purple');
+          addLine('          choices per slot instead of 10. With 4 slots,', 'purple');
+          addLine('          does the total jump closer to..."', 'purple');
+          addLine('', '');
+          addPre('   A)  ~40,000     (about 4× more)\n   B)  ~1,600,000  (about 160× more)');
+          addLine('', '');
+          addLine('Type A or B:', 'warning');
           s.comboStep = 2;
         } else {
           sound.denied();
           addLine('[THINK ABOUT IT] You had 100 combos with 2 wheels. A 3rd wheel gives each of those 100 combos 10 new endings. Is that +10 or ×10?', 'error');
         }
       } else if (s.comboStep === 2) {
-        if (n === 1679616) {
+        const answer = input.trim().toUpperCase();
+        if (answer === 'B') {
           sound.success();
           addLine('', '');
           addLine('>>> LAYER 2 CRACKED <<<', 'success big');
           addLine('36⁴ = 1,679,616 combinations!', 'success');
           addLine('', '');
-          addLine('AI CORE: "From 100 to 1.6 MILLION. Just two more', 'purple');
-          addLine('          characters and mixing in letters did that."', 'purple');
+          addLine('AI CORE: "Not 4× more — ONE HUNDRED AND SIXTY-EIGHT', 'purple');
+          addLine('          times more! Each slot multiplied by 36 instead', 'purple');
+          addLine('          of 10, and that difference COMPOUNDS across', 'purple');
+          addLine('          every slot."', 'purple');
           addLine('', '');
           addLine('AI CORE: "Think about your name on a video game', 'purple');
           addLine('          scoreboard — 3 letters, just uppercase. That\'s', 'purple');
@@ -218,9 +226,12 @@ function runS2M1Phase() {
           s.phase = 2;
           addLine('');
           setTimeout(runS2M1Phase, 1800);
+        } else if (answer === 'A') {
+          sound.denied();
+          addLine('[NOT QUITE] Think about what you just learned — each slot MULTIPLIES. Going from 10 to 36 choices doesn\'t add a little at each slot. It multiplies at EVERY position!', 'error');
         } else {
           sound.denied();
-          addLine('[YOU\'RE CLOSE] Take it step by step: 36×36 = 1,296. Then 1,296 × 36 = 46,656. One more × 36...', 'error');
+          addLine('[TYPE A or B] Which is closer — 40,000 or 1,600,000?', 'error');
         }
       }
     });
