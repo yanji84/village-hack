@@ -752,7 +752,7 @@ function startModule3() {
       sound.denied();
       s.wrongCount++;
       if (s.wrongCount >= 3) {
-        addLine('NEXUS: "I back 3 = F. L back 3 = I. Y back 3 = V. H back 3 = E. Read them together."', 'error');
+        addLine('NEXUS: "Letter by letter: I\u2192F, L\u2192I, Y\u2192V, H\u2192E. Read them together."', 'error');
       } else if (s.wrongCount >= 2) {
         addLine('NEXUS: "First letter: I. Count back 3: I\u2192H\u2192G\u2192F. That gives F. Now do L, Y, and H the same way."', 'error');
       } else {

@@ -448,8 +448,8 @@ async function runPhase1a() {
       sound.success();
       addLine('[CORRECT]', 'success');
       // Animate the execution path
-      const terminal = document.getElementById('terminal');
       (async () => {
+        const terminal = document.getElementById('terminal');
         await animateConditional(terminal, {
           lines: [
             'x = 10',

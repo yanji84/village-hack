@@ -222,6 +222,7 @@ async function animateHalfAdder(ha, a, b, sum, carry) {
 
 function addReplayButton(container, animationFn) {
   const btn = document.createElement('span');
+  btn.className = 'replay-btn';
   btn.textContent = '[ replay ]';
   btn.style.cssText = 'color: var(--cyan, #00ffff); cursor: pointer; font-size: 11px; opacity: 0.6; transition: opacity 0.2s; margin-top: 4px; display: inline-block;';
   btn.onmouseenter = () => btn.style.opacity = '1';
@@ -383,6 +384,7 @@ function runLogicPhase() {
           addLine('        These three rules are the foundation of EVERY', 'highlight');
           addLine('        computer ever built. Now let\'s combine them."', 'highlight');
           s.phase = 3;
+          setCurrentInputHandler(null);
           addLine('');
           setTimeout(runLogicPhase, 1200);
         } else {
@@ -545,8 +547,8 @@ function runLogicPhase() {
           if (s.halfAdder) {
             await animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
             // Remove any previous replay button
-            const oldBtn = s.halfAdderWrapper.querySelector('span');
-            if (oldBtn && oldBtn.textContent === '[ replay ]') oldBtn.remove();
+            const oldBtn = s.halfAdderWrapper.querySelector('.replay-btn');
+            if (oldBtn) oldBtn.remove();
             addReplayButton(s.halfAdderWrapper, async () => {
               resetHalfAdder(s.halfAdder);
               await animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
@@ -577,8 +579,8 @@ function runLogicPhase() {
             resetHalfAdder(s.halfAdder);
             await animateHalfAdder(s.halfAdder, 1, 0, 1, 0);
             // Remove any previous replay button
-            const oldBtn = s.halfAdderWrapper.querySelector('span');
-            if (oldBtn && oldBtn.textContent === '[ replay ]') oldBtn.remove();
+            const oldBtn = s.halfAdderWrapper.querySelector('.replay-btn');
+            if (oldBtn) oldBtn.remove();
             addReplayButton(s.halfAdderWrapper, async () => {
               resetHalfAdder(s.halfAdder);
               await animateHalfAdder(s.halfAdder, 1, 0, 1, 0);

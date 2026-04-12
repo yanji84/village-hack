@@ -103,6 +103,7 @@ function runRecoveryPhase() {
     setCurrentInputHandler((input) => {
       // 0011=3, 0101=5, z=3+5=8
       if (input.trim() === '8') {
+        setCurrentInputHandler(null);
         sound.success();
         addLine('[CORRECT] x=0011=3, y=0101=5, z=3+5=8.', 'success');
 
@@ -207,6 +208,7 @@ function runRecoveryPhase() {
       // b = 6+3 = 9
       const parts = input.trim().split(/[\s,]+/).map(Number);
       if (parts.length === 2 && parts[0] === 6 && parts[1] === 9) {
+        setCurrentInputHandler(null);
         sound.success();
         addLine('[CORRECT] a=6, b=9.', 'success');
 
@@ -341,6 +343,7 @@ function runRecoveryPhase() {
       // Reverse line 2: c was 24, before *2 it was 12
       // Reverse line 1: c=12 = a+b = 6+b, so b=6
       if (input.trim() === '6') {
+        setCurrentInputHandler(null);
         sound.success();
         addLine('[CORRECT] b = 6.', 'success');
         addLine('', '');

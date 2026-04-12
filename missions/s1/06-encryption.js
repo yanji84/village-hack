@@ -304,6 +304,8 @@ function showCipherPuzzle() {
     const guess = input.toUpperCase().trim();
     if (guess === p.plain) {
       sound.success();
+      // Clear handler immediately to prevent duplicate triggers during transitions
+      setCurrentInputHandler(null);
       addLine(`[DECODED] "${p.plain}" -- correct!`, 'success');
       s.cipherIdx++;
       if (s.cipherIdx >= cipherPuzzles.length) {

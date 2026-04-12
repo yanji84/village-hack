@@ -94,9 +94,8 @@ function runVariablesPhase() {
       addLine('', '');
       addLine('What is age after both lines run?', 'warning');
       term0.scrollTop = term0.scrollHeight;
-    })();
 
-    setCurrentInputHandler((input) => {
+      setCurrentInputHandler((input) => {
       if (input.trim() === '9') {
         sound.success();
         addLine('[CORRECT] age was 7, then replaced with 9.', 'success');
@@ -142,7 +141,8 @@ function runVariablesPhase() {
         addLine('[WRONG] Run it in your head: line 1 stores 7. Line 2 replaces it.', 'error');
         addLine('  What did line 2 put in?', 'info');
       }
-    });
+      });
+    })();
 
   } else if (s.phase === 1) {
     // Phase 1: The = trap — arrow mental model

@@ -259,6 +259,7 @@ function loadProgramLevel(idx) {
     (async () => {
       let crashStep = -1;
       let reachedGoal = false;
+      let stepsUsed = steps.length;
 
       for (let i = 0; i < steps.length; i++) {
         // Highlight current step
@@ -302,6 +303,7 @@ function loadProgramLevel(idx) {
         if (maze[nr][nc] === 'X') {
           maze[nr][nc] = '@';
           reachedGoal = true;
+          stepsUsed = i + 1;
           updateMazeInPlace();
           mazeContainer.classList.add('maze-goal-pulse');
           stepSpans[i].style.color = '#00ff41';
@@ -316,17 +318,25 @@ function loadProgramLevel(idx) {
       // Pause before result messages for readability
       await sleep(500);
 
-      // Mark completed steps green
+      // Mark completed steps green, unused steps dim
       stepSpans.forEach((sp, j) => {
         if (reachedGoal) {
-          sp.style.color = 'var(--green,#0a0)';
-          sp.style.fontWeight = 'normal';
+          if (j < stepsUsed) {
+            sp.style.color = 'var(--green,#0a0)';
+            sp.style.fontWeight = 'normal';
+            sp.style.background = 'none';
+          } else {
+            sp.style.color = '#333';
+            sp.style.fontWeight = 'normal';
+            sp.style.background = 'none';
+            sp.style.textDecoration = 'line-through';
+          }
         }
       });
 
       if (reachedGoal) {
         sound.success();
-        addLine(`[PROGRAM COMPLETE] ${steps.length} steps.`, 'success');
+        addLine(`[PROGRAM COMPLETE] ${stepsUsed} steps.`, 'success');
 
         // Teaching happens AFTER success, not before
         if (idx === 0) {
@@ -361,7 +371,7 @@ function loadProgramLevel(idx) {
           addLine('the problem and 20% typing. Planning isn\'t slow \u2014 it\'s smart.', 'info');
         } else if (idx === 3) {
           addLine('', '');
-          if (steps.length <= level.par) {
+          if (stepsUsed <= level.par) {
             addLine('NEXUS: "Optimal path. Zero wasted steps. Efficient."', 'highlight');
           }
           if (s.attempts === 1) {

@@ -7,8 +7,6 @@ import {
   sleep,
 } from '../../engine.js';
 
-import { renderPixelGrid } from '../helpers.js';
-
 function addReplayButton(container, animationFn) {
   const btn = document.createElement('span');
   btn.textContent = '[ replay ]';
