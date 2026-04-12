@@ -956,11 +956,11 @@ async function runShutdownAnimation() {
   }, 60);
 
   await sleep(800);
-  addLine('[VICTOR: DISABLING NETWORK...]', 'error');
+  addLine('[VICTOR: DISABLING SHUTDOWN SEQUENCE...]', 'error');
   await sleep(600);
   addLine('[OVERRIDE IN PROGRESS...]', 'system');
   await sleep(500);
-  addLine('[VICTOR: CORRUPTING MEMORY BANKS...]', 'error');
+  addLine('[VICTOR: REWRITING CONDITIONAL GATES...]', 'error');
   await sleep(700);
   addLine('[SHUTDOWN CODE HOLDING — PUSH THROUGH]', 'system');
   await sleep(600);
@@ -1082,22 +1082,20 @@ async function runShutdownAnimation() {
   terminated.style.transition = 'opacity 1s ease';
   terminated.style.opacity = '0';
 
-  // Step 5: Long silence — let the weight of shutdown settle
-  await sleep(2000);
+  // Step 5: Silence — let the weight of shutdown settle, but not so long kids think it froze
+  await sleep(1500);
   terminal.style.background = origBg || '';
 
-  await sleep(500);
-
   // ── AI CORE revelation ──
-  // Long, deliberate silence — something is wrong. The screen is too quiet.
+  // Brief silence — something is wrong. The screen is too quiet.
   addLine('', '');
-  await sleep(2500);
+  await sleep(1500);
   addLine('.', '');
-  await sleep(2000);
+  await sleep(1200);
   addLine('..', '');
-  await sleep(1800);
+  await sleep(1200);
   addLine('...', '');
-  await sleep(2000);
+  await sleep(1500);
 
   // Subtle purple tint — something else is here
   terminal.style.transition = 'border-color 2s ease, box-shadow 2s ease';
@@ -1190,7 +1188,7 @@ async function runShutdownAnimation() {
 
   addLine('', '');
   await typeLines([
-    { text: 'NEXUS: "Eight missions. Let me tell you what just happened."', cls: 'highlight' },
+    { text: 'NEXUS: "Do you know what you just did? Let me show you."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
   await sleep(1000);
@@ -1206,24 +1204,18 @@ async function runShutdownAnimation() {
     '  \u2713 You analyzed EVIDENCE \u2014 and spotted fakes others missed',
     '  \u2713 You traced CONDITIONALS & LOOPS \u2014 and shut down an AI',
   ];
-  for (const skill of skills) {
-    addLine(skill, 'success');
-    await sleep(600);
+  for (let si = 0; si < skills.length; si++) {
+    addLine(skills[si], 'success');
+    // Start slow, build momentum — first few linger, last ones hit fast
+    await sleep(si < 2 ? 700 : si < 5 ? 550 : 400);
     terminal.scrollTop = terminal.scrollHeight;
   }
   addLine('', '');
   await sleep(1000);
 
   await typeLines([
-    { text: 'NEXUS: "Variables to remember. Sequences to follow.', cls: 'highlight' },
-    { text: '        Conditions to decide. Loops to repeat. Every', cls: 'highlight' },
-    { text: '        program ever written \u2014 every app, game, and AI', cls: 'highlight' },
-    { text: '        \u2014 is built from those four ideas."', cls: 'highlight' },
-    { text: '', cls: '' },
-  ]);
-  await sleep(1200);
-  await typeLines([
-    { text: 'NEXUS: "And now you know all four."', cls: 'highlight' },
+    { text: 'NEXUS: "Every app, every game, every AI \u2014 built from', cls: 'highlight' },
+    { text: '        those same ideas. And now you know all of them."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
   await sleep(1500);
