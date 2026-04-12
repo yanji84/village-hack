@@ -22,16 +22,17 @@ export const mission = {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[BACKDOOR LOCATED] Protected by advanced password security.', cls: 'system' },
+      { text: '[SCANNING VILLAGE SYSTEMS...]', cls: 'system' },
+      { text: '[BACKDOOR DETECTED] Password security layer active.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "In Season 1, you cracked codes using deduction and', cls: 'purple' },
-      { text: '          patterns. Those are important skills. But real', cls: 'purple' },
-      { text: '          password security goes deeper."', cls: 'purple' },
+      { text: 'AI CORE: "Found one. VICTOR hid a backdoor behind three', cls: 'purple' },
+      { text: '          layers of password security. He thought no one', cls: 'purple' },
+      { text: '          would understand how they work."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Three concepts every hacker must understand:', cls: 'purple' },
-      { text: '          HASHING (how passwords are really stored), PASSWORD', cls: 'purple' },
-      { text: '          STRENGTH (why some are harder to crack than others),', cls: 'purple' },
-      { text: '          and CONSTRAINT SATISFACTION (building to meet rules)."', cls: 'purple' },
+      { text: 'AI CORE: "He was wrong. I will teach you the real thing —', cls: 'purple' },
+      { text: '          not tricks, not puzzles. The actual computer', cls: 'purple' },
+      { text: '          science behind passwords. Three layers, three', cls: 'purple' },
+      { text: '          breakthroughs. Let\'s seal this backdoor together."', cls: 'purple' },
       { text: '', cls: '' },
     ]);
 
@@ -45,20 +46,25 @@ function runS2M1Phase() {
 
   if (s.phase === 0) {
     // Phase 1: Hash cracking
-    addLine('\u2501\u2501\u2501 Backdoor #1: Hash Cracking \u2501\u2501\u2501', 'highlight');
-    addLine('AI CORE: "When you set a password on a website, they don\'t', 'purple');
-    addLine('          store your actual password. They store a HASH of', 'purple');
-    addLine('          it. A hash is a one-way mathematical fingerprint."', 'purple');
-    addLine('AI CORE: "Same input always gives the same hash. But you', 'purple');
-    addLine('          can\'t work backward from the hash to the input."', 'purple');
-    addLine('AI CORE: "Here\'s a simple hash function: add up each letter\'s', 'purple');
+    addLine('━━━ LAYER 1 of 3: Hash Cracking ━━━', 'highlight');
+    addLine('', '');
+    addLine('AI CORE: "When you make a password on a website, they don\'t', 'purple');
+    addLine('          save the actual word. They run it through a HASH', 'purple');
+    addLine('          function — like a secret fingerprint machine."', 'purple');
+    addLine('', '');
+    addLine('AI CORE: "You put a word in, you get a number out. Same word', 'purple');
+    addLine('          always gives the same number. But you can\'t go', 'purple');
+    addLine('          backwards — the number won\'t tell you the word."', 'purple');
+    addLine('', '');
+    addLine('AI CORE: "VICTOR\'s hash function: add up each letter\'s', 'purple');
     addLine('          position in the alphabet. A=1, B=2, ... Z=26."', 'purple');
-    addLine('AI CORE: "Example: CAT = C(3) + A(1) + T(20) = 24"', 'purple');
+    addLine('', '');
+    addLine('          Example: CAT = C(3) + A(1) + T(20) = <span class="highlight">24</span>', 'purple');
     addLine('', '');
     addLine('AI CORE: "The backdoor stores hash = <span class="highlight">40</span>. Which password', 'purple');
     addLine('          from this list has that hash?"', 'purple');
     addLine('', '');
-    addPre('  Candidates:  DOG  CAT  KIT  FOX  HEN  OWL\n\n  Letter values: A=1 B=2 C=3 D=4 E=5 F=6 G=7 H=8 I=9\n                 J=10 K=11 L=12 M=13 N=14 O=15 P=16 Q=17\n                 R=18 S=19 T=20 U=21 V=22 W=23 X=24 Y=25 Z=26');
+    addPre('  ┌─────────────────────────────────────┐\n  │  Candidates:                         │\n  │                                       │\n  │    DOG    CAT    KIT    FOX    HEN    │\n  │                                       │\n  └─────────────────────────────────────┘\n\n   A=1  B=2  C=3  D=4  E=5  F=6  G=7\n   H=8  I=9  J=10 K=11 L=12 M=13 N=14\n   O=15 P=16 Q=17 R=18 S=19 T=20 U=21\n   V=22 W=23 X=24 Y=25 Z=26');
     addLine('', '');
     addLine('Which password has hash = 40? (Compute the sum for each)', 'warning');
 
@@ -66,17 +72,23 @@ function runS2M1Phase() {
       // KIT = K(11) + I(9) + T(20) = 40
       if (input.toUpperCase().trim() === 'KIT') {
         sound.success();
-        addLine('[CRACKED] K(11) + I(9) + T(20) = 40. Password is KIT.', 'success');
-        addLine('AI CORE: "You just did what a hash cracker does. Compute', 'purple');
-        addLine('          the hash for each candidate, compare to the', 'purple');
-        addLine('          target. Real hash functions are much more complex,', 'purple');
-        addLine('          but the idea is identical."', 'purple');
+        addLine('', '');
+        addLine('>>> LAYER 1 CRACKED <<<', 'success big');
+        addLine('K(11) + I(9) + T(20) = 40. Password is KIT.', 'success');
+        addLine('', '');
+        addLine('AI CORE: "That\'s exactly what a real hash cracker does —', 'purple');
+        addLine('          try each candidate, compute its fingerprint,', 'purple');
+        addLine('          and compare. Real hash functions are far more', 'purple');
+        addLine('          complex, but the idea is the same."', 'purple');
+        addLine('', '');
+        addLine('AI CORE: "One layer down. But VICTOR\'s next lock is', 'purple');
+        addLine('          about the MATH of why passwords are strong..."', 'purple');
         s.phase = 1;
         addLine('');
-        setTimeout(runS2M1Phase, 1000);
+        setTimeout(runS2M1Phase, 1500);
       } else {
         sound.denied();
-        addLine('[WRONG] Add up the letter values for each candidate. Which sum = 40?', 'error');
+        addLine('[NOT QUITE] Try each word — add up the letters. Example: DOG = D(4) + O(15) + G(7) = 26. Which one makes 40?', 'error');
       }
     });
   } else if (s.phase === 1) {
