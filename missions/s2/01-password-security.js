@@ -84,7 +84,7 @@ function runS2M1Phase() {
         if (input.toUpperCase().trim() === 'KIT') {
           sound.success();
           addLine('', '');
-          addLine('[CORRECT] K(11) + I(9) + T(20) = 40 ✓', 'success');
+          addLine('[MATCH FOUND] K(11) + I(9) + T(20) = 40 ✓', 'success');
           addLine('', '');
           addLine('AI CORE: "Good. Now here\'s the twist. Look at this', 'purple');
           addLine('          other word: LINE."', 'purple');
@@ -100,7 +100,7 @@ function runS2M1Phase() {
           s.hashStep = 1;
         } else {
           sound.denied();
-          addLine('[NOT QUITE] Add up the letters. DOG = D(4)+O(15)+G(7) = 26. FOX = F(6)+O(15)+X(24) = 45. What about KIT?', 'error');
+          addLine('[CLOSE] I\'ll help — DOG = D(4)+O(15)+G(7) = 26. FOX = F(6)+O(15)+X(24) = 45. Try the last one!', 'error');
         }
       } else if (s.hashStep === 1) {
         if (input.toUpperCase().trim() === 'YES') {
@@ -128,7 +128,7 @@ function runS2M1Phase() {
           setTimeout(runS2M1Phase, 1800);
         } else {
           sound.denied();
-          addLine('[THINK AGAIN] The system only sees the number 40. It checks: does your input produce 40? What happens when you type LINE?', 'error');
+          addLine('[ALMOST] Remember — the system only sees the number 40. Both KIT and LINE produce 40. So what happens if someone types LINE?', 'error');
         }
       }
     });
@@ -156,7 +156,7 @@ function runS2M1Phase() {
       if (s.comboStep === 0) {
         if (n === 100) {
           sound.success();
-          addLine('[CORRECT] 10 × 10 = 100 combinations.', 'success');
+          addLine('[GOT IT] 10 × 10 = 100 combinations!', 'success');
           addLine('', '');
           addLine('AI CORE: "Good. Now you add just ONE more digit wheel.', 'purple');
           addLine('          Three wheels total, still 0-9 each."', 'purple');
@@ -170,12 +170,12 @@ function runS2M1Phase() {
           s.comboStep = 1;
         } else {
           sound.denied();
-          addLine('[ALMOST] Each wheel has 10 options. Multiply them: 10 × 10 = ?', 'error');
+          addLine('[KEEP GOING] Each wheel has 10 options. When you combine them, you multiply: 10 × 10 = ?', 'error');
         }
       } else if (s.comboStep === 1) {
         if (n === 1000) {
           sound.success();
-          addLine('[CORRECT] 10 × 10 × 10 = 1,000!', 'success');
+          addLine('[YES] 10 × 10 × 10 = 1,000! One wheel → ten TIMES more.', 'success');
           addLine('', '');
           addLine('AI CORE: "Not 110 — one THOUSAND. Adding a wheel', 'purple');
           addLine('          doesn\'t add options, it MULTIPLIES them.', 'purple');
@@ -191,7 +191,7 @@ function runS2M1Phase() {
           s.comboStep = 2;
         } else {
           sound.denied();
-          addLine('[NOT QUITE] With 2 wheels you had 100. A 3rd wheel adds 10 more options PER existing combination. Is that +10 or ×10?', 'error');
+          addLine('[THINK ABOUT IT] You had 100 combos with 2 wheels. A 3rd wheel gives each of those 100 combos 10 new endings. Is that +10 or ×10?', 'error');
         }
       } else if (s.comboStep === 2) {
         if (n === 1679616) {
@@ -220,7 +220,7 @@ function runS2M1Phase() {
           setTimeout(runS2M1Phase, 1800);
         } else {
           sound.denied();
-          addLine('[ALMOST] Go step by step: 36×36=1296, then 1296×36=46656, then ×36 one more time.', 'error');
+          addLine('[YOU\'RE CLOSE] Take it step by step: 36×36 = 1,296. Then 1,296 × 36 = 46,656. One more × 36...', 'error');
         }
       }
     });
@@ -289,7 +289,7 @@ function runS2M1Phase() {
         } else {
           addLine(`[REJECTED] ${failed.map(f => '✗ ' + f.msg).join(' | ')}`, 'error');
         }
-        addLine('AI CORE: "Think about structure: which positions are locked by rules 2 and 3? Where can the symbols go?"', 'purple');
+        addLine('AI CORE: "You\'re getting there. Start with what you know: position 1 must be a letter, position 5 must be a digit. Now — where can the symbols fit?"', 'purple');
       }
     });
   }
