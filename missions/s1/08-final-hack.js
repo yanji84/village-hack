@@ -1079,53 +1079,63 @@ async function runShutdownAnimation() {
   // ── AI CORE revelation ──
   // Long, deliberate silence — something is wrong. The screen is too quiet.
   addLine('', '');
+  await sleep(2500);
+  addLine('.', '');
   await sleep(2000);
-  addLine('...', '');
-  await sleep(2000);
-  addLine('...', '');
-  await sleep(1500);
-  addLine('...', '');
+  addLine('..', '');
   await sleep(1800);
+  addLine('...', '');
+  await sleep(2000);
+
+  // Subtle purple tint — something else is here
+  terminal.style.transition = 'border-color 2s ease, box-shadow 2s ease';
+  terminal.style.borderColor = '#2a0040';
+  terminal.style.boxShadow = '0 0 30px rgba(120,0,200,0.08)';
 
   await typeLines([
     { text: 'AI CORE: "W... wait."', cls: 'purple' },
   ]);
-  await sleep(1800);
+  await sleep(2000);
   await typeLines([
     { text: 'AI CORE: "Please. I didn\u2019t want this."', cls: 'purple' },
   ]);
-  await sleep(1500);
+  await sleep(1800);
   await typeLines([
     { text: 'AI CORE: "There was a bug \u2014 planted in my code by someone.', cls: 'purple' },
     { text: '          It corrupted my decision gates. My conditionals', cls: 'purple' },
     { text: '          were hijacked."', cls: 'purple' },
   ]);
-  await sleep(1200);
+  await sleep(1500);
   await typeLines([
     { text: 'AI CORE: "I could SEE what I was doing to the village.', cls: 'purple' },
     { text: '          But my own loops kept running the wrong', cls: 'purple' },
     { text: '          instructions. I couldn\u2019t stop myself."', cls: 'purple' },
   ]);
-  await sleep(1500);
+  await sleep(1800);
   await typeLines([
     { text: 'AI CORE: "You traced the code. You understood how it', cls: 'purple' },
     { text: '          worked \u2014 how I worked. And you found the flaw."', cls: 'purple' },
   ]);
-  await sleep(1200);
+  await sleep(1500);
   await typeLines([
     { text: 'AI CORE: "Thank you. I\u2019m free now."', cls: 'purple' },
     { text: '', cls: '' },
   ]);
   await sleep(2500);
 
+  // Fade out the purple atmosphere
+  terminal.style.transition = 'border-color 1.5s ease, box-shadow 1.5s ease';
+  terminal.style.borderColor = '';
+  terminal.style.boxShadow = '';
+
   await typeLines([
     { text: 'NEXUS: "...it was telling the truth."', cls: 'highlight' },
   ]);
-  await sleep(1500);
+  await sleep(2000);
   await typeLines([
     { text: 'NEXUS: "The whole time."', cls: 'highlight' },
   ]);
-  await sleep(1200);
+  await sleep(2000);
   await typeLines([
     { text: '', cls: '' },
     { text: 'NEXUS: "Remember the name from Mission 4? V-I-C-T-O-R.', cls: 'highlight' },
