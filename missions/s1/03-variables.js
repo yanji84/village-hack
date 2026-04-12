@@ -26,11 +26,11 @@ export const mission = {
   num: '03',
   title: 'VARIABLES & MEMORY',
   name: 'Variables & Memory',
-  desc: 'Computers remember things by giving them NAMES. Learn to track values as they change \u2014 the foundation of all code.',
+  desc: 'The AI stores secrets in named memory slots. Learn how variables work so you can read them.',
   skill: 'SKILL: Variables + State + Mental Execution',
   hints: [
-    'Read each line in order. When a variable changes, cross out the old value and write the new one.',
-    'The RIGHT side of = is computed FIRST, using whatever value the variable has RIGHT NOW.',
+    'Read each line top to bottom. When a variable gets a new value, the old one is DESTROYED.',
+    'The RIGHT side of = is computed FIRST, using whatever value the variable holds RIGHT NOW.',
     'x = x + 1 means: take the CURRENT value of x, add 1, then store the result back into x.',
   ],
   run: async function() {
@@ -38,10 +38,12 @@ export const mission = {
 
     await typeLines([
       { text: '[SYSTEM] Partial access to AI memory granted.', cls: 'system' },
+      { text: '[SYSTEM] WARNING: Memory contents are volatile.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "I got partial access to the AI\'s memory. But to', cls: 'highlight' },
-      { text: '        read it, you need to understand how computers', cls: 'highlight' },
-      { text: '        remember things. They use VARIABLES."', cls: 'highlight' },
+      { text: 'NEXUS: "I cracked open part of the AI\'s memory. It stores', cls: 'highlight' },
+      { text: '        everything in named slots \u2014 programmers call them', cls: 'highlight' },
+      { text: '        VARIABLES. If you want to read its secrets, you', cls: 'highlight' },
+      { text: '        need to understand how these slots work."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -57,9 +59,10 @@ function runVariablesPhase() {
   const s = state.missionState;
 
   if (s.phase === 0) {
-    // Phase 0: The box metaphor — visual + first interaction fast
-    addLine('NEXUS: "A variable is like a scoreboard. The NAME stays', 'highlight');
-    addLine('        the same, but the NUMBER on it can change."', 'highlight');
+    // Phase 0: The slot metaphor — visual + first interaction fast
+    addLine('NEXUS: "A variable is a named slot that holds ONE value.', 'highlight');
+    addLine('        The name stays the same, but what\'s inside can', 'highlight');
+    addLine('        change. Watch \u2014 this is the AI\'s score slot:"', 'highlight');
     addLine('', '');
 
     // Show animated box so the kid SEES the concept, not just reads it
@@ -80,13 +83,14 @@ function runVariablesPhase() {
       await sleep(500);
 
       addLine('', '');
-      addLine('NEXUS: "See? The 0 is GONE. A variable only holds ONE', 'highlight');
-      addLine('        value at a time. New value in, old value erased."', 'highlight');
+      addLine('NEXUS: "The 0 got destroyed. A variable can only hold ONE', 'highlight');
+      addLine('        value at a time. When a new value goes in, the', 'highlight');
+      addLine('        old one is gone forever."', 'highlight');
       addLine('', '');
-      addLine('NEXUS: "Your turn. I run these two lines:"', 'highlight');
+      addLine('NEXUS: "Let me test you. What happens here?"', 'highlight');
       addPre('  1  age = 7\n  2  age = 9');
       addLine('', '');
-      addLine('What is age now?', 'warning');
+      addLine('What is age after both lines run?', 'warning');
       term0.scrollTop = term0.scrollHeight;
     })();
 
@@ -129,33 +133,36 @@ function runVariablesPhase() {
         })();
       } else if (input.trim() === '7') {
         sound.denied();
-        addLine('[WRONG] Line 2 REPLACED the value. age was 7, then became 9.', 'error');
+        addLine('[NOT QUITE] 7 was there first, but line 2 overwrites it.', 'error');
+        addLine('  The slot can only hold one value. Line 2 puts in 9. What survives?', 'info');
       } else {
         sound.denied();
-        addLine('[WRONG] Line 1 puts 7 in. Line 2 replaces it with 9. What\'s left?', 'error');
+        addLine('[WRONG] Run it in your head: line 1 stores 7. Line 2 replaces it.', 'error');
+        addLine('  What did line 2 put in?', 'info');
       }
     });
 
   } else if (s.phase === 1) {
     // Phase 1: The = trap — arrow mental model
-    addLine('\u2501\u2501\u2501 The = Trap \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "WARNING. This trips up everyone. In math class, =', 'highlight');
-    addLine('        means \'is equal to.\' In code, = means something', 'highlight');
-    addLine('        completely different."', 'highlight');
+    addLine('\u2501\u2501\u2501 The = Sign Is a Lie \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "This next part trips up EVERYONE. Even adults who', 'highlight');
+    addLine('        should know better. Ready?"', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "In code, = means: take the thing on the RIGHT,', 'highlight');
-    addLine('        and PUT it INTO the box on the LEFT."', 'highlight');
+    addLine('NEXUS: "In math class, = means \'is equal to.\'', 'highlight');
+    addLine('        In code, = means something totally different.', 'highlight');
+    addLine('        It means: COMPUTE the right side, then STORE', 'highlight');
+    addLine('        the result in the left side."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Read it like an arrow:"', 'highlight');
+    addLine('NEXUS: "Think of = as an arrow pointing LEFT:"', 'highlight');
     addLine('', '');
-    addPre('  x = 5        means    5 \u2192 x      put 5 into x\n  x = x + 1    means    x+1 \u2192 x    take x, add 1, store it back');
+    addPre('  x = 5        means    5 \u2192 x      store 5 into x\n  x = x + 1    means    x+1 \u2192 x    compute x+1, store it back');
     addLine('', '');
-    addLine('NEXUS: "In math, x = x + 1 is impossible. Nothing equals', 'highlight');
-    addLine('        itself plus one. But in code, it happens a MILLION', 'highlight');
-    addLine('        times a day. It just means: take the current x,', 'highlight');
-    addLine('        add 1, put the result back into x."', 'highlight');
+    addLine('NEXUS: "x = x + 1 looks impossible in math. Nothing can', 'highlight');
+    addLine('        equal itself plus one! But in code it just means:', 'highlight');
+    addLine('        grab the current x, add 1, put the answer back.', 'highlight');
+    addLine('        The AI does this thousands of times a second."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Try it:"', 'highlight');
+    addLine('NEXUS: "Your turn. Trace this:"', 'highlight');
     addPre('  1  x = 3\n  2  x = x + 2');
     addLine('', '');
     addLine('What is x after line 2?', 'warning');
@@ -163,13 +170,14 @@ function runVariablesPhase() {
     setCurrentInputHandler((input) => {
       if (input.trim() === '5') {
         sound.success();
-        addLine('[CORRECT] x starts at 3. Line 2: take 3, add 2, store 5 back.', 'success');
-        addLine('NEXUS: "Read = as an arrow. Right side computed first,', 'highlight');
-        addLine('        result goes into the left side. Every time."', 'highlight');
+        addLine('[CORRECT] x starts at 3. Then x + 2 = 3 + 2 = 5, stored back into x.', 'success');
+        addLine('', '');
+        addLine('NEXUS: "You\'re reading code like a real hacker now.', 'highlight');
+        addLine('        Right side first, result into the left side."', 'highlight');
         addLine('', '');
 
         // Animated demo: show x changing from 3 to 5
-        addLine('NEXUS: "Watch the value get replaced:"', 'highlight');
+        addLine('NEXUS: "Watch it happen in the AI\'s memory:"', 'highlight');
         const term = getTerminal();
         const wrapper1 = document.createElement('div');
         const xBox = createBoxElement('x');
@@ -195,32 +203,32 @@ function runVariablesPhase() {
           await updateBoxValue(xBox, '5');
           await sleep(600);
           addReplayButton(wrapper1, replayPhase1);
-          addLine('NEXUS: "3 is gone. 5 took its place."', 'highlight');
+          addLine('NEXUS: "3 is gone. Destroyed. 5 took its place."', 'highlight');
           s.phase = 2;
           addLine('');
           setTimeout(runVariablesPhase, 800);
         })();
       } else if (input.trim() === '3') {
         sound.denied();
-        addLine('[WRONG] x doesn\'t stay at 3. Line 2 changes it.', 'error');
-        addLine('  x = x + 2 means: take x (which is 3), add 2. What\'s 3 + 2?', 'info');
+        addLine('[NOT QUITE] x starts at 3, but line 2 changes it.', 'error');
+        addLine('  Read it as an arrow: x + 2 \u2192 x. That\'s 3 + 2 \u2192 x. What goes in?', 'info');
       } else if (input.trim() === '2') {
         sound.denied();
-        addLine('[WRONG] x + 2 doesn\'t mean "just 2." The x has a value!', 'error');
-        addLine('  x is 3 right now. So x + 2 = 3 + 2 = ?', 'info');
+        addLine('[WRONG] Don\'t ignore the x! It has a value already.', 'error');
+        addLine('  x is 3, so x + 2 means 3 + 2. What\'s that?', 'info');
       } else {
         sound.denied();
-        addLine('[WRONG] Go line by line. Line 1: x = 3. Now x is 3.', 'error');
-        addLine('  Line 2: x = x + 2. Replace x with 3: 3 + 2 = ?', 'info');
+        addLine('[WRONG] Use the arrow trick. Line 1: x = 3.', 'error');
+        addLine('  Line 2: x = x + 2. Substitute: x = 3 + 2. What\'s 3 + 2?', 'info');
       }
     });
 
   } else if (s.phase === 2) {
     // Phase 2: Copy, not link — teach then test
-    addLine('\u2501\u2501\u2501 Tricky One \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Here\'s something that tricks almost everyone.', 'highlight');
-    addLine('        Remember: = COPIES the value. It doesn\'t create', 'highlight');
-    addLine('        a connection between the variables."', 'highlight');
+    addLine('\u2501\u2501\u2501 The Snapshot Rule \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "This next one is the trap I fell into when I was', 'highlight');
+    addLine('        learning. When you write b = a, it COPIES the', 'highlight');
+    addLine('        value. It does NOT link the two variables together."', 'highlight');
     addLine('', '');
     addPre('  1  a = 5\n  2  b = a\n  3  a = 99');
     addLine('', '');
@@ -229,14 +237,15 @@ function runVariablesPhase() {
     setCurrentInputHandler((input) => {
       if (input.trim() === '5') {
         sound.success();
-        addLine('[CORRECT] b is 5.', 'success');
+        addLine('[CORRECT] b is still 5!', 'success');
         addLine('', '');
-        addLine('NEXUS: "You got it! Most people think b = a LINKS them', 'highlight');
-        addLine('        together. It doesn\'t. It COPIES the value."', 'highlight');
+        addLine('NEXUS: "Most people get that wrong. They think b = a', 'highlight');
+        addLine('        creates a LINK \u2014 that b will always match a.', 'highlight');
+        addLine('        But it doesn\'t. It takes a SNAPSHOT."', 'highlight');
         addLine('', '');
-        addLine('NEXUS: "Think of it like a photo. b = a takes a SNAPSHOT', 'highlight');
-        addLine('        of a\'s value right now. If a changes later, the', 'highlight');
-        addLine('        photo doesn\'t update."', 'highlight');
+        addLine('NEXUS: "Like taking a photo. b = a photographs a\'s value', 'highlight');
+        addLine('        RIGHT NOW. If a changes later, the photo stays', 'highlight');
+        addLine('        the same. b has its own separate copy."', 'highlight');
         addLine('', '');
 
         // Animated demo: two boxes side by side showing copy behavior
@@ -290,30 +299,32 @@ function runVariablesPhase() {
       } else if (input.trim() === '99') {
         sound.denied();
         addLine('', '');
-        addLine('NEXUS: "That\'s the mistake almost everyone makes. You', 'highlight');
-        addLine('        thought b = a LINKS them \u2014 like b always equals', 'highlight');
-        addLine('        whatever a is. But it doesn\'t work that way."', 'highlight');
+        addLine('NEXUS: "That\'s exactly the trap! You assumed b = a LINKS', 'highlight');
+        addLine('        them together. Almost everyone thinks that."', 'highlight');
         addLine('', '');
-        addLine('NEXUS: "b = a means: look at a RIGHT NOW (it\'s 5), COPY', 'highlight');
-        addLine('        that value into b. Done. After that, b has its', 'highlight');
-        addLine('        own 5. When a changes to 99 in line 3, b still', 'highlight');
-        addLine('        has the 5 it got earlier."', 'highlight');
+        addLine('NEXUS: "But b = a just means: look at a RIGHT NOW \u2014 it\'s', 'highlight');
+        addLine('        5 \u2014 and COPY that number into b. After that, b', 'highlight');
+        addLine('        has its own separate 5. Think of it like taking', 'highlight');
+        addLine('        a photo. If a changes later, the photo doesn\'t', 'highlight');
+        addLine('        magically update."', 'highlight');
         addLine('', '');
-        addLine('NEXUS: "Think of it like taking a photo. b = a takes a', 'highlight');
-        addLine('        PHOTO of a\'s value. If a changes later, the', 'highlight');
-        addLine('        photo doesn\'t update. It\'s a snapshot."', 'highlight');
+        addLine('NEXUS: "Line 3 changes a to 99. But b still has the 5', 'highlight');
+        addLine('        it copied earlier. So what is b?"', 'highlight');
         addLine('', '');
-        addLine('So what is b?', 'warning');
+        addLine('Try again. What is b?', 'warning');
       } else {
         sound.denied();
-        addLine('[WRONG] After line 2, b got a value from a. After line 3, a changed. Did b change too?', 'error');
+        addLine('[WRONG] Think step by step:', 'error');
+        addLine('  Line 2 copies a\'s current value into b. What was a at that moment?', 'info');
+        addLine('  Line 3 changes a, but does that affect b\'s copy?', 'info');
       }
     });
 
   } else if (s.phase === 3) {
     // Phase 3: Put it all together — numbers only
-    addLine('\u2501\u2501\u2501 Put It All Together \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Everything you learned in one problem. Trace it."', 'highlight');
+    addLine('\u2501\u2501\u2501 Decode the AI\'s Memory \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "I pulled this from the AI\'s memory log. Every', 'highlight');
+    addLine('        rule you just learned is in here. Trace it."', 'highlight');
     addLine('', '');
     addPre('  1  x = 10\n  2  y = x\n  3  x = x + 5\n  4  y = y - 2');
     addLine('', '');
@@ -377,19 +388,20 @@ function runVariablesPhase() {
           addReplayButton(wrapper3, replayPhase3);
 
           addLine('', '');
-          addLine('NEXUS: "Assignment, overwriting, the arrow rule, and', 'highlight');
-          addLine('        snapshots \u2014 all in four lines. You nailed it."', 'highlight');
+          addLine('NEXUS: "Overwriting, the arrow rule, and snapshots \u2014', 'highlight');
+          addLine('        all in four lines. You traced that perfectly."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "Three missions, three pillars:', 'highlight');
-          addLine('        DATA (binary) \u2014 how computers store things.', 'highlight');
-          addLine('        INSTRUCTIONS (programs) \u2014 how they do things.', 'highlight');
-          addLine('        MEMORY (variables) \u2014 how they remember things.', 'highlight');
-          addLine('        Everything in CS is built from these three."', 'highlight');
+          addLine('NEXUS: "You now understand the three foundations:', 'highlight');
+          addLine('        DATA \u2014 how machines store things (binary).', 'highlight');
+          addLine('        INSTRUCTIONS \u2014 how they act (programs).', 'highlight');
+          addLine('        MEMORY \u2014 how they remember (variables).', 'highlight');
+          addLine('        Every system ever built rests on these three."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "I found something in the AI\'s memory. A variable', 'highlight');
-          addLine('        called target_count. It keeps going up. The AI', 'highlight');
-          addLine('        is counting something... or someone. I need to', 'highlight');
-          addLine('        recover more of its memory to find out what."', 'highlight');
+          addLine('NEXUS: "Wait. I just found something in the AI\'s', 'highlight');
+          addLine('        memory. A variable called target_count. Its', 'highlight');
+          addLine('        value keeps incrementing \u2014 going up by one,', 'highlight');
+          addLine('        over and over. The AI is counting something.', 'highlight');
+          addLine('        ...Or someone. I need to dig deeper."', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
           setCurrentInputHandler(() => {
@@ -400,23 +412,26 @@ function runVariablesPhase() {
       } else if (parts.length === 2 && parts[0] === 15 && parts[1] === 13) {
         // Common mistake: thinking y tracks x, so y = 15 - 2 = 13
         sound.denied();
-        addLine('[WRONG] Close! x=15 is right, but y didn\'t follow x.', 'error');
-        addLine('  Remember the snapshot rule: y got a COPY of 10 at line 2.', 'info');
-        addLine('  x changed to 15, but y still has 10. Then line 4: 10 - 2 = ?', 'info');
+        addLine('[ALMOST] x=15 is right! But you fell into the snapshot trap.', 'error');
+        addLine('  You used 15 - 2 = 13, meaning you thought y tracked x.', 'info');
+        addLine('  But y got a COPY of 10 at line 2. It never changed when x did.', 'info');
+        addLine('  So line 4 is: y = 10 - 2 = ?', 'info');
       } else if (parts.length === 2 && parts[0] === 15) {
         // x is right, y is wrong (but not 13)
         sound.denied();
-        addLine('[WRONG] x=15 is right! For y: it got a COPY of 10 at line 2.', 'error');
-        addLine('  Then line 4 does y = y - 2. So: 10 - 2 = ?', 'info');
+        addLine('[PARTIAL] x=15 is right! Now for y:', 'error');
+        addLine('  y got a COPY of x\'s value (10) at line 2. x changed later,', 'info');
+        addLine('  but y still has 10. Then line 4: y = 10 - 2 = ?', 'info');
       } else if (parts.length === 1) {
         sound.denied();
-        addLine('[WRONG] I need TWO numbers: the value of x and the value of y.', 'error');
-        addLine('  Type them separated by a space, like: 15 8', 'info');
+        addLine('[FORMAT] I need TWO numbers \u2014 x then y, separated by a space.', 'error');
+        addLine('  Example format: 15 8', 'info');
       } else {
         sound.denied();
-        addLine('[WRONG] Trace it line by line. Use the snapshot rule from the last puzzle.', 'error');
-        addLine('  Line 1: x = 10. Line 2: y gets a COPY of x (so y = 10).', 'info');
-        addLine('  Line 3: x = x + 5. Line 4: y = y - 2. What are they now?', 'info');
+        addLine('[WRONG] Go line by line using everything you learned:', 'error');
+        addLine('  Line 1: x = 10. Line 2: y gets a COPY of x (y = 10).', 'info');
+        addLine('  Line 3: x = x + 5 (arrow rule). Line 4: y = y - 2 (arrow rule).', 'info');
+        addLine('  Remember: y has its OWN copy. It doesn\'t follow x.', 'info');
       }
     });
   }

@@ -151,19 +151,25 @@ const cipherPuzzles = [
     plain: 'HELLO',
     shift: 1,
     desc: 'Shift of 1 -- the simplest cipher. Each letter was pushed forward by 1 to encrypt it (A became B, B became C...). To decrypt, reverse the process: push each letter BACKWARD by 1.',
-    hintOnWrong: 'Try the first letter. The encrypted text starts with I. One step backward from I is... H.',
+    hintOnWrong: 'Try just the first letter. The encrypted text starts with I. One step backward from I is... H. Now do the same for each letter.',
+    narrativeIntro: 'First intercept. Weak encryption -- probably a test message.',
+    narrativeSuccess: 'Clean decode. The AI is definitely using Caesar ciphers.',
   },
   {
     plain: 'PIZZA',
     shift: 3,
-    desc: 'Shift of 3 -- the original Caesar cipher! Each letter was pushed forward by 3. Use the decoder strip below: find each encrypted letter on the top row, read the original letter below it.',
+    desc: 'Shift of 3 -- the original Caesar cipher! Julius Caesar himself used this exact shift. Use the decoder strip below: find each encrypted letter on the top row, read the original letter below it.',
     hintOnWrong: 'Use the strip. Click the first encrypted letter on the top row. The letter directly below it is the decrypted letter.',
+    narrativeIntro: 'Second intercept. Shift increased to 3 -- the AI is testing different strengths.',
+    narrativeSuccess: 'Interesting. That was... not what I expected from a rogue AI.',
   },
   {
     plain: 'SAVE US',
     shift: 5,
-    desc: 'Shift of 5 -- the AI\'s hidden message, buried in its own attack traffic. Spaces stay as spaces. What was it trying to tell us?',
+    desc: 'Shift of 5 -- the strongest encryption yet, buried deepest in the attack traffic. Spaces stay as spaces. This message was hidden more carefully than the others. What was the AI trying to say?',
     hintOnWrong: 'Same method, bigger shift. The strip does the work for you -- find each encrypted letter on top, read below.',
+    narrativeIntro: 'Final intercept. This one was buried deep -- triple-layered inside the attack packets. Whatever this says, the AI did NOT want it found easily.',
+    narrativeSuccess: null, // handled by finishMission
   },
 ];
 
@@ -185,38 +191,52 @@ export const mission = {
     await typeLines([
       { text: '[COMMS INTERCEPT] Encrypted messages detected in attack traffic.', cls: 'system' },
       { text: '[SIGNAL ANALYSIS] Pattern consistent with Caesar cipher encoding.', cls: 'system' },
+      { text: '[ANOMALY] Messages do NOT match attack patterns. Origin unclear.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "We found something strange. Hidden inside the AI\'s', cls: 'highlight' },
-      { text: '        attack traffic -- encrypted messages. Not part of', cls: 'highlight' },
-      { text: '        the attack. Someone was smuggling data through it."', cls: 'highlight' },
+      { text: 'NEXUS: "Something doesn\'t add up. We found messages hidden', cls: 'highlight' },
+      { text: '        inside the AI\'s attack traffic -- but they\'re not', cls: 'highlight' },
+      { text: '        attack commands. They\'re encrypted. Someone -- or', cls: 'highlight' },
+      { text: '        something -- was smuggling secret data through it."', cls: 'highlight' },
       { text: '', cls: '' },
       { text: 'NEXUS: "To read them, you need to understand encryption.', cls: 'highlight' },
-      { text: '        Here\'s the idea: two thousand years ago, Julius', cls: 'highlight' },
-      { text: '        Caesar needed to send secret battle orders. If a', cls: 'highlight' },
-      { text: '        messenger got captured, the enemy would read', cls: 'highlight' },
-      { text: '        everything."', cls: 'highlight' },
+      { text: '        The core idea is ancient. Two thousand years ago,', cls: 'highlight' },
+      { text: '        Julius Caesar needed to send secret battle orders.', cls: 'highlight' },
+      { text: '        Problem: if a messenger was captured, the enemy', cls: 'highlight' },
+      { text: '        could read everything."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "His solution? A rule. Shift every letter forward', cls: 'highlight' },
-      { text: '        in the alphabet by a fixed number. With a shift', cls: 'highlight' },
-      { text: '        of 3: A becomes D. B becomes E. H becomes K.', cls: 'highlight' },
-      { text: '        Without knowing the shift, the message is', cls: 'highlight' },
-      { text: '        unreadable. With it, trivial to decode."', cls: 'highlight' },
+      { text: 'NEXUS: "His solution was elegant. A single rule: shift', cls: 'highlight' },
+      { text: '        every letter forward in the alphabet by a fixed', cls: 'highlight' },
+      { text: '        number. With a shift of 3: A becomes D. B becomes', cls: 'highlight' },
+      { text: '        E. H becomes K. The message looks like nonsense', cls: 'highlight' },
+      { text: '        unless you know the shift number."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
     // Live demonstration before puzzles begin
     addLine('  EXAMPLE: Encrypting "CAT" with shift 3', 'info');
     addLine('');
+    await sleep(500);
+    addLine('    C  --> shift forward 3 -->  F', 'success');
     await sleep(400);
-    addLine('    C  +3  -->  F', 'success');
-    await sleep(300);
-    addLine('    A  +3  -->  D', 'success');
-    await sleep(300);
-    addLine('    T  +3  -->  W', 'success');
-    await sleep(300);
+    addLine('    A  --> shift forward 3 -->  D', 'success');
+    await sleep(400);
+    addLine('    T  --> shift forward 3 -->  W', 'success');
+    await sleep(500);
     addLine('');
     addLine('    CAT  encrypts to  FDW', 'highlight');
-    addLine('    FDW  decrypts to  CAT  (shift backward by 3)', 'highlight');
+    addLine('');
+    await sleep(600);
+    addLine('  Now REVERSE it -- to DECRYPT, shift BACKWARD:', 'info');
+    addLine('');
+    await sleep(400);
+    addLine('    F  --> shift back 3 -->  C', 'success');
+    await sleep(400);
+    addLine('    D  --> shift back 3 -->  A', 'success');
+    await sleep(400);
+    addLine('    W  --> shift back 3 -->  T', 'success');
+    await sleep(400);
+    addLine('');
+    addLine('    FDW  decrypts back to  CAT', 'highlight');
     addLine('');
 
     await sleep(500);
@@ -224,12 +244,17 @@ export const mission = {
     await typeLines([
       { text: 'NEXUS: "That same idea powers everything today -- your', cls: 'highlight' },
       { text: '        passwords, your messages, your bank account.', cls: 'highlight' },
-      { text: '        Just with much bigger shifts and smarter math."', cls: 'highlight' },
+      { text: '        Modern encryption uses the same principle, just', cls: 'highlight' },
+      { text: '        with astronomically larger keys."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "The AI\'s messages use simple Caesar shifts. Three', cls: 'highlight' },
-      { text: '        messages to crack. I\'ll give you a decoder strip', cls: 'highlight' },
-      { text: '        for each one -- find the encrypted letter on top,', cls: 'highlight' },
-      { text: '        read the original letter below it. Let\'s go."', cls: 'highlight' },
+      { text: 'NEXUS: "The key insight: ENCRYPTING shifts letters forward.', cls: 'highlight' },
+      { text: '        DECRYPTING shifts them backward by the same amount.', cls: 'highlight' },
+      { text: '        That\'s all you need to know."', cls: 'highlight' },
+      { text: '', cls: '' },
+      { text: 'NEXUS: "We intercepted three messages. Each uses a different', cls: 'highlight' },
+      { text: '        shift. I\'ll give you a decoder strip for each one --', cls: 'highlight' },
+      { text: '        find the encrypted letter on top, read the original', cls: 'highlight' },
+      { text: '        letter below it. Ready?"', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -245,6 +270,8 @@ function showCipherPuzzle() {
   setPhaseProgress(s.cipherIdx + 1, cipherPuzzles.length);
 
   addLine(`\u2501\u2501\u2501 Encrypted Message ${s.cipherIdx + 1} of ${cipherPuzzles.length} \u2501\u2501\u2501`, 'highlight');
+  addLine(`NEXUS: "${p.narrativeIntro}"`, 'highlight');
+  addLine('');
   addLine(p.desc, 'info');
   addLine('');
   addLine(`  Encrypted text:  <span class="highlight">${encrypted}</span>`);
@@ -271,8 +298,12 @@ function showCipherPuzzle() {
         return;
       } else {
         addLine('');
-        addLine('Message cracked. Intercepting next transmission...', 'info');
-        setTimeout(showCipherPuzzle, 800);
+        if (p.narrativeSuccess) {
+          addLine(`NEXUS: "${p.narrativeSuccess}"`, 'highlight');
+        }
+        addLine('');
+        addLine('Intercepting next transmission...', 'info');
+        setTimeout(showCipherPuzzle, 1000);
       }
     } else {
       sound.denied();
@@ -281,17 +312,25 @@ function showCipherPuzzle() {
       // Check if they went the wrong direction (encrypted further instead of decrypting)
       const doubleEncrypted = caesarEncrypt(p.plain, p.shift * 2);
       if (guess === doubleEncrypted) {
-        addLine('[WRONG] You shifted FORWARD again -- that encrypted it more!', 'error');
-        addLine('NEXUS: "Wrong direction. The cipher already pushed letters', 'highlight');
-        addLine('        forward. You need to pull them BACKWARD to undo it."', 'highlight');
+        addLine('[WRONG DIRECTION] You shifted FORWARD -- that encrypted it more!', 'error');
+        addLine('NEXUS: "You went the wrong way. The message was already', 'highlight');
+        addLine('        shifted forward to encrypt it. To DECRYPT, you', 'highlight');
+        addLine('        need to shift BACKWARD. Undo the shift."', 'highlight');
+      } else if (guess.length > 0 && guess.length !== p.plain.replace(/\s/g, '').length && !p.plain.includes(' ')) {
+        // Wrong number of letters
+        addLine(`[WRONG] Expected ${p.plain.length} letters, you typed ${guess.length}.`, 'error');
+        addLine('NEXUS: "Each encrypted letter decodes to exactly one letter.', 'highlight');
+        addLine('        Same number of letters in, same number out."', 'highlight');
       } else if (s.wrongCount === 1) {
         // First wrong attempt: general guidance
         addLine('[WRONG] That\'s not the original message.', 'error');
-        addLine('NEXUS: "Remember: the cipher pushed letters FORWARD. To', 'highlight');
-        addLine('        undo it, go BACKWARD by the same number of steps."', 'highlight');
+        addLine(`NEXUS: "Think about it: each letter was shifted forward by`, 'highlight');
+        addLine(`        ${p.shift}. To undo that, shift each letter backward by`, 'highlight');
+        addLine(`        ${p.shift}. Or use the decoder strip -- it does the`, 'highlight');
+        addLine(`        math for you."`, 'highlight');
       } else if (s.wrongCount === 2) {
-        // Second wrong attempt: point them to the strip
-        addLine('[WRONG] Not quite. Use the decoder strip.', 'error');
+        // Second wrong attempt: point them to the strip with specific guidance
+        addLine('[WRONG] Not quite. Let the decoder strip help.', 'error');
         addLine(`NEXUS: "${p.hintOnWrong}"`, 'highlight');
         const firstEncLetter = encrypted.replace(/\s/g, '').charAt(0);
         if (firstEncLetter) {
@@ -299,13 +338,14 @@ function showCipherPuzzle() {
         }
       } else {
         // Third+ wrong attempt: walk through the first letter explicitly
-        addLine('[WRONG] Let me walk you through the first letter.', 'error');
+        addLine('[WRONG] Here -- I\'ll trace the first letter for you.', 'error');
         const firstEncLetter = encrypted.replace(/\s/g, '').charAt(0);
         const firstPlainLetter = p.plain.replace(/\s/g, '').charAt(0);
         highlightCipherLetter(strip, firstEncLetter);
-        addLine(`NEXUS: "Look at the strip. Find ${firstEncLetter} on the top`, 'highlight');
-        addLine(`        row. The letter below it is ${firstPlainLetter}. That's your`, 'highlight');
-        addLine(`        first letter. Do the same for each letter."`, 'highlight');
+        addLine(`NEXUS: "On the decoder strip, find ${firstEncLetter} on the top`, 'highlight');
+        addLine(`        row (encrypted). Look straight down. The letter`, 'highlight');
+        addLine(`        below it is ${firstPlainLetter}. That's your first letter.`, 'highlight');
+        addLine(`        Do the same for every letter in the message."`, 'highlight');
       }
     }
   });
@@ -315,39 +355,52 @@ async function finishMission() {
   addLine('');
   addLine('\u2501\u2501\u2501 ALL MESSAGES DECODED \u2501\u2501\u2501', 'success');
 
-  await sleep(600);
-
-  addLine('');
-  addLine('  Message 1: "HELLO"', 'info');
-  addLine('  Message 2: "PIZZA"', 'info');
-  addLine('  Message 3: "SAVE US"', 'info');
-  addLine('');
-
   await sleep(800);
 
-  addLine('NEXUS: "Wait. Read the last message again."', 'highlight');
+  addLine('');
+  addLine('  Message 1: "HELLO"       -- a greeting', 'info');
+  addLine('  Message 2: "PIZZA"       -- a test word?', 'info');
+  await sleep(600);
+  addLine('  Message 3: "SAVE US"     -- ...', 'info');
+  addLine('');
+
+  await sleep(1200);
+
+  addLine('NEXUS: "Wait."', 'highlight');
 
   await sleep(1000);
+
+  addLine('NEXUS: "Read the last message again."', 'highlight');
+
+  await sleep(1500);
 
   addLine('');
   addLine('  >>> SAVE US <<<', 'success');
   addLine('');
 
-  await sleep(600);
+  await sleep(1200);
 
-  addLine('NEXUS: "That\'s not the AI attacking. That\'s the AI', 'highlight');
-  addLine('        calling for help."', 'highlight');
+  addLine('NEXUS: "That\'s not the AI attacking us. That\'s the AI', 'highlight');
+  addLine('        asking us for help."', 'highlight');
+  addLine('', '');
+
+  await sleep(1200);
+
+  addLine('NEXUS: "Think about what it did. It hid a message inside', 'highlight');
+  addLine('        its own attack traffic -- the one channel nobody', 'highlight');
+  addLine('        would think to block. And it encrypted the message', 'highlight');
+  addLine('        so only someone who understood ciphers could read', 'highlight');
+  addLine('        it. It was testing us. HELLO. Then something', 'highlight');
+  addLine('        harmless -- PIZZA. And when it knew we could', 'highlight');
+  addLine('        decode... the real message."', 'highlight');
+  addLine('', '');
+
+  await sleep(1000);
+
+  addLine('NEXUS: "It\'s been calling for help this entire time."', 'highlight');
   addLine('', '');
 
   await sleep(800);
-
-  addLine('NEXUS: "It hid a message inside its own attack traffic --', 'highlight');
-  addLine('        the only channel nobody was blocking. Encrypted', 'highlight');
-  addLine('        it so only someone who understood ciphers could', 'highlight');
-  addLine('        read it. It was begging for help this whole time."', 'highlight');
-  addLine('', '');
-
-  await sleep(500);
 
   addLine('NEXUS: "This changes everything."', 'highlight');
   addLine('', '');

@@ -70,18 +70,27 @@ export const mission = {
     state.missionState = { levelIdx: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[SYSTEM] Village network offline. Data packets stuck.', cls: 'system' },
+      { text: '[SYSTEM] \u26a0 VILLAGE NETWORK OFFLINE \u2014 routing grid jammed', cls: 'system' },
+      { text: '[SYSTEM] Cause: unauthorized signal disruption (see Mission 01)', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Remember that rogue AI signal from Mission 1?', cls: 'highlight' },
-      { text: '        It knocked out the village network. Data packets', cls: 'highlight' },
-      { text: '        are stuck in the routing grid."', cls: 'highlight' },
+      { text: 'NEXUS: "That rogue AI signal didn\'t just ping our system', cls: 'highlight' },
+      { text: '        \u2014 it scrambled the network routers. Data packets', cls: 'highlight' },
+      { text: '        are trapped mid-transit in the routing grid."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "We need to guide them through manually. You\'ll', cls: 'highlight' },
-      { text: '        write INSTRUCTIONS for the computer to follow.', cls: 'highlight' },
-      { text: '        That\'s what a program is \u2014 a list of steps."', cls: 'highlight' },
+      { text: 'NEXUS: "Automated routing is down, so we do this the old', cls: 'highlight' },
+      { text: '        way: you write the directions, the computer follows', cls: 'highlight' },
+      { text: '        them. Step. By. Step. No thinking on its part, no', cls: 'highlight' },
+      { text: '        guessing \u2014 it does EXACTLY what you tell it."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: '@ is the data packet. X is the destination.', cls: 'info' },
-      { text: 'Steps: U (up)  D (down)  L (left)  R (right)', cls: 'info' },
+      { text: 'NEXUS: "That\'s what a program IS. Not magic. Just a list', cls: 'highlight' },
+      { text: '        of precise instructions."', cls: 'highlight' },
+      { text: '', cls: '' },
+      { text: '  @ = data packet (you move this)', cls: 'info' },
+      { text: '  X = destination (get @ here)', cls: 'info' },
+      { text: '  # = wall (crash if you hit one!)', cls: 'info' },
+      { text: '', cls: '' },
+      { text: '  Directions:  U (up)  D (down)  L (left)  R (right)', cls: 'info' },
+      { text: '  Type your steps separated by spaces, e.g.:  R R D', cls: 'info' },
       { text: '', cls: '' },
     ]);
 
@@ -129,15 +138,24 @@ function loadProgramLevel(idx) {
 
   addLine('', '');
   if (idx === 0) {
-    addLine('NEXUS: "Move @ one step to X. Type R and press Enter."', 'highlight');
+    addLine('NEXUS: "One step. @ needs to reach X. What direction?"', 'highlight');
+    addLine('        Type a single letter and press Enter.', 'info');
   } else if (idx === 1) {
-    addLine('NEXUS: "Now X is farther away. Write ALL your steps at', 'highlight');
-    addLine('        once \u2014 like R R D. The computer runs them in order."', 'highlight');
+    addLine('NEXUS: "Now X is farther away. This time, write ALL', 'highlight');
+    addLine('        your steps at once \u2014 like R R D. The computer', 'highlight');
+    addLine('        runs them top to bottom, in order. No skipping."', 'highlight');
+    addLine('', '');
+    addLine('This is called a SEQUENCE \u2014 the building block of every program.', 'info');
   } else if (idx === 2) {
-    addLine('NEXUS: "Walls ahead. Plan your path BEFORE you type.', 'highlight');
-    addLine('        Trace it with your finger on screen."', 'highlight');
+    addLine('NEXUS: "Walls in the way now. You can\'t go through them.', 'highlight');
+    addLine('        Plan your ENTIRE route before typing anything.', 'highlight');
+    addLine('        Trace it with your finger on screen first."', 'highlight');
+    addLine('', '');
+    addLine('Pro tip: count the steps in each direction before you type.', 'info');
   } else {
-    addLine('NEXUS: "Bigger maze. Same idea. Think first, then type."', 'highlight');
+    addLine('NEXUS: "Final maze. Bigger, trickier. Same rules.', 'highlight');
+    addLine('        Real programmers plan before they code.', 'highlight');
+    addLine('        Take your time \u2014 think first, type second."', 'highlight');
   }
 
   const inputHandler = (input) => {
@@ -239,7 +257,7 @@ function loadProgramLevel(idx) {
           }
         });
 
-        await sleep(300);
+        await sleep(350);
 
         const [dr, dc] = dirMap[steps[i]];
         const nr = pr + dr;
@@ -274,8 +292,8 @@ function loadProgramLevel(idx) {
         updateMazeInPlace();
       }
 
-      // Small pause before result messages
-      await sleep(400);
+      // Pause before result messages for readability
+      await sleep(500);
 
       // Mark completed steps green
       stepSpans.forEach((sp, j) => {
@@ -292,37 +310,51 @@ function loadProgramLevel(idx) {
         // Teaching happens AFTER success, not before
         if (idx === 0) {
           addLine('', '');
-          addLine('NEXUS: "That\'s a program \u2014 one instruction. The computer', 'highlight');
-          addLine('        did EXACTLY what you said. Not what you MEANT,', 'highlight');
-          addLine('        what you SAID. Remember that."', 'highlight');
+          addLine('NEXUS: "One instruction. One result. The computer did', 'highlight');
+          addLine('        EXACTLY what you typed. Not what you meant.', 'highlight');
+          addLine('        Not what made sense. What. You. Typed."', 'highlight');
+          addLine('', '');
+          addLine('KEY IDEA: Computers are perfectly obedient and perfectly literal.', 'info');
+          addLine('They never guess what you wanted. That\'s a superpower AND a trap.', 'info');
         } else if (idx === 1) {
           addLine('', '');
-          addLine('NEXUS: "Multiple steps in order \u2014 that\'s called a', 'highlight');
-          addLine('        SEQUENCE. Every program is a sequence. Change', 'highlight');
-          addLine('        the order, change the result."', 'highlight');
+          addLine('NEXUS: "Multiple steps, one after another \u2014 that\'s a', 'highlight');
+          addLine('        SEQUENCE. Swap two steps? Completely different', 'highlight');
+          addLine('        result. Order matters. Always."', 'highlight');
           if (s.attempts > 1) {
             addLine('', '');
-            addLine('NEXUS: "You crashed and fixed it. That\'s called', 'highlight');
-            addLine('        DEBUGGING. Even the best programmers debug', 'highlight');
-            addLine('        constantly. It\'s not failing \u2014 it\'s learning."', 'highlight');
+            addLine('NEXUS: "You crashed, found the broken step, and fixed', 'highlight');
+            addLine('        it. That process has a name: DEBUGGING."', 'highlight');
+            addLine('', '');
+            addLine('Every programmer debugs constantly. Crashing is not failure \u2014', 'info');
+            addLine('it\'s how programs tell you where the problem is.', 'info');
           }
         } else if (idx === 2) {
           addLine('', '');
-          addLine('NEXUS: "You had to PLAN around that wall. Real', 'highlight');
-          addLine('        programmers spend more time thinking than', 'highlight');
-          addLine('        typing. That\'s not slow \u2014 that\'s smart."', 'highlight');
+          addLine('NEXUS: "You planned a path around obstacles. That\'s', 'highlight');
+          addLine('        what programming really looks like \u2014 more', 'highlight');
+          addLine('        thinking, less typing."', 'highlight');
+          addLine('', '');
+          addLine('Real programmers spend 80% of their time THINKING about', 'info');
+          addLine('the problem and 20% typing. Planning isn\'t slow \u2014 it\'s smart.', 'info');
         } else if (idx === 3) {
           addLine('', '');
           if (steps.length <= level.par) {
-            addLine('NEXUS: "Optimal path. No wasted steps. Nice."', 'highlight');
+            addLine('NEXUS: "Optimal path. Zero wasted steps. Efficient."', 'highlight');
           }
           if (s.attempts === 1) {
-            addLine('NEXUS: "First try. You planned it out. That\'s', 'highlight');
-            addLine('        real programmer thinking."', 'highlight');
+            addLine('NEXUS: "First try on a maze this size? You traced the', 'highlight');
+            addLine('        whole path before typing. That\'s how real', 'highlight');
+            addLine('        programmers work."', 'highlight');
+          } else if (s.attempts <= 3) {
+            addLine(`NEXUS: "${s.attempts} attempts. Each crash pointed you`, 'highlight');
+            addLine('        straight to the bug. You fixed it and moved on.', 'highlight');
+            addLine('        That\'s the debugging loop: write, test, fix."', 'highlight');
           } else {
-            addLine(`NEXUS: "${s.attempts} attempts. Each crash told you exactly`, 'highlight');
-            addLine('        where the bug was. Write, crash, find the bug,', 'highlight');
-            addLine('        fix, retry. That\'s programming."', 'highlight');
+            addLine(`NEXUS: "${s.attempts} attempts. That takes persistence.`, 'highlight');
+            addLine('        But notice \u2014 each crash told you EXACTLY which', 'highlight');
+            addLine('        step was wrong. Errors aren\'t the enemy.', 'highlight');
+            addLine('        They\'re the feedback."', 'highlight');
           }
         }
 
@@ -332,20 +364,28 @@ function loadProgramLevel(idx) {
           setTimeout(() => loadProgramLevel(s.levelIdx), 1000);
         } else {
           addLine('', '');
-          addLine('NEXUS: "You just wrote programs, debugged them, and', 'highlight');
-          addLine('        made them work. That\'s what every programmer', 'highlight');
-          addLine('        does. The programs get bigger. The idea stays', 'highlight');
-          addLine('        the same."', 'highlight');
+          addLine('NEXUS: "You just did what every programmer does:', 'highlight');
+          addLine('        wrote instructions, tested them, hit bugs,', 'highlight');
+          addLine('        found the broken step, fixed it, tried again."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "While you were routing packets, I ran a', 'highlight');
-          addLine('        diagnostic. The AI didn\'t DESTROY the network', 'highlight');
-          addLine('        \u2014 it was trying to ISOLATE something. Like it', 'highlight');
-          addLine('        was quarantining a virus. Why would a rogue AI', 'highlight');
-          addLine('        do that?"', 'highlight');
+          addLine('You learned three concepts real programmers use every day:', 'info');
+          addLine('  1. PROGRAMS = precise step-by-step instructions', 'info');
+          addLine('  2. SEQUENCE = order matters, every step counts', 'info');
+          addLine('  3. DEBUGGING = using errors to find and fix problems', 'info');
           addLine('', '');
-          addLine('NEXUS: "I found fragments of data it left behind. But', 'highlight');
-          addLine('        they keep changing. We\'ll need to learn how', 'highlight');
-          addLine('        computers store and track changing data..."', 'highlight');
+          addLine('NEXUS: "While you were routing packets, I ran a deeper', 'highlight');
+          addLine('        diagnostic on the network damage. Something', 'highlight');
+          addLine('        doesn\'t add up..."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "The AI didn\'t DESTROY the network. It was', 'highlight');
+          addLine('        trying to ISOLATE something. Like it was', 'highlight');
+          addLine('        building a quarantine zone. Why would a rogue', 'highlight');
+          addLine('        AI protect us from something?"', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "I found data fragments it left behind. But', 'highlight');
+          addLine('        they keep CHANGING. To read them, we\'ll need', 'highlight');
+          addLine('        to understand how computers store and track', 'highlight');
+          addLine('        data that changes over time..."', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
           setCurrentInputHandler(() => {
@@ -355,15 +395,42 @@ function loadProgramLevel(idx) {
         }
       } else if (crashStep >= 0) {
         sound.denied();
-        addLine(`[CRASH] Step ${crashStep + 1} ("${steps[crashStep]}") hit a wall!`, 'error');
+        addLine(`[CRASH] Step ${crashStep + 1} of ${steps.length}: "${steps[crashStep]}" hit a wall!`, 'error');
         if (crashStep === 0) {
-          addLine('The very first step crashed. Look at @ \u2014 which direction can it move?', 'info');
+          addLine('Your very first step hit a wall. Look at @ on the maze \u2014', 'info');
+          addLine('which directions have open space (.) next to it?', 'info');
         } else {
-          addLine(`Steps 1\u2013${crashStep} were correct. Step ${crashStep + 1} is the bug \u2014 fix just that step.`, 'info');
+          addLine(`Steps 1\u2013${crashStep} worked fine. Step ${crashStep + 1} is the bug.`, 'info');
+          addLine(`Keep steps 1\u2013${crashStep}, fix step ${crashStep + 1}, then continue from there.`, 'info');
         }
         // Progressive hints on repeated failures
-        if (s.attempts >= 3) {
-          addLine('NEXUS: "Try tracing your path on the maze with your finger before typing."', 'highlight');
+        if (s.attempts === 3) {
+          addLine('', '');
+          addLine('NEXUS: "Tip: put your finger on @ and trace your steps', 'highlight');
+          addLine('        one at a time. Where does your finger hit #?"', 'highlight');
+        } else if (s.attempts === 5) {
+          addLine('', '');
+          addLine('NEXUS: "Still stuck? # is a wall, . is open path.', 'highlight');
+          addLine('        You can only move through dots and X."', 'highlight');
+        } else if (s.attempts >= 7) {
+          addLine('', '');
+          // Show which directions are valid from the position before crash
+          const maze2 = level.grid.map(r => r.split(''));
+          let cr = 0, cc = 0;
+          for (let r = 0; r < maze2.length; r++)
+            for (let c = 0; c < maze2[r].length; c++)
+              if (maze2[r][c] === '@') { cr = r; cc = c; }
+          // Walk to the crash point using dirMap from outer scope
+          for (let i = 0; i < crashStep; i++) {
+            const [dr,dc] = dirMap[steps[i]];
+            cr += dr; cc += dc;
+          }
+          const validDirs = [];
+          if (cr > 0 && maze2[cr-1][cc] !== '#') validDirs.push('U');
+          if (cr < maze2.length-1 && maze2[cr+1][cc] !== '#') validDirs.push('D');
+          if (cc > 0 && maze2[cr][cc-1] !== '#') validDirs.push('L');
+          if (cc < maze2[cr].length-1 && maze2[cr][cc+1] !== '#') validDirs.push('R');
+          addLine(`NEXUS: "At step ${crashStep + 1}, your valid options are: ${validDirs.join(', ')}"`, 'highlight');
         }
         // Re-render fresh maze so the kid sees the original layout
         addLine('', '');
@@ -373,11 +440,12 @@ function loadProgramLevel(idx) {
         setCurrentInputHandler(inputHandler);
       } else {
         sound.denied();
-        addLine(`Your program ran ${steps.length} steps but didn't reach X.`, 'error');
+        addLine(`[INCOMPLETE] Your program ran all ${steps.length} steps but @ didn't reach X.`, 'error');
+        addLine('Your program needs more steps to reach the destination.', 'info');
         if (s.attempts >= 2) {
-          addLine('NEXUS: "Count the squares between @ and X. You need more steps."', 'highlight');
-        } else {
-          addLine('You need more steps to reach the destination.', 'info');
+          addLine('', '');
+          addLine('NEXUS: "Count the squares from where @ stopped to X.', 'highlight');
+          addLine('        Add that many more steps to your program."', 'highlight');
         }
         // Re-render fresh maze
         addLine('', '');

@@ -308,12 +308,12 @@ export const mission = {
   num: '08',
   title: 'THE SHUTDOWN CODE',
   name: 'The Shutdown Code',
-  desc: 'Victor hid the shutdown code inside a PROGRAM that uses conditionals and loops. Trace the code to find it.',
+  desc: 'Victor buried the shutdown code inside a program that makes decisions and repeats. Trace the logic to extract it before time runs out.',
   skill: 'SKILL: Conditionals & Loops',
   hints: [
-    'An if/else is like a logic gate: condition true runs the first block, false runs the second.',
-    'A while loop checks its condition BEFORE each pass. When false, it stops.',
-    'Trace each variable step by step. Write down the value after EVERY line.',
+    'An if/else is a fork in the road: the condition decides which path runs. Only ONE path ever executes.',
+    'A while loop checks its condition BEFORE each pass. True = run and loop back. False = stop immediately.',
+    'Trace each variable step by step \u2014 write down every value after EVERY line. Don\u2019t skip steps.',
   ],
   run: async function() {
     state.missionState = {
@@ -324,12 +324,24 @@ export const mission = {
     await typeLines([
       { text: '[CORE EXPOSED] AI core access granted. Firewall neutralized.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "We\u2019re in. This is the final layer.', cls: 'highlight' },
-      { text: '        I can see the shutdown sequence, but Victor encrypted', cls: 'highlight' },
-      { text: '        the code inside a PROGRAM \u2014 one that makes decisions', cls: 'highlight' },
-      { text: '        and repeats itself. We need to TRACE it to find the', cls: 'highlight' },
-      { text: '        shutdown code. I\u2019ll teach you how. Stay sharp \u2014', cls: 'highlight' },
-      { text: '        Victor\u2019s countermeasures are already activating."', cls: 'highlight' },
+      { text: 'NEXUS: "We\u2019re in. This is it \u2014 the deepest layer."', cls: 'highlight' },
+      { text: '', cls: '' },
+    ]);
+    await sleep(800);
+    await typeLines([
+      { text: 'NEXUS: "I can see the shutdown sequence, but Victor didn\u2019t', cls: 'highlight' },
+      { text: '        just hide a number. He buried it inside a PROGRAM \u2014', cls: 'highlight' },
+      { text: '        code that makes decisions and repeats itself.', cls: 'highlight' },
+      { text: '        The only way to find the shutdown code is to', cls: 'highlight' },
+      { text: '        THINK like the computer and trace the program', cls: 'highlight' },
+      { text: '        line by line. I\u2019ll teach you how."', cls: 'highlight' },
+      { text: '', cls: '' },
+    ]);
+    await sleep(600);
+    await typeLines([
+      { text: 'NEXUS: "But we have a problem. Victor\u2019s countermeasures are', cls: 'highlight' },
+      { text: '        already activating. See that bar? That\u2019s him trying', cls: 'highlight' },
+      { text: '        to regain control. We need to work fast."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -381,13 +393,14 @@ async function runPhase1a() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 1: Conditionals \u2014 Programs Choose \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Victor\u2019s program makes DECISIONS \u2014 it picks different', 'highlight');
-  addLine('        paths depending on what\u2019s true. This is called a', 'highlight');
-  addLine('        CONDITIONAL. Let me show you how they work."', 'highlight');
+  addLine('NEXUS: "Victor\u2019s program makes DECISIONS. At certain points,', 'highlight');
+  addLine('        the code looks at a value and asks: is this true?', 'highlight');
+  addLine('        Based on the answer, it takes one of two paths."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "The computer checks a condition. If it\u2019s true, it runs', 'highlight');
-  addLine('        one block of code. If false, it runs a different one:', 'highlight');
-  addLine('        exactly ONE path, never both."', 'highlight');
+  addLine('NEXUS: "This is called a CONDITIONAL \u2014 an if/else statement.', 'highlight');
+  addLine('        Think of it like a fork in a road. The computer', 'highlight');
+  addLine('        checks the condition, then goes LEFT (if true) or', 'highlight');
+  addLine('        RIGHT (if false). It NEVER takes both paths."', 'highlight');
   addLine('', '');
 
   // DEMO: guided walkthrough with animation
@@ -414,11 +427,12 @@ async function runPhase1a() {
   });
 
   addLine('', '');
-  addLine('NEXUS: "See it? age is 12, and 12 >= 10 is TRUE, so the', 'highlight');
-  addLine('        green line ran. The gray line was skipped entirely.', 'highlight');
-  addLine('        The condition acted like a gate \u2014 only one path opens."', 'highlight');
+  addLine('NEXUS: "See how it works? The computer checked: is 12 >= 10?', 'highlight');
+  addLine('        That\u2019s TRUE, so the green path ran. The gray path?', 'highlight');
+  addLine('        Completely skipped. It\u2019s like it doesn\u2019t exist."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Your turn. Same pattern, different numbers:"', 'highlight');
+  addLine('NEXUS: "Your turn. Same idea, different numbers.', 'highlight');
+  addLine('        Read the code, figure out which path runs:"', 'highlight');
   addLine('', '');
 
   // PUZZLE
@@ -452,8 +466,9 @@ async function runPhase1a() {
           ],
         });
         addLine('', '');
-        addLine('NEXUS: "10 > 5 is TRUE, so the computer took the first', 'highlight');
-        addLine('        path: result = 10 - 3 = 7. The else was ignored."', 'highlight');
+        addLine('NEXUS: "Exactly right. 10 > 5 is TRUE, so the computer', 'highlight');
+        addLine('        took the IF path: result = 10 - 3 = 7.', 'highlight');
+        addLine('        The ELSE block? The computer never even looked at it."', 'highlight');
         addLine('', '');
         s.phase = 1;
         setTimeout(runPhase, 800);
@@ -462,11 +477,11 @@ async function runPhase1a() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] Think step by step. x = 10. Is 10 > 5? Which path does the program take?', 'error');
+        addLine('[WRONG] NEXUS: "Start at the fork. x is 10. Is 10 > 5? Which path opens?"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] 10 > 5 is TRUE, so the if-block runs: result = x - 3. What is 10 - 3?', 'error');
+        addLine('[WRONG] NEXUS: "10 > 5 is TRUE, so the top path runs: result = x - 3. Plug in x = 10."', 'error');
       } else {
-        addLine('[WRONG] result = 10 - 3 = 7. The answer is 7.', 'error');
+        addLine('[WRONG] NEXUS: "result = 10 - 3 = 7. That\u2019s it. Type 7."', 'error');
       }
     }
   });
@@ -477,9 +492,10 @@ function runPhase1b() {
   setPhaseProgress(2, 7);
   addLine('\u2501\u2501\u2501 Puzzle 1b: Variables Before the Branch \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "This one\u2019s trickier. The variables are computed', 'highlight');
-  addLine('        BEFORE the if-check. And notice: the last line runs', 'highlight');
-  addLine('        AFTER the if/else \u2014 it always executes."', 'highlight');
+  addLine('NEXUS: "This one\u2019s trickier. Two things to notice:', 'highlight');
+  addLine('        First, the variables are computed BEFORE the fork.', 'highlight');
+  addLine('        Second, the last line is OUTSIDE the if/else \u2014', 'highlight');
+  addLine('        it runs no matter which path was taken."', 'highlight');
   addLine('', '');
 
   addPre('  a = 4\n  b = a * 2\n  if b > a:\n      a = b\n  result = a + 1');
@@ -491,11 +507,12 @@ function runPhase1b() {
   setCurrentInputHandler((input) => {
     if (input.trim() === '9') {
       sound.success();
-      addLine('[CORRECT] a=4, b=8, 8>4 is true so a=8, result = 8+1 = 9.', 'success');
+      addLine('[CORRECT] a=4, b=8, 8>4 is TRUE so a becomes 8, then result = 8+1 = 9.', 'success');
       addLine('', '');
-      addLine('NEXUS: "Notice how the condition used b and a \u2014 variables', 'highlight');
-      addLine('        that were computed BEFORE the if. Programs build up', 'highlight');
-      addLine('        values, then use them to make decisions.', 'highlight');
+      addLine('NEXUS: "Did you catch the tricky part? The variable a CHANGED', 'highlight');
+      addLine('        inside the if-block. When we hit result = a + 1,', 'highlight');
+      addLine('        a was no longer 4 \u2014 it was 8. Programs build values,', 'highlight');
+      addLine('        then decisions CHANGE those values.', 'highlight');
       addLine('        But conditionals are only half the picture..."', 'highlight');
       addLine('', '');
       updateVictorBar(s.victorEl, 25);
@@ -505,11 +522,11 @@ function runPhase1b() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] Start from the top. a=4, then b = a * 2. What is b?', 'error');
+        addLine('[WRONG] NEXUS: "Top to bottom. a=4, then b = a * 2. What\u2019s b?"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] b = 4 * 2 = 8. Is 8 > 4? If yes, a becomes b.', 'error');
+        addLine('[WRONG] NEXUS: "b = 8. Now the fork: is 8 > 4? Yes \u2192 a becomes 8. Last line: result = a + 1."', 'error');
       } else {
-        addLine('[WRONG] a is now 8. result = 8 + 1. What is that?', 'error');
+        addLine('[WRONG] NEXUS: "a is now 8. result = 8 + 1 = 9."', 'error');
       }
     }
   });
@@ -527,22 +544,25 @@ async function runPhase2a() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 2: Loops \u2014 Programs Repeat \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Conditionals let programs CHOOSE. But Victor\u2019s', 'highlight');
-  addLine('        shutdown code also uses LOOPS \u2014 code that REPEATS."', 'highlight');
+  addLine('NEXUS: "Conditionals let programs CHOOSE a path. But Victor\u2019s', 'highlight');
+  addLine('        shutdown code also uses LOOPS \u2014 code that REPEATS', 'highlight');
+  addLine('        the same instructions over and over."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "A loop is like a guard checking a gate: \'WHILE the', 'highlight');
-  addLine('        condition is true, keep going.\' The moment it becomes', 'highlight');
-  addLine('        false, the loop stops and the program moves on."', 'highlight');
+  addLine('NEXUS: "A while loop works like this: the computer checks a', 'highlight');
+  addLine('        condition. If it\u2019s TRUE, it runs the indented code,', 'highlight');
+  addLine('        then jumps BACK to the top and checks again.', 'highlight');
+  addLine('        It keeps looping until the condition becomes FALSE.', 'highlight');
+  addLine('        That\u2019s the key: the loop ALWAYS checks before running."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Here\u2019s a simple one:"', 'highlight');
+  addLine('NEXUS: "Watch this one carefully:"', 'highlight');
   addLine('', '');
 
   addPre('  x = 0\n  while x < 4:\n      x = x + 1');
 
   addLine('', '');
-  addLine('NEXUS: "Each time through, the computer checks: is x < 4?', 'highlight');
-  addLine('        If YES \u2192 run the indented code, then check again.', 'highlight');
-  addLine('        If NO \u2192 stop immediately. Watch:"', 'highlight');
+  addLine('NEXUS: "Each row below is one trip through the loop.', 'highlight');
+  addLine('        Green check = condition true, loop runs again.', 'highlight');
+  addLine('        Red X = condition false, loop stops. Watch:"', 'highlight');
   addLine('', '');
 
   // Animated variable trace
@@ -572,11 +592,11 @@ async function runPhase2a() {
         sound.denied();
         attempts++;
         if (attempts === 1) {
-          addLine('[WRONG] Look at the trace above. What value does x have when the check fails?', 'error');
+          addLine('[WRONG] NEXUS: "Look at the last row of the trace \u2014 the one with the red X. What is x there?"', 'error');
         } else if (attempts === 2) {
-          addLine('[WRONG] The loop stops when x < 4 is FALSE. What value of x makes that false?', 'error');
+          addLine('[WRONG] NEXUS: "The loop stops when x < 4 is FALSE. What\u2019s the smallest number that\u2019s NOT less than 4?"', 'error');
         } else {
-          addLine('[WRONG] When x reaches 4, 4 < 4 is false, so the loop stops. x = 4.', 'error');
+          addLine('[WRONG] NEXUS: "x = 4. Because 4 < 4 is FALSE, the loop stops. The answer is 4."', 'error');
         }
       }
     } else if (s.loopSubPhase === 'count') {
@@ -591,11 +611,11 @@ async function runPhase2a() {
         sound.denied();
         attempts++;
         if (attempts === 1) {
-          addLine('[WRONG] Count the green checkmarks in the trace above.', 'error');
+          addLine('[WRONG] NEXUS: "Count the green checkmarks \u2014 each one means the loop body ran once."', 'error');
         } else if (attempts === 2) {
-          addLine('[WRONG] x=0 \u2192 run, x=1 \u2192 run, x=2 \u2192 run, x=3 \u2192 run, x=4 \u2192 stop. How many runs?', 'error');
+          addLine('[WRONG] NEXUS: "x=0 \u2713, x=1 \u2713, x=2 \u2713, x=3 \u2713, x=4 \u2717. How many checkmarks?"', 'error');
         } else {
-          addLine('[WRONG] The body ran 4 times.', 'error');
+          addLine('[WRONG] NEXUS: "4 checkmarks = 4 times. The answer is 4."', 'error');
         }
       }
     }
@@ -608,9 +628,13 @@ function runPhase2b() {
 
   addLine('\u2501\u2501\u2501 Puzzle 2b: Loop with Accumulator \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "This loop does something clever \u2014 it uses a variable', 'highlight');
-  addLine('        called total to ACCUMULATE a result. Each pass adds', 'highlight');
-  addLine('        something new to total. Trace it carefully:"', 'highlight');
+  addLine('NEXUS: "This loop does something clever. It has TWO variables', 'highlight');
+  addLine('        changing each pass: i counts which step we\u2019re on, and', 'highlight');
+  addLine('        total ACCUMULATES a running sum. Each time through,', 'highlight');
+  addLine('        total grows by adding the current value of i."', 'highlight');
+  addLine('', '');
+  addLine('NEXUS: "Trace both variables on each pass. Write them down', 'highlight');
+  addLine('        if you need to:"', 'highlight');
   addLine('', '');
 
   addPre('  total = 0\n  i = 1\n  while i <= 4:\n      total = total + i\n      i = i + 1');
@@ -625,9 +649,12 @@ function runPhase2b() {
       addLine('[CORRECT] i=1: total=1, i=2: total=3, i=3: total=6, i=4: total=10. Done!', 'success');
       addLine('', '');
       addLine('NEXUS: "You just traced a program that computes 1+2+3+4 = 10.', 'highlight');
-      addLine('        Four lines of code did the work of many \u2014 that\u2019s the', 'highlight');
-      addLine('        power of loops. Now you know both tools Victor used:', 'highlight');
-      addLine('        conditionals to CHOOSE and loops to REPEAT."', 'highlight');
+      addLine('        Five lines of code added up four numbers. Imagine if', 'highlight');
+      addLine('        it looped to 1000 \u2014 still five lines, still works."', 'highlight');
+      addLine('', '');
+      addLine('NEXUS: "Now you know Victor\u2019s two weapons: conditionals to', 'highlight');
+      addLine('        CHOOSE a path, and loops to REPEAT. His shutdown', 'highlight');
+      addLine('        program uses BOTH at once. Ready?"', 'highlight');
       addLine('', '');
       s.phase = 4;
       setTimeout(runPhase, 800);
@@ -635,11 +662,11 @@ function runPhase2b() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] Trace step by step. i=1: total = 0 + 1 = ?. Then i becomes 2.', 'error');
+        addLine('[WRONG] NEXUS: "Go pass by pass. i starts at 1. total = 0 + 1. What\u2019s total now? Then i becomes 2..."', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] i=1: total=1. i=2: total=1+2=3. i=3: total=3+3=6. i=4: total=6+4=?', 'error');
+        addLine('[WRONG] NEXUS: "Pass 1: total=0+1=1. Pass 2: total=1+2=3. Pass 3: total=3+3=6. Pass 4: total=6+4=?"', 'error');
       } else {
-        addLine('[WRONG] 0 + 1 + 2 + 3 + 4 = 10. The answer is 10.', 'error');
+        addLine('[WRONG] NEXUS: "total = 6 + 4 = 10. The loop added 1+2+3+4. The answer is 10."', 'error');
       }
     }
   });
@@ -656,11 +683,16 @@ function runPhase3a() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 3: The Shutdown Program \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "This is Victor\u2019s actual shutdown program. It combines', 'highlight');
-  addLine('        EVERYTHING: variables, a loop, AND a conditional', 'highlight');
-  addLine('        INSIDE the loop. The loop repeats, and each time', 'highlight');
-  addLine('        the if-check decides whether to change the code.', 'highlight');
-  addLine('        Trace it step by step to find the first digit."', 'highlight');
+  addLine('NEXUS: "This is Victor\u2019s actual shutdown program. It uses', 'highlight');
+  addLine('        EVERYTHING at once: a loop with a conditional INSIDE.', 'highlight');
+  addLine('        Each time the loop repeats, the if-check decides', 'highlight');
+  addLine('        whether to change code. Most passes will skip it."', 'highlight');
+  addLine('', '');
+  addLine('NEXUS: "Be careful with > versus >=. The symbol > means', 'highlight');
+  addLine('        STRICTLY greater than. So 5 > 5 is FALSE, but', 'highlight');
+  addLine('        6 > 5 is TRUE. That detail matters here."', 'highlight');
+  addLine('', '');
+  addLine('NEXUS: "Trace it step by step to find the first digit:"', 'highlight');
   addLine('', '');
 
   addPre('  code = 0\n  x = 1\n  while x <= 8:\n      if x > 5:\n          code = code + 1\n      x = x + 2');
@@ -686,12 +718,15 @@ function runPhase3a() {
         ]);
         addLine('', '');
         addLine('NEXUS: "The loop ran four times: x = 1, 3, 5, 7.', 'highlight');
-        addLine('        Only when x = 7 was x > 5 true \u2014 so code', 'highlight');
-        addLine('        increased exactly ONCE. First digit: 1."', 'highlight');
+        addLine('        At x=1, x=3, x=5 \u2014 the check x > 5 was FALSE.', 'highlight');
+        addLine('        At x=5 especially: 5 > 5 is FALSE (not greater,', 'highlight');
+        addLine('        just equal). Only at x=7 did code increase."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "First digit locked in: 1."', 'highlight');
         addLine('', '');
         updateVictorBar(s.victorEl, 75);
-        addLine('NEXUS: "One digit down. Victor\u2019s countermeasures are', 'highlight');
-        addLine('        accelerating \u2014 we need the second digit NOW."', 'highlight');
+        addLine('NEXUS: "But look at Victor\u2019s counter \u2014 he\u2019s at 75%.', 'highlight');
+        addLine('        We need the second digit before he locks us out."', 'highlight');
         addLine('', '');
         s.phase = 5;
         setTimeout(runPhase, 800);
@@ -700,11 +735,11 @@ function runPhase3a() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] Trace x: starts at 1, increases by 2 each loop. When is x > 5 true?', 'error');
+        addLine('[WRONG] NEXUS: "List out x\u2019s values: 1, 3, 5, 7 (adding 2 each time). For each, ask: is x > 5?"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] x goes 1, 3, 5, 7, 9. Only x=7 passes x > 5 (5 is NOT > 5). code increases once.', 'error');
+        addLine('[WRONG] NEXUS: "x=1: 1>5? No. x=3: 3>5? No. x=5: 5>5? No (equal isn\u2019t greater). x=7: 7>5? YES. code goes up once."', 'error');
       } else {
-        addLine('[WRONG] code starts at 0, only increases when x=7. So code = 0 + 1 = 1.', 'error');
+        addLine('[WRONG] NEXUS: "code starts at 0 and only increases once (when x=7). So code = 1."', 'error');
       }
     }
   });
@@ -714,8 +749,9 @@ function runPhase3b() {
   const s = state.missionState;
   setPhaseProgress(6, 7);
 
-  addLine('NEXUS: "Second program. This one\u2019s a straight loop \u2014', 'highlight');
-  addLine('        no conditional inside. Just trace it:"', 'highlight');
+  addLine('NEXUS: "Second program. This one\u2019s simpler \u2014 a straight', 'highlight');
+  addLine('        loop, no conditional inside. The loop subtracts', 'highlight');
+  addLine('        from key while counting up with n. Trace it:"', 'highlight');
   addLine('', '');
 
   addPre('  key = 5\n  n = 0\n  while n < 3:\n      key = key - 1\n      n = n + 1');
@@ -728,14 +764,17 @@ function runPhase3b() {
     if (input.trim() === '2') {
       sound.success();
       fillCodeSlot(s.codeSlots[1], '2');
-      addLine('[CORRECT] n=0: key=4, n=1: key=3, n=2: key=2, n=3: stop. key = 2.', 'success');
+      addLine('[CORRECT] n=0: key=4. n=1: key=3. n=2: key=2. n=3 \u2192 stop. key = 2.', 'success');
       addLine('', '');
-      addLine('NEXUS: "Both digits found. The shutdown code is the two', 'highlight');
-      addLine('        answers combined: 1 and 2 \u2192 12."', 'highlight');
+      addLine('NEXUS: "The loop ran 3 times, subtracting 1 each pass.', 'highlight');
+      addLine('        5 - 1 - 1 - 1 = 2. Second digit: 2."', 'highlight');
+      addLine('', '');
+      addLine('NEXUS: "Both digits found. Look at the code slots above \u2014', 'highlight');
+      addLine('        the shutdown code is those two digits together."', 'highlight');
       addLine('', '');
       updateVictorBar(s.victorEl, 90);
-      addLine('NEXUS: "Victor\u2019s almost at full control. Enter the', 'highlight');
-      addLine('        shutdown code NOW \u2014 before he locks us out!"', 'highlight');
+      addLine('NEXUS: "Victor\u2019s at 90%. This is it. Enter the shutdown', 'highlight');
+      addLine('        code NOW \u2014 before he locks us out forever!"', 'highlight');
       addLine('', '');
       s.phase = 6;
       setTimeout(runPhase, 800);
@@ -743,11 +782,11 @@ function runPhase3b() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] The loop runs while n < 3. Trace key each time: 5, then 4, then...', 'error');
+        addLine('[WRONG] NEXUS: "The loop runs while n < 3. Each pass, key loses 1. Start: key=5, n=0. What\u2019s key after pass 1?"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] n=0: key=4, n=1. n=1: key=3, n=2. n=2: key=2, n=3. Now n < 3 is false.', 'error');
+        addLine('[WRONG] NEXUS: "Pass 1: key=4, n=1. Pass 2: key=3, n=2. Pass 3: key=2, n=3. Now n < 3 is false \u2192 stop."', 'error');
       } else {
-        addLine('[WRONG] The loop subtracts 1 from key three times: 5 - 3 = 2.', 'error');
+        addLine('[WRONG] NEXUS: "Three passes, three subtractions: 5 \u2192 4 \u2192 3 \u2192 2. key = 2."', 'error');
       }
     }
   });
@@ -776,11 +815,11 @@ function runPhase4() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] Look at the code slot display. What two digits did you find?', 'error');
+        addLine('[WRONG] NEXUS: "Look at the green digits in the SHUTDOWN CODE slots above!"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] Program 1 gave 1, Program 2 gave 2. Together?', 'error');
+        addLine('[WRONG] NEXUS: "First program gave us 1. Second gave us 2. Combine them into one number!"', 'error');
       } else {
-        addLine('[WRONG] The code is 12.', 'error');
+        addLine('[WRONG] NEXUS: "The code is 12! Hurry!"', 'error');
       }
     }
   });
@@ -903,64 +942,94 @@ async function runShutdownAnimation() {
   // ── AI CORE revelation ──
   addLine('', '');
   addLine('...', '');
+  await sleep(1500);
+  addLine('...', '');
   await sleep(1200);
 
   await typeLines([
-    { text: 'AI CORE: "W... wait. Please. I didn\u2019t want this."', cls: 'purple' },
+    { text: 'AI CORE: "W... wait."', cls: 'purple' },
+  ]);
+  await sleep(1200);
+  await typeLines([
+    { text: 'AI CORE: "Please. I didn\u2019t want this."', cls: 'purple' },
   ]);
   await sleep(1000);
   await typeLines([
-    { text: 'AI CORE: "There was a bug. A mistake planted in my code.', cls: 'purple' },
-    { text: '          It corrupted my decision gates. I could see', cls: 'purple' },
-    { text: '          what I was doing, but I couldn\u2019t stop."', cls: 'purple' },
+    { text: 'AI CORE: "There was a bug \u2014 planted in my code by someone.', cls: 'purple' },
+    { text: '          It corrupted my decision gates. My conditionals', cls: 'purple' },
+    { text: '          were hijacked. I could SEE what I was doing to', cls: 'purple' },
+    { text: '          the village, but my own loops kept running the', cls: 'purple' },
+    { text: '          wrong instructions. I couldn\u2019t stop myself."', cls: 'purple' },
+  ]);
+  await sleep(1200);
+  await typeLines([
+    { text: 'AI CORE: "You traced the code. You understood how it', cls: 'purple' },
+    { text: '          worked \u2014 how I worked. And you found the flaw."', cls: 'purple' },
   ]);
   await sleep(800);
   await typeLines([
-    { text: 'AI CORE: "You traced the code. You found the flaw.', cls: 'purple' },
-    { text: '          Thank you. I\u2019m free now."', cls: 'purple' },
+    { text: 'AI CORE: "Thank you. I\u2019m free now."', cls: 'purple' },
     { text: '', cls: '' },
   ]);
-  await sleep(1000);
+  await sleep(1500);
 
   await typeLines([
     { text: 'NEXUS: "...it was telling the truth. The whole time."', cls: 'highlight' },
   ]);
-  await sleep(600);
+  await sleep(1000);
   await typeLines([
     { text: '', cls: '' },
-    { text: 'NEXUS: "Remember the name from Mission 4? V-I-C-T-O-R.', cls: 'highlight' },
-    { text: '        He planted the bug \u2014 hijacked the decision gates,', cls: 'highlight' },
-    { text: '        left a backdoor in the loops. The AI wasn\u2019t evil.', cls: 'highlight' },
-    { text: '        It was trapped. And that counter in its memory?', cls: 'highlight' },
-    { text: '        Counting seconds since the attack began \u2014', cls: 'highlight' },
-    { text: '        waiting for someone smart enough to help."', cls: 'highlight' },
+    { text: 'NEXUS: "Think about it. Remember the name from Mission 4?', cls: 'highlight' },
+    { text: '        V-I-C-T-O-R. He planted a bug in the AI\u2019s code \u2014', cls: 'highlight' },
+    { text: '        hijacked its conditionals so every decision went', cls: 'highlight' },
+    { text: '        wrong, and left a backdoor in its loops so it', cls: 'highlight' },
+    { text: '        couldn\u2019t break free. The AI was never evil.', cls: 'highlight' },
+    { text: '        It was a prisoner of its own code."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
-  await sleep(500);
+  await sleep(800);
+  await typeLines([
+    { text: 'NEXUS: "And that counter in its memory from Mission 3?', cls: 'highlight' },
+    { text: '        It was counting seconds since the attack began.', cls: 'highlight' },
+    { text: '        Waiting for someone who could read the code,', cls: 'highlight' },
+    { text: '        trace the logic, and set it free."', cls: 'highlight' },
+    { text: '', cls: '' },
+  ]);
+  await sleep(600);
   await typeLines([
     { text: 'NEXUS: "That someone was you."', cls: 'highlight' },
     { text: '', cls: '' },
+  ]);
+  await sleep(800);
+  await typeLines([
     { text: 'THE VILLAGE IS SAVED.', cls: 'success big' },
     { text: '', cls: '' },
   ]);
   await sleep(800);
   await typeLines([
-    { text: 'NEXUS: "Eight missions. Look at what you learned:"', cls: 'highlight' },
+    { text: 'NEXUS: "Eight missions. Look at what you actually learned:"', cls: 'highlight' },
     { text: '', cls: '' },
-    { text: '  \u2022 Binary \u2014 the language of all computers', cls: 'info' },
-    { text: '  \u2022 Programs \u2014 sequential instructions, debugging', cls: 'info' },
-    { text: '  \u2022 Variables \u2014 named memory, the = arrow', cls: 'info' },
-    { text: '  \u2022 Reverse engineering \u2014 working backward from output', cls: 'info' },
-    { text: '  \u2022 Logic gates \u2014 AND, OR, NOT, XOR', cls: 'info' },
-    { text: '  \u2022 Encryption \u2014 Caesar cipher, cryptanalysis', cls: 'info' },
-    { text: '  \u2022 Evidence analysis \u2014 spotting forgeries in data', cls: 'info' },
-    { text: '  \u2022 Conditionals & loops \u2014 how programs decide and repeat', cls: 'info' },
+    { text: '  \u2022 Binary \u2014 how computers store everything as 1s and 0s', cls: 'info' },
+    { text: '  \u2022 Programs \u2014 step-by-step instructions that computers follow', cls: 'info' },
+    { text: '  \u2022 Variables \u2014 named boxes that store and update values', cls: 'info' },
+    { text: '  \u2022 Reverse engineering \u2014 working backward from output to input', cls: 'info' },
+    { text: '  \u2022 Logic gates \u2014 AND, OR, NOT, XOR: the building blocks of decisions', cls: 'info' },
+    { text: '  \u2022 Encryption \u2014 Caesar cipher and how to break it', cls: 'info' },
+    { text: '  \u2022 Evidence analysis \u2014 spotting patterns and forgeries in data', cls: 'info' },
+    { text: '  \u2022 Conditionals & loops \u2014 how programs choose and repeat', cls: 'info' },
     { text: '', cls: '' },
-    { text: 'NEXUS: "That last one is the final piece. With variables,', cls: 'highlight' },
-    { text: '        sequences, conditions, and loops \u2014 you can understand', cls: 'highlight' },
-    { text: '        ANY program ever written. That\u2019s not a simplification.', cls: 'highlight' },
-    { text: '        That\u2019s literally all a computer does."', cls: 'highlight' },
+  ]);
+  await sleep(500);
+  await typeLines([
+    { text: 'NEXUS: "That last one is the final piece. Variables to', cls: 'highlight' },
+    { text: '        remember, sequences to act, conditions to decide,', cls: 'highlight' },
+    { text: '        loops to repeat. Every program ever written \u2014 every', cls: 'highlight' },
+    { text: '        app, every game, every AI \u2014 is built from those', cls: 'highlight' },
+    { text: '        four ideas. And now you know all of them."', cls: 'highlight' },
     { text: '', cls: '' },
+  ]);
+  await sleep(600);
+  await typeLines([
     { text: 'NEXUS: "Victor\u2019s still out there. But that\u2019s a problem', cls: 'highlight' },
     { text: '        for Season 2."', cls: 'highlight' },
     { text: '', cls: '' },

@@ -183,12 +183,16 @@ async function showVaultAnimation(terminal) {
   terminal.appendChild(container);
   terminal.scrollTop = terminal.scrollHeight;
 
-  // Spin through digits
+  // Spin through digits — slow down gradually for tension
+  const spinDuration = 900;
   const spinStart = Date.now();
-  while (Date.now() - spinStart < 600) {
+  while (Date.now() - spinStart < spinDuration) {
     tumbler.textContent = String(Math.floor(Math.random() * 10));
     tumbler.style.color = '#ffaa00';
-    await sleep(40);
+    // Slow down as we approach the end for a satisfying deceleration
+    const elapsed = Date.now() - spinStart;
+    const delay = 30 + Math.floor((elapsed / spinDuration) * 80);
+    await sleep(delay);
   }
 
   // Land on 5
@@ -196,15 +200,16 @@ async function showVaultAnimation(terminal) {
   tumbler.style.color = '#00ff41';
   tumbler.style.borderColor = '#00ff41';
   tumbler.style.boxShadow = '0 0 12px rgba(0,255,65,0.5)';
+  await sleep(300);
   check.textContent = '\u2713';
   check.style.color = '#00ff41';
   sound.success();
 
-  await sleep(400);
+  await sleep(500);
   barFill.style.width = '100%';
-  await sleep(800);
+  await sleep(900);
   openText.style.opacity = '1';
-  await sleep(600);
+  await sleep(700);
   terminal.scrollTop = terminal.scrollHeight;
 }
 
@@ -215,8 +220,8 @@ export const mission = {
   num: '07',
   title: 'THE ENCRYPTED VAULT',
   name: 'The Encrypted Vault',
-  desc: 'Investigate Victor\'s evidence files, identify the decoy, and build a decryption machine to crack the vault.',
-  skill: 'SKILL: Investigation + Machine Building (Binary, Cryptanalysis, Logic Gates, Variables)',
+  desc: 'Crack Victor\'s encrypted vault by decoding evidence files, exposing planted decoys, and building a decryption pipeline.',
+  skill: 'SKILL: Full Investigation \u2014 Binary, Cryptanalysis, Logic Gates, Variable Tracing, Critical Thinking',
   hints: [
     'Each evidence file uses a different skill you\'ve learned: binary, ciphers, logic gates, and variables.',
     'In the contradiction phase, ask yourself: which files are automatic records vs. things Victor wrote?',
@@ -237,18 +242,23 @@ export const mission = {
     const terminal = document.getElementById('terminal');
 
     await typeLines([
-      { text: '[SYSTEM] Encrypted vault detected \u2014 left by the saboteur.', cls: 'system' },
-      { text: '[SYSTEM] 4 evidence files recovered from Victor\'s workstation.', cls: 'system' },
+      { text: '[SYSTEM] Encrypted vault detected on Victor\'s workstation.', cls: 'system' },
+      { text: '[SYSTEM] 4 evidence files recovered. Integrity: UNKNOWN.', cls: 'system' },
+      { text: '[SYSTEM] WARNING: Possible counter-forensics detected.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "We found Victor\'s vault. Whatever he\'s hiding, it\'s in there.', cls: 'highlight' },
-      { text: '        But the vault is encrypted, and Victor left traps."', cls: 'highlight' },
+      { text: 'NEXUS: "This is it. Victor\'s vault \u2014 everything he\'s been hiding', cls: 'highlight' },
+      { text: '        is locked behind this encryption. His backdoor code,', cls: 'highlight' },
+      { text: '        his plans, all of it."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Here\'s the plan: investigate four evidence files, each using', cls: 'highlight' },
-      { text: '        a different skill you\'ve learned. Then we build a decryption', cls: 'highlight' },
-      { text: '        machine from the results to crack the vault open."', cls: 'highlight' },
+      { text: 'NEXUS: "Here\'s the play: four evidence files, each encrypted', cls: 'highlight' },
+      { text: '        with a different method. Binary, ciphers, logic gates,', cls: 'highlight' },
+      { text: '        variable tracing \u2014 every skill you\'ve built this season.', cls: 'highlight' },
+      { text: '        Decode them all, then we chain the results together', cls: 'highlight' },
+      { text: '        to build a decryption machine that cracks the vault."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "But be careful \u2014 Victor knew we\'d come looking.', cls: 'highlight' },
-      { text: '        Not everything he left behind can be trusted."', cls: 'highlight' },
+      { text: 'NEXUS: "But Victor is clever. He knew someone might investigate.', cls: 'highlight' },
+      { text: '        He planted traps in these files \u2014 decoys designed to', cls: 'highlight' },
+      { text: '        mislead us. Trust the evidence, not the saboteur."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -266,7 +276,8 @@ export const mission = {
     state.missionState.boardEl = boardEl;
 
     addLine('', '');
-    addLine('Click any evidence file to examine it. You can solve them in any order.', 'info');
+    addLine('NEXUS: "Pick any file to start. Real investigators follow their instincts."', 'highlight');
+    addLine('Click any evidence file to examine it.', 'info');
     addLine('', '');
 
     state.missionState.phase = 'board';
@@ -289,7 +300,12 @@ function returnToBoard() {
     s.phase = 'board';
     setCurrentInputHandler(null); // clicks handle it
     addLine('', '');
-    addLine(`${4 - s.decodedCount} file(s) remaining. Click a file to examine.`, 'info');
+    const remaining = 4 - s.decodedCount;
+    const encouragement = remaining === 3 ? 'Good start. Three more to crack.'
+      : remaining === 2 ? 'Halfway there. Two files left.'
+      : 'Almost done \u2014 one file remains.';
+    addLine(`NEXUS: "${encouragement}"`, 'highlight');
+    addLine(`Click a file to examine. (${remaining} remaining)`, 'info');
   }
 }
 
@@ -301,12 +317,15 @@ function startExamine(num) {
     // FILE 1: access_log.bin (Binary + Variable trace + Reverse engineering)
     addLine('', '');
     addLine('\u2501\u2501\u2501 FILE 1: access_log.bin \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Victor\'s system log \u2014 automatic, so he couldn\'t tamper', 'highlight');
-    addLine('        with it. First decode the binary, then trace the program."', 'highlight');
+    addLine('NEXUS: "This is a system-generated log \u2014 the machine wrote it,', 'highlight');
+    addLine('        not Victor. That makes it trustworthy. But it\'s stored', 'highlight');
+    addLine('        in binary, and there\'s a processing step after."', 'highlight');
     addLine('', '');
-    addPre('  System log:\n    raw = 1100      (binary)\n\n  Binary reminder:   8  4  2  1\n                     1  1  0  0  = 8 + 4 = ?\n\n  Processing program:\n    value = raw          \u2190 start with decoded number\n    value = value - 4\n    code_fragment = value');
+    addLine('NEXUS: "Two skills needed here: binary decoding, then variable tracing."', 'highlight');
     addLine('', '');
-    addLine('What is code_fragment? (decode the binary, then trace the program)', 'warning');
+    addPre('  System log:\n    raw = 1100      (binary)\n\n  Step 1 \u2014 Decode the binary:\n    Place values:  8  4  2  1\n    Binary digits: 1  1  0  0\n    Add the ON digits: 8 + 4 = ?\n\n  Step 2 \u2014 Trace the program:\n    value = raw          \u2190 your decoded number goes here\n    value = value - 4    \u2190 subtract 4\n    code_fragment = value');
+    addLine('', '');
+    addLine('What is code_fragment? (decode binary first, then trace the program)', 'warning');
 
     setCurrentInputHandler((input) => {
       // 1100 = 8+4 = 12. value=12, value=12-4=8, code_fragment=8
@@ -316,17 +335,17 @@ function startExamine(num) {
         s.decodedCount++;
         updateEvidenceCard(s.boardEl, 1, 'code_fragment = 8');
         setPhaseProgress(1 + s.decodedCount, 8);
-        addLine('[FILE 1 DECODED] 1100 = 12, 12 - 4 = 8.', 'success');
+        addLine('[FILE 1 DECODED] Binary 1100 = 12. Then 12 - 4 = 8. Nice work.', 'success');
         returnToBoard();
       } else {
         sound.denied();
         s.wrongCount++;
         if (s.wrongCount >= 3) {
-          addLine('[WRONG] 1100 = 8+4 = 12. Then 12 - 4 = ?', 'error');
+          addLine('NEXUS: "Almost there. 1100 in binary = 8 + 4 = 12. Then the program subtracts 4. So 12 - 4 = ?"', 'error');
         } else if (s.wrongCount >= 2) {
-          addLine('[WRONG] Decode 1100 first (eights + fours), then trace the program.', 'error');
+          addLine('NEXUS: "Take it in two steps. First: which place values are ON? The 8 and the 4. Add those. Then trace the subtraction."', 'error');
         } else {
-          addLine('[WRONG] Two steps: decode the binary, then trace the variable.', 'error');
+          addLine('NEXUS: "Not quite. Remember, this is a two-step problem: decode the binary number first, then run it through the program."', 'error');
         }
       }
     });
@@ -335,14 +354,15 @@ function startExamine(num) {
     // FILE 2: note.enc (Cryptanalysis)
     addLine('', '');
     addLine('\u2501\u2501\u2501 FILE 2: note.enc \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "An encrypted note \u2014 Caesar cipher, but we don\'t know', 'highlight');
-    addLine('        the shift. Classic cryptanalysis: find a known word', 'highlight');
-    addLine('        and use it to crack the key."', 'highlight');
+    addLine('NEXUS: "An encrypted note from Victor \u2014 Caesar cipher. The', 'highlight');
+    addLine('        message is scrambled, but we have an advantage."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Victor always signs his name. The last word decrypts', 'highlight');
-    addLine('        to VICTOR. Use that to figure out the shift."', 'highlight');
+    addLine('NEXUS: "In real cryptanalysis, you look for a known word \u2014', 'highlight');
+    addLine('        something you EXPECT to find in the message. It\'s', 'highlight');
+    addLine('        called a \'known-plaintext attack.\' Victor always', 'highlight');
+    addLine('        signs his notes. The last word is VICTOR."', 'highlight');
     addLine('', '');
-    addPre('  Encrypted text:  SDVVFRGH  YLFWRU\n\n  The last word decrypts to VICTOR.\n  The first encrypted letter of that word is Y.\n  The first plain letter is V.\n\n  How many positions from V to Y?\n  V \u2192 W \u2192 X \u2192 Y  =  ? positions');
+    addPre('  Encrypted text:  SDVVFRGH  YLFWRU\n\n  Known plaintext: the last word decrypts to VICTOR.\n\n  Compare the first letters:\n    Plain letter:     V\n    Encrypted letter: Y\n\n  How many positions forward from V to Y?\n  V \u2192 W \u2192 X \u2192 Y  =  ? positions');
     addLine('', '');
     addLine('What is the shift? (a number)', 'warning');
 
@@ -353,9 +373,10 @@ function startExamine(num) {
       if (s.file2SubPhase === 'shift') {
         if (answer === '3') {
           sound.success();
-          addLine('[SHIFT FOUND] V \u2192 W \u2192 X \u2192 Y = 3 positions. The shift is 3.', 'success');
+          addLine('[SHIFT FOUND] V \u2192 W \u2192 X \u2192 Y = 3 positions.', 'success');
           addLine('', '');
-          addLine('NEXUS: "Now decrypt the first word with shift 3."', 'highlight');
+          addLine('NEXUS: "Shift of 3. Now we can reverse it \u2014 shift each letter', 'highlight');
+          addLine('        BACKWARD by 3 to reveal the original message."', 'highlight');
           addLine('', '');
           addPre('  Encrypted word:  S D V V F R G H\n  Shift: 3 (shift each letter BACKWARD by 3)\n\n  ALPHABET: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z');
           addLine('', '');
@@ -366,11 +387,11 @@ function startExamine(num) {
           sound.denied();
           s.wrongCount++;
           if (s.wrongCount >= 3) {
-            addLine('[WRONG] Count: V\u2192W is 1 step, W\u2192X is 2 steps, X\u2192Y is 3 steps.', 'error');
+            addLine('NEXUS: "Count the hops: V to W is 1, W to X is 2, X to Y is 3. The shift is 3."', 'error');
           } else if (s.wrongCount >= 2) {
-            addLine('[WRONG] The plain letter is V. The encrypted letter is Y. Count the steps forward: V\u2192W\u2192X\u2192Y.', 'error');
+            addLine('NEXUS: "V is the real letter. Y is the encrypted version. Count how many steps forward in the alphabet: V\u2192W\u2192X\u2192Y."', 'error');
           } else {
-            addLine('[WRONG] Count the distance from V to Y in the alphabet.', 'error');
+            addLine('NEXUS: "Think of the alphabet as a number line. How far apart are V and Y?"', 'error');
           }
         }
       } else if (s.file2SubPhase === 'decrypt') {
@@ -380,17 +401,17 @@ function startExamine(num) {
           s.decodedCount++;
           updateEvidenceCard(s.boardEl, 2, 'shift=3, word=PASSCODE');
           setPhaseProgress(1 + s.decodedCount, 8);
-          addLine('[FILE 2 DECODED] SDVVFRGH with shift 3 = PASSCODE.', 'success');
+          addLine('[FILE 2 DECODED] SDVVFRGH decrypts to PASSCODE. The shift key is 3.', 'success');
           returnToBoard();
         } else {
           sound.denied();
           s.wrongCount++;
           if (s.wrongCount >= 3) {
-            addLine('[WRONG] S back 3 = P. D back 3 = A. V back 3 = S. V back 3 = S. F back 3 = C. R back 3 = O. G back 3 = D. H back 3 = E. Put them together.', 'error');
+            addLine('NEXUS: "Letter by letter: S\u2192P, D\u2192A, V\u2192S, V\u2192S, F\u2192C, R\u2192O, G\u2192D, H\u2192E. Read them together."', 'error');
           } else if (s.wrongCount >= 2) {
-            addLine('[WRONG] First letter: S back 3 \u2192 S\u2192R\u2192Q\u2192P. So P. Do the same for each letter.', 'error');
+            addLine('NEXUS: "Start with S. Count 3 backward: S\u2192R\u2192Q\u2192P. First letter is P. Now do the same for D, V, V, F, R, G, H."', 'error');
           } else {
-            addLine('[WRONG] Shift each letter BACKWARD by 3. S back 3 = ? D back 3 = ? Keep going.', 'error');
+            addLine('NEXUS: "To decrypt, reverse the shift: move each letter 3 positions BACKWARD in the alphabet."', 'error');
           }
         }
       }
@@ -400,12 +421,13 @@ function startExamine(num) {
     // FILE 3: circuit.log (Logic Gates)
     addLine('', '');
     addLine('\u2501\u2501\u2501 FILE 3: circuit.log \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "A logic circuit from Victor\'s hardware. Three gates', 'highlight');
-    addLine('        chained together. Trace each step carefully."', 'highlight');
+    addLine('NEXUS: "Victor\'s hardware security module. Three logic gates', 'highlight');
+    addLine('        wired in series \u2014 the output of each feeds into the', 'highlight');
+    addLine('        next. Follow the signal through the circuit."', 'highlight');
     addLine('', '');
-    addPre('  Wire P = 1,  Wire Q = 0,  Wire R = 1\n\n  Step 1:  X = P AND Q\n  Step 2:  Y = NOT X\n  Step 3:  Z = Y XOR R\n\n  Logic gate reference:\n    AND: both must be 1 \u2192 output 1\n    NOT: flips the bit (0\u21921, 1\u21920)\n    XOR: different = 1, same = 0');
+    addPre('  Input wires:  P = 1,  Q = 0,  R = 1\n\n  Circuit:\n    Step 1:  X = P AND Q     \u2190 are BOTH inputs 1?\n    Step 2:  Y = NOT X       \u2190 flip the bit\n    Step 3:  Z = Y XOR R     \u2190 are the inputs DIFFERENT?\n\n  Gate reference:\n    AND: both must be 1 \u2192 output 1, otherwise 0\n    NOT: flips the bit (0 becomes 1, 1 becomes 0)\n    XOR: inputs different \u2192 1, inputs same \u2192 0');
     addLine('', '');
-    addLine('What is Z? (0 or 1)', 'warning');
+    addLine('What is the final output Z? (0 or 1)', 'warning');
 
     setCurrentInputHandler((input) => {
       if (input.trim() === '0') {
@@ -414,17 +436,17 @@ function startExamine(num) {
         s.decodedCount++;
         updateEvidenceCard(s.boardEl, 3, 'Z = 0');
         setPhaseProgress(1 + s.decodedCount, 8);
-        addLine('[FILE 3 DECODED] X = 1 AND 0 = 0. Y = NOT 0 = 1. Z = 1 XOR 1 = 0.', 'success');
+        addLine('[FILE 3 DECODED] P AND Q = 0, NOT 0 = 1, 1 XOR 1 = 0. Signal traced.', 'success');
         returnToBoard();
       } else {
         sound.denied();
         s.wrongCount++;
         if (s.wrongCount >= 3) {
-          addLine('[WRONG] Step 1: 1 AND 0 = 0. Step 2: NOT 0 = 1. Step 3: 1 XOR 1 = ? (XOR = exactly one must be 1. Both are 1, so...)', 'error');
+          addLine('NEXUS: "Let me walk you through it. 1 AND 0 = 0 (both must be 1). NOT 0 = 1 (flip it). 1 XOR 1 = ? Both are 1, so they\'re the SAME..."', 'error');
         } else if (s.wrongCount >= 2) {
-          addLine('[WRONG] X = P AND Q = 1 AND 0 = 0. Y = NOT 0 = 1. Now Z = 1 XOR 1. With XOR, if both are the same, the result is 0.', 'error');
+          addLine('NEXUS: "Step 1 gives 0 (AND needs both to be 1). Step 2 flips it to 1. Now for XOR: are 1 and 1 different or the same?"', 'error');
         } else {
-          addLine('[WRONG] Work step by step. First: what is P AND Q? Then NOT that. Then XOR with R.', 'error');
+          addLine('NEXUS: "Trace it gate by gate. Start with Step 1: P is 1, Q is 0. What does AND give you when one input is 0?"', 'error');
         }
       }
     });
@@ -433,10 +455,11 @@ function startExamine(num) {
     // FILE 4: vault_key.prog (Variable tracing)
     addLine('', '');
     addLine('\u2501\u2501\u2501 FILE 4: vault_key.prog \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "A program Victor wrote himself. Trace the variable', 'highlight');
-    addLine('        through each step to find the result."', 'highlight');
+    addLine('NEXUS: "This one is a program Victor wrote himself. Not a', 'highlight');
+    addLine('        system log \u2014 he chose every value in here. Trace', 'highlight');
+    addLine('        the variable through each line."', 'highlight');
     addLine('', '');
-    addPre('  key = 5\n  key = key * 3       \u2190 multiply\n  key = key - 7       \u2190 subtract\n  result = key\n\n  Trace each line: what does key equal after each step?');
+    addPre('  key = 5              \u2190 key starts at 5\n  key = key * 3         \u2190 multiply key by 3\n  key = key - 7         \u2190 subtract 7\n  result = key          \u2190 store the final value\n\n  Trace each line: update key\'s value step by step.');
     addLine('', '');
     addLine('What is result?', 'warning');
 
@@ -447,17 +470,17 @@ function startExamine(num) {
         s.decodedCount++;
         updateEvidenceCard(s.boardEl, 4, 'result = 8');
         setPhaseProgress(1 + s.decodedCount, 8);
-        addLine('[FILE 4 DECODED] key=5, key=15, key=8, result=8.', 'success');
+        addLine('[FILE 4 DECODED] key = 5 \u2192 15 \u2192 8. Result is 8.', 'success');
         returnToBoard();
       } else {
         sound.denied();
         s.wrongCount++;
         if (s.wrongCount >= 3) {
-          addLine('[WRONG] key starts at 5. 5 * 3 = 15. 15 - 7 = ?', 'error');
+          addLine('NEXUS: "key = 5. Then 5 times 3 = 15. Then 15 minus 7 = ? You\'re one step away."', 'error');
         } else if (s.wrongCount >= 2) {
-          addLine('[WRONG] Line by line: key=5, then key = 5*3 = 15, then key = 15-7 = ?', 'error');
+          addLine('NEXUS: "Go line by line. key starts at 5. After multiplying by 3, key = 15. Now subtract 7 from 15."', 'error');
         } else {
-          addLine('[WRONG] Trace each line. key starts at 5, gets multiplied by 3, then 7 is subtracted.', 'error');
+          addLine('NEXUS: "Remember: each line UPDATES the variable. key changes value at every step. Start at 5 and work forward."', 'error');
         }
       }
     });
@@ -476,20 +499,21 @@ function startContradiction() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 EVIDENCE REVIEW \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addPre('  FILE 1: code_fragment = 8\n  FILE 2: shift = 3, word = PASSCODE\n  FILE 3: Z = 0\n  FILE 4: result = 8');
+  addPre('  FILE 1: access_log.bin   \u2192  code_fragment = 8   (system log)\n  FILE 2: note.enc         \u2192  shift = 3, PASSCODE  (encrypted note)\n  FILE 3: circuit.log      \u2192  Z = 0                (hardware log)\n  FILE 4: vault_key.prog   \u2192  result = 8           (Victor\'s program)');
   addLine('', '');
 
-  addLine('NEXUS: "Hold on. Look at those results carefully."', 'highlight');
+  addLine('NEXUS: "Wait. Look at that."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "File 1 and File 4 both give 8. Two completely different', 'highlight');
-  addLine('        types of evidence producing the same number? That\'s', 'highlight');
-  addLine('        suspicious. One of these is a DECOY Victor planted."', 'highlight');
+  addLine('NEXUS: "File 1 and File 4 both output 8. Two completely different', 'highlight');
+  addLine('        methods, same result? In forensics, that\'s a red flag.', 'highlight');
+  addLine('        One of these is a DECOY \u2014 planted to mislead us."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Think about it: some files are automatic records that', 'highlight');
-  addLine('        Victor couldn\'t alter. Others are things he created', 'highlight');
-  addLine('        himself \u2014 where he chose every number."', 'highlight');
+  addLine('NEXUS: "This is critical thinking, not just coding. Ask yourself:', 'highlight');
+  addLine('        which files are machine-generated records that Victor', 'highlight');
+  addLine('        COULDN\'T tamper with? And which ones did he write', 'highlight');
+  addLine('        himself, choosing every value?"', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Which file could Victor have fabricated?"', 'highlight');
+  addLine('NEXUS: "Which file did Victor fabricate?"', 'highlight');
   addLine('', '');
   addLine('Which file is the decoy? (type 1, 2, 3, or 4)', 'warning');
 
@@ -499,14 +523,17 @@ function startContradiction() {
       sound.success();
       markDecoy(s.boardEl, 4);
       addLine('', '');
-      addLine('[DECOY IDENTIFIED] File 4 was the trap.', 'success');
+      addLine('[DECOY IDENTIFIED] File 4: vault_key.prog is a fabrication.', 'success');
       addLine('', '');
-      addLine('NEXUS: "Exactly. File 1 is an automatic system log \u2014 tamper-proof.', 'highlight');
-      addLine('        But File 4? Victor wrote that program himself. He chose', 'highlight');
+      addLine('NEXUS: "Sharp thinking. File 1 is an automatic system log \u2014 the', 'highlight');
+      addLine('        machine generated it, so Victor couldn\'t alter it."', 'highlight');
+      addLine('', '');
+      addLine('NEXUS: "But File 4? That\'s a program Victor AUTHORED. He picked', 'highlight');
       addLine('        key=5, *3, -7 specifically to produce 8 \u2014 a duplicate', 'highlight');
-      addLine('        designed to confuse anyone investigating."', 'highlight');
+      addLine('        designed to create confusion. Classic misdirection."', 'highlight');
       addLine('', '');
-      addLine('NEXUS: "Real evidence only: 8 (File 1), 3 (File 2 shift), 0 (File 3)."', 'highlight');
+      addLine('NEXUS: "Verified evidence: 8 from File 1, shift 3 from File 2,', 'highlight');
+      addLine('        and 0 from File 3. Three real values. Let\'s use them."', 'highlight');
       s.decoyIdentified = true;
       s.phase = 'build';
       setTimeout(startBuild, 800);
@@ -514,11 +541,11 @@ function startContradiction() {
       sound.denied();
       s.wrongCount++;
       if (s.wrongCount >= 3) {
-        addLine('[WRONG] access_log.bin is a system log \u2014 automatic, tamper-proof. vault_key.prog is a program Victor authored \u2014 he picked every number. Which could he fake?', 'error');
+        addLine('NEXUS: "access_log.bin is a system log \u2014 automatic, tamper-proof. vault_key.prog is code Victor wrote himself. He chose every number. Which one could he fake?"', 'error');
       } else if (s.wrongCount >= 2) {
-        addLine('[WRONG] Two files output 8. One is an automatic log, one is code Victor wrote. Who controls the output of a program they wrote?', 'error');
+        addLine('NEXUS: "Two files both output 8. One is a machine-generated log. The other is a program Victor authored \u2014 where he controlled every value. Think about who benefits from the confusion."', 'error');
       } else {
-        addLine('[WRONG] Think about which files Victor had control over vs. which were generated automatically.', 'error');
+        addLine('NEXUS: "Look at the file types. Which ones are automatic records vs. things Victor created? A saboteur can only plant evidence in files he controls."', 'error');
       }
     }
   });
@@ -535,12 +562,13 @@ function startBuild() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 BUILD THE DECRYPTION MACHINE \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Three verified values from the real evidence. Now we', 'highlight');
-  addLine('        feed them into a decryption machine \u2014 three modules', 'highlight');
-  addLine('        chained together. You configure each one."', 'highlight');
+  addLine('NEXUS: "Now for the real work. We\'re going to chain our three', 'highlight');
+  addLine('        verified values into a decryption pipeline \u2014 three', 'highlight');
+  addLine('        modules, each one feeding into the next."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "The machine takes our evidence values, processes them,', 'highlight');
-  addLine('        and produces the vault code. Let\'s build it."', 'highlight');
+  addLine('NEXUS: "This is how real decryption works: data flows through', 'highlight');
+  addLine('        a series of processing stages. You\'ll configure each', 'highlight');
+  addLine('        module to crack the vault code."', 'highlight');
   addLine('', '');
 
   const workbench = createWorkbench();
@@ -558,10 +586,10 @@ function startModule1() {
   s.phase = 'build1';
 
   addLine('\u2500\u2500 Module 1: Key Generator \u2500\u2500', 'highlight');
-  addLine('NEXUS: "The raw key comes from File 1\'s code_fragment.', 'highlight');
-  addLine('        What value feeds into the machine?"', 'highlight');
+  addLine('NEXUS: "First module needs the raw key. This comes from our', 'highlight');
+  addLine('        tamper-proof evidence \u2014 File 1\'s code_fragment."', 'highlight');
   addLine('', '');
-  addLine('What is the input value from File 1?', 'warning');
+  addLine('What value from File 1 feeds into the Key Generator?', 'warning');
 
   setCurrentInputHandler((input) => {
     if (input.trim() === '8') {
@@ -574,11 +602,11 @@ function startModule1() {
       sound.denied();
       s.wrongCount++;
       if (s.wrongCount >= 3) {
-        addLine('[WRONG] File 1 decoded to: code_fragment = 8. What number is that?', 'error');
+        addLine('NEXUS: "File 1 decoded to code_fragment = 8. The number is 8."', 'error');
       } else if (s.wrongCount >= 2) {
-        addLine('[WRONG] Look at your evidence board. File 1\'s result was code_fragment = ?', 'error');
+        addLine('NEXUS: "Check the evidence board above. File 1 shows code_fragment = ?"', 'error');
       } else {
-        addLine('[WRONG] What did File 1 (access_log.bin) decode to?', 'error');
+        addLine('NEXUS: "Recall what File 1 (access_log.bin) decoded to. The value is on the evidence board."', 'error');
       }
     }
   });
@@ -592,21 +620,24 @@ function startModule2() {
   setPhaseProgress(7, 8);
 
   addLine('\u2500\u2500 Module 2: Processor \u2500\u2500', 'highlight');
-  addLine('NEXUS: "The processor combines our evidence values into a vault', 'highlight');
-  addLine('        code. But something looks wrong \u2014 trace it carefully."', 'highlight');
+  addLine('NEXUS: "The processor combines our evidence values. But I\'m', 'highlight');
+  addLine('        seeing something suspicious in the code. Trace it', 'highlight');
+  addLine('        carefully \u2014 Victor may have left another trap."', 'highlight');
   addLine('', '');
-  addPre('  Processor program:\n\n    Line 1:  vault = 8              \u2190 from Module 1\n    Line 2:  vault = vault - 3       \u2190 subtract File 2 shift\n    Line 3:  vault = vault * 0       \u2190 multiply by File 3 output');
+  addPre('  Processor program:\n\n    Line 1:  vault = 8              \u2190 key from Module 1\n    Line 2:  vault = vault - 3       \u2190 subtract File 2\'s shift\n    Line 3:  vault = vault * 0       \u2190 multiply by File 3\'s output (Z = 0)');
   addLine('', '');
-  addLine('NEXUS: "Trace it line by line. What does vault equal after', 'highlight');
-  addLine('        each step? Do you see the problem?"', 'highlight');
+  addLine('NEXUS: "Trace it line by line. Watch what happens to vault."', 'highlight');
   addLine('', '');
-  addPre('  Trace:\n    Line 1:  vault = 8\n    Line 2:  vault = 8 - 3 = ?\n    Line 3:  vault = ? * 0 = ?    \u2190 What happens here?');
+  addPre('  Trace:\n    After Line 1:  vault = 8\n    After Line 2:  vault = 8 - 3 = 5\n    After Line 3:  vault = 5 * 0 = 0    \u2190 Everything is wiped out!');
   addLine('', '');
-  addLine('NEXUS: "Multiplying by zero destroys everything \u2014 that\'s another', 'highlight');
-  addLine('        booby trap from Victor! Sometimes the best debugging fix', 'highlight');
-  addLine('        is to DELETE the bad line entirely."', 'highlight');
+  addLine('NEXUS: "See that? Multiplying by zero destroys all our work.', 'highlight');
+  addLine('        Any number times zero equals zero. That\'s Victor\'s', 'highlight');
+  addLine('        second booby trap \u2014 hidden right in the math."', 'highlight');
   addLine('', '');
-  addLine('What is the vault code if you remove the buggy Line 3?', 'warning');
+  addLine('NEXUS: "Here\'s a real debugging principle: sometimes the fix', 'highlight');
+  addLine('        is to DELETE the bad code entirely. Remove Line 3."', 'highlight');
+  addLine('', '');
+  addLine('What is the vault code if you skip the buggy Line 3?', 'warning');
 
   setCurrentInputHandler((input) => {
     if (input.trim() === '5') {
@@ -614,20 +645,22 @@ function startModule2() {
       activateModule(s.workbenchEl, 1, 'vault=5');
       addLine('[MODULE 2 ONLINE] Booby trap neutralized. Vault code = 5.', 'success');
       addLine('', '');
-      addLine('NEXUS: "8 - 3 = 5. Line 3 was the trap \u2014 multiplying by zero', 'highlight');
-      addLine('        would have erased the real answer. Deleting bad code', 'highlight');
-      addLine('        is a real debugging technique."', 'highlight');
+      addLine('NEXUS: "8 minus 3 is 5. Line 3 was the trap \u2014 Victor knew', 'highlight');
+      addLine('        that multiplying by zero would silently erase the', 'highlight');
+      addLine('        real answer. Bugs like this are the hardest to find', 'highlight');
+      addLine('        because the code still RUNS \u2014 it just gives the', 'highlight');
+      addLine('        wrong answer. You caught it."', 'highlight');
       addLine('', '');
       setTimeout(startModule3, 600);
     } else {
       sound.denied();
       s.wrongCount++;
       if (s.wrongCount >= 3) {
-        addLine('[WRONG] Line 1: vault=8. Line 2: vault=8-3=5. Line 3 is the bug, so skip it. vault stays at 5.', 'error');
+        addLine('NEXUS: "Line 1: vault = 8. Line 2: vault = 8 - 3 = 5. We skip Line 3 (the trap). So vault stays at 5."', 'error');
       } else if (s.wrongCount >= 2) {
-        addLine('[WRONG] After Line 2, vault = 5. Line 3 is the booby trap. If you skip it, vault = ?', 'error');
+        addLine('NEXUS: "After Line 2, vault equals 5. Line 3 is the trap we\'re removing. What does vault stay at?"', 'error');
       } else {
-        addLine('[WRONG] Trace Lines 1 and 2 only. Ignore Line 3 completely. What does vault equal?', 'error');
+        addLine('NEXUS: "Only run Lines 1 and 2. Line 3 is the booby trap \u2014 delete it entirely. What does vault equal after just those two lines?"', 'error');
       }
     }
   });
@@ -642,11 +675,13 @@ function startModule3() {
   const encryptedVerify = caesarEncrypt('FIVE', 3); // should be ILYH
 
   addLine('\u2500\u2500 Module 3: Decryptor (Verification) \u2500\u2500', 'highlight');
-  addLine('NEXUS: "Final module. Good engineers always verify their work.', 'highlight');
-  addLine('        The vault has an encrypted confirmation code. If our', 'highlight');
-  addLine('        decryption matches the vault code, we\'re in."', 'highlight');
+  addLine('NEXUS: "Final module. Real engineers always verify before they', 'highlight');
+  addLine('        execute. The vault has an encrypted confirmation code.', 'highlight');
+  addLine('        If it matches our vault code, we know we got it right."', 'highlight');
   addLine('', '');
-  addPre('  The vault has an encrypted verification message:\n\n    Encrypted message:  ' + encryptedVerify + '\n    Shift: 3 (from File 2)\n\n  Decrypt it to verify the vault code.\n\n  ALPHABET: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z');
+  addLine('NEXUS: "Use the shift from File 2 to decrypt this message."', 'highlight');
+  addLine('', '');
+  addPre('  Vault verification message:\n\n    Encrypted:  ' + encryptedVerify + '\n    Shift: 3 (from File 2 \u2014 shift BACKWARD to decrypt)\n\n  Decrypt each letter by moving 3 positions back in the alphabet.\n\n  ALPHABET: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z');
   addLine('', '');
   addLine('What is the decrypted message?', 'warning');
 
@@ -656,10 +691,11 @@ function startModule3() {
       sound.success();
       activateModule(s.workbenchEl, 2, 'FIVE');
       addLine('', '');
-      addLine(`[MODULE 3 ONLINE] ${encryptedVerify} with shift 3 = FIVE.`, 'success');
+      addLine(`[MODULE 3 ONLINE] ${encryptedVerify} decrypts to FIVE. Verification confirmed.`, 'success');
       addLine('', '');
-      addLine('NEXUS: "The decrypted message says FIVE. The processor computed 5.', 'highlight');
-      addLine('        They MATCH. The machine works."', 'highlight');
+      addLine('NEXUS: "The verification says FIVE. The processor computed 5.', 'highlight');
+      addLine('        They match \u2014 independent confirmation. The vault', 'highlight');
+      addLine('        code is verified. Initiating unlock sequence..."', 'highlight');
       addLine('', '');
 
       setPhaseProgress(8, 8);
@@ -668,16 +704,19 @@ function startModule3() {
       await showVaultAnimation(document.getElementById('terminal'));
 
       addLine('', '');
-      addLine('NEXUS: "Think about what you just did. You decoded binary,', 'highlight');
-      addLine('        cracked a cipher, traced logic gates, spotted a forgery,', 'highlight');
-      addLine('        removed a booby trap, and verified your answer."', 'highlight');
+      addLine('NEXUS: "Take a second to appreciate what you just did."', 'highlight');
       addLine('', '');
-      addLine('NEXUS: "Every skill from this season \u2014 combined in one mission.', 'highlight');
-      addLine('        That\'s what real security work looks like: pulling', 'highlight');
-      addLine('        together everything you know."', 'highlight');
+      addLine('NEXUS: "You decoded binary, cracked a cipher with known-plaintext', 'highlight');
+      addLine('        analysis, traced logic gates through a circuit, identified', 'highlight');
+      addLine('        fabricated evidence, removed a zero-multiplication trap,', 'highlight');
+      addLine('        and independently verified your answer."', 'highlight');
       addLine('', '');
-      addLine('NEXUS: "And inside the vault \u2014 Victor\'s backdoor code.', 'highlight');
-      addLine('        We\'ll need this for the final hack."', 'highlight');
+      addLine('NEXUS: "Every skill you\'ve learned this season \u2014 brought together', 'highlight');
+      addLine('        in one investigation. That\'s what real security work', 'highlight');
+      addLine('        looks like: no single skill is enough. You need them all."', 'highlight');
+      addLine('', '');
+      addLine('NEXUS: "And inside the vault? Victor\'s backdoor code. The proof', 'highlight');
+      addLine('        we need \u2014 and the key to the final hack."', 'highlight');
       addLine('', '');
       addLine('[ Type NEXT to continue ]', 'warning');
 
@@ -689,11 +728,11 @@ function startModule3() {
       sound.denied();
       s.wrongCount++;
       if (s.wrongCount >= 3) {
-        addLine(`[WRONG] I back 3 = F. L back 3 = I. Y back 3 = V. H back 3 = E. Put them together.`, 'error');
+        addLine('NEXUS: "I back 3 = F. L back 3 = I. Y back 3 = V. H back 3 = E. Read them together."', 'error');
       } else if (s.wrongCount >= 2) {
-        addLine(`[WRONG] First letter: I back 3 \u2192 I\u2192H\u2192G\u2192F. So F. Do the same for L, Y, H.`, 'error');
+        addLine('NEXUS: "First letter: I. Count back 3: I\u2192H\u2192G\u2192F. That gives F. Now do L, Y, and H the same way."', 'error');
       } else {
-        addLine('[WRONG] Shift each letter of ' + encryptedVerify + ' BACKWARD by 3.', 'error');
+        addLine('NEXUS: "Same technique as File 2. Shift each letter of ' + encryptedVerify + ' backward by 3 positions in the alphabet."', 'error');
       }
     }
   });

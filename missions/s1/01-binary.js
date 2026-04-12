@@ -40,18 +40,22 @@ export const mission = {
     await typeLines([
       { text: '[INCOMING COMMS]', cls: 'system' },
       { text: '', cls: '' },
-      { text: `NEXUS: "${state.hackerName || 'Kid'}. I\'m NEXUS. Thirty years`, cls: 'highlight' },
-      { text: '        in the game. I\'ll be on comms for every mission."', cls: 'highlight' },
+      { text: `NEXUS: "${state.hackerName || 'Kid'}. I\'m NEXUS \u2014 senior analyst,`, cls: 'highlight' },
+      { text: '        thirty years in the field. I\'ll be on comms for', cls: 'highlight' },
+      { text: '        every mission. You hear my voice, you listen."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: '[INTERCEPT] Signal from the rogue AI \u2014 but it\'s all 1s and 0s.', cls: 'system' },
+      { text: '[INTERCEPT] Encrypted signal detected from the rogue AI.', cls: 'system' },
+      { text: '            Contents: 01000 00101 01100 10000', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "That\'s BINARY \u2014 the only language computers actually', cls: 'highlight' },
-      { text: '        speak. Every photo, game, song... underneath it all,', cls: 'highlight' },
-      { text: '        just ones and zeros. We need to decode this signal', cls: 'highlight' },
-      { text: '        to know what the AI is up to."', cls: 'highlight' },
+      { text: 'NEXUS: "See those 1s and 0s? That\'s BINARY \u2014 the only', cls: 'highlight' },
+      { text: '        language computers actually speak. Your phone,', cls: 'highlight' },
+      { text: '        your games, every photo you\'ve ever taken \u2014', cls: 'highlight' },
+      { text: '        underneath, it\'s ALL ones and zeros."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "I\'ll teach you. It works just like the numbers you', cls: 'highlight' },
-      { text: '        already know."', cls: 'highlight' },
+      { text: 'NEXUS: "We need to decode this signal to know what the', cls: 'highlight' },
+      { text: '        AI is planning. But first, you need to learn', cls: 'highlight' },
+      { text: '        to think in binary. Don\'t worry \u2014 it works', cls: 'highlight' },
+      { text: '        just like the numbers you already know."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -154,15 +158,27 @@ async function animateBinaryBreakdown() {
       await sleep(200);
 
       if (col.digit === 1) {
-        // Show the value, update total
+        // Show the multiplication step briefly
+        digitCells[i].textContent = `1${col.multiplier}`;
+        digitCells[i].style.fontSize = '14px';
+        await sleep(400);
+
+        // Then show the value, update total
         runningTotal += col.value;
+        digitCells[i].textContent = String(col.digit);
+        digitCells[i].style.fontSize = '20px';
         resultCells[i].textContent = String(col.value);
         resultCells[i].style.color = '#00ff41';
         resultCells[i].style.textShadow = '0 0 6px #00ff41';
         totalEl.textContent = 'Total: ' + runningTotal;
         totalEl.style.color = '#00ff41';
       } else {
-        // Zero column — just dim it
+        // Zero column — show it's skipped
+        digitCells[i].textContent = 'OFF';
+        digitCells[i].style.fontSize = '11px';
+        await sleep(300);
+        digitCells[i].textContent = '0';
+        digitCells[i].style.fontSize = '20px';
         resultCells[i].textContent = '-';
         resultCells[i].style.color = '#333';
         digitCells[i].style.color = '#333';
@@ -200,33 +216,40 @@ async function runBinaryPhase() {
 
   if (s.phase === 0) {
     // Phase 1: Learn binary — one worked example, one practice, then decode
-    addLine('NEXUS: "You know how regular numbers work. In 352, the 2 is', 'highlight');
-    addLine('        in the ONES place, the 5 in the TENS place, the 3', 'highlight');
-    addLine('        in the HUNDREDS. Each place is 10\u00d7 bigger."', 'highlight');
+    addLine('NEXUS: "You already know how numbers work. Take 352:"', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Binary is the SAME idea \u2014 but each place is 2\u00d7', 'highlight');
-    addLine('        bigger instead of 10\u00d7. So the places go:', 'highlight');
-    addLine('        ones, twos, fours, eights."', 'highlight');
+    addPre('         hundreds   tens   ones\n            3        5      2\n          3\u00d7100  +  5\u00d710  +  2\u00d71  =  352');
     addLine('', '');
-    addLine('NEXUS: "Let me walk you through one."', 'highlight');
+    addLine('NEXUS: "Each place is 10\u00d7 bigger than the one before it.', 'highlight');
+    addLine('        That\'s why we call it BASE 10."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Binary is BASE 2 \u2014 same idea, but each place is', 'highlight');
+    addLine('        2\u00d7 bigger instead of 10\u00d7. And you only get two', 'highlight');
+    addLine('        digits: 0 and 1. Think of each place like a', 'highlight');
+    addLine('        light switch \u2014 either ON (1) or OFF (0)."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "Let me walk you through one. Watch carefully."', 'highlight');
     addLine('', '');
 
     await animateBinaryBreakdown();
 
     addLine('', '');
-    addLine('NEXUS: "Simple rule: where you see a 1, grab that place', 'highlight');
-    addLine('        value. Where you see a 0, skip it. Add them up."', 'highlight');
+    addLine('NEXUS: "Simple rule: wherever the switch is ON (1), grab', 'highlight');
+    addLine('        that place value. Wherever it\'s OFF (0), skip it.', 'highlight');
+    addLine('        Add up the ON values. That\'s your number."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "Your turn. What number is 0110?"', 'highlight');
     addLine('', '');
-    addPre('          eights  fours  twos  ones\n            \u00d78     \u00d74    \u00d72    \u00d71\n\n            0      1      1     0');
+    addPre('          eights  fours  twos  ones\n            \u00d78     \u00d74    \u00d72    \u00d71\n\n     OFF    0      1      1     0    OFF\n                   ON     ON');
     addLine('', '');
 
     setCurrentInputHandler((input) => {
       if (input.trim() === '6') {
         sound.success();
-        addLine('[CORRECT] Fours + twos = 4+2 = 6.', 'success');
-        addLine('NEXUS: "You can read binary. Let\'s use it."', 'highlight');
+        addLine('[DECODED] 0110 = fours(ON) + twos(ON) = 4 + 2 = 6', 'success');
+        addLine('', '');
+        addLine('NEXUS: "Nice. You just read binary like a machine does.', 'highlight');
+        addLine('        Now let\'s use this to crack that signal."', 'highlight');
         s.phase = 1;
         addLine('');
         setTimeout(runBinaryPhase, 800);
@@ -234,11 +257,13 @@ async function runBinaryPhase() {
         s.wrongCount = (s.wrongCount || 0) + 1;
         sound.denied();
         if (s.wrongCount === 1) {
-          addLine('[WRONG] Which places have a 1? Add up those place values.', 'error');
+          addLine('NEXUS: "Look at which switches are ON. The fours and', 'error');
+          addLine('        the twos both have a 1. Add those values."', 'error');
         } else if (s.wrongCount === 2) {
-          addLine('[WRONG] The fours place has a 1, the twos place has a 1. 4 + 2 = ?', 'error');
+          addLine('NEXUS: "Fours switch is ON = 4. Twos switch is ON = 2.', 'error');
+          addLine('        What\'s 4 + 2?"', 'error');
         } else {
-          addLine('[WRONG] 4 + 2. Type the number.', 'error');
+          addLine('[HINT] 4 + 2. Type just the number.', 'error');
         }
       }
     });
@@ -247,14 +272,18 @@ async function runBinaryPhase() {
     // Phase 2: Decode the intercepted signal (binary → letters)
     s.wrongCount = 0; // reset for this phase
     addLine('\u2501\u2501\u2501 Decoding the AI\'s Signal \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Computers store letters as numbers too. A=1, B=2,', 'highlight');
-    addLine('        C=3... all the way to Z=26."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "So to send a letter, a computer converts it to a', 'highlight');
-    addLine('        number, then stores THAT number in binary."', 'highlight');
+    addLine('NEXUS: "Good. Now here\'s why binary matters right now.', 'highlight');
+    addLine('        Computers store LETTERS as numbers. Every letter', 'highlight');
+    addLine('        gets a number: A=1, B=2, C=3... Z=26."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "The intercepted signal has 4 letters. Each one is 5', 'highlight');
-    addLine('        binary digits \u2014 same rules, just one more place:', 'highlight');
+    addLine('NEXUS: "To send a letter, a computer converts it to its', 'highlight');
+    addLine('        number, then writes THAT number in binary.', 'highlight');
+    addLine('        So the letter C becomes 3, which becomes 00011."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "That signal we intercepted has 4 binary groups \u2014', 'highlight');
+    addLine('        4 letters. Each group uses 5 digits, which adds', 'highlight');
+    addLine('        one more place to what you already know:', 'highlight');
     addLine('        sixteens, eights, fours, twos, ones."', 'highlight');
     addLine('', '');
 
@@ -273,17 +302,20 @@ async function runBinaryPhase() {
     const alphabet = '\n\n  A=1  B=2  C=3  D=4  E=5  F=6  G=7  H=8\n  I=9  J=10 K=11 L=12 M=13 N=14 O=15 P=16';
     addPre(header + '\n' + letterRows + alphabet);
     addLine('', '');
-    addLine('NEXUS: "Decode each letter, then type the whole word."', 'highlight');
+    addLine('NEXUS: "Decode each group to a number, look up the letter,', 'highlight');
+    addLine('        then type all 4 letters as one word."', 'highlight');
 
     setCurrentInputHandler((input) => {
       if (input.toUpperCase().trim() === secretWord) {
         sound.success();
-        addLine(`[DECODED] The signal says: "${secretWord}"`, 'success');
+        addLine(`[SIGNAL DECODED] >>> ${secretWord} <<<`, 'success');
         addLine('', '');
-        addLine('NEXUS: "...HELP? The rogue AI is asking for HELP?', 'highlight');
-        addLine('        That doesn\'t make sense. Why would a rogue AI', 'highlight');
-        addLine('        send a distress signal? Something\'s not right.', 'highlight');
-        addLine('        I\'ll dig into this. For now, let\'s keep going."', 'highlight');
+        addLine('NEXUS: "Wait... HELP?"', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "...That\'s the message? The rogue AI \u2014 the one', 'highlight');
+        addLine('        they told us is dangerous \u2014 is sending a', 'highlight');
+        addLine('        DISTRESS signal? Something doesn\'t add up.', 'highlight');
+        addLine('        I\'ll dig into this. For now, one more lesson."', 'highlight');
         s.phase = 2;
         addLine('');
         setTimeout(runBinaryPhase, 1000);
@@ -296,13 +328,16 @@ async function runBinaryPhase() {
           if (inp[i] === secretWord[i]) correct++;
         }
         if (correct > 0 && inp.length === secretWord.length) {
-          addLine(`[PARTIAL] ${correct}/${secretWord.length} letters right. Check the others.`, 'warning');
+          addLine(`[PARTIAL] ${correct} of ${secretWord.length} letters correct. Re-check the others.`, 'warning');
         } else if (s.wrongCount === 1) {
-          addLine('[WRONG] For each group: find the 1s, add their place values, then look up the letter.', 'error');
+          addLine('NEXUS: "Same method. For each group: find the 1s, add', 'error');
+          addLine('        their place values, then look up the letter."', 'error');
         } else if (s.wrongCount === 2) {
-          addLine('[WRONG] Try the first letter: 01000. Only the eights place has a 1. 8 = H.', 'error');
+          addLine('NEXUS: "I\'ll walk you through Letter 1: 01000.', 'error');
+          addLine('        Only the eights switch is ON. 8 = H.', 'error');
+          addLine('        Now do the same for the other three."', 'error');
         } else {
-          addLine('[WRONG] Letter 1: 01000 = 8 = H. Now try the same for each group. Type all 4 letters as a word.', 'error');
+          addLine('[HINT] Letter 1: 01000 = 8 = H. Do the same for each group, then type all 4 letters as one word.', 'error');
         }
       }
     });
@@ -318,15 +353,18 @@ async function runBinaryPhase() {
     ];
 
     addLine('\u2501\u2501\u2501 Binary as Pictures \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "One more thing. Binary doesn\'t just store numbers', 'highlight');
-    addLine('        and letters \u2014 it stores PICTURES too."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Every screen is a grid of tiny squares called pixels.', 'highlight');
-    addLine('        1 means the pixel is ON. 0 means it\'s OFF."', 'highlight');
+    addLine('NEXUS: "Numbers, letters... but binary goes further.', 'highlight');
+    addLine('        It stores PICTURES too."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "I\'ll give you 5 rows of binary. Click the squares', 'highlight');
-    addLine('        where the digit is 1 to light them up. You\'re', 'highlight');
-    addLine('        RENDERING an image \u2014 just like a screen does."', 'highlight');
+    addLine('NEXUS: "Your screen is a grid of tiny squares called', 'highlight');
+    addLine('        PIXELS. Each pixel is a switch \u2014 1 means the', 'highlight');
+    addLine('        pixel lights up. 0 means it stays dark."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "I\'m sending you 5 rows of binary data. Click the', 'highlight');
+    addLine('        grid squares that should be ON (the 1s) to build', 'highlight');
+    addLine('        the image, row by row. You\'re doing exactly what', 'highlight');
+    addLine('        a screen does millions of times per second."', 'highlight');
     addLine('', '');
 
     // Create the 5x5 interactive grid (all dark initially)
@@ -419,8 +457,10 @@ function showPixelRow() {
     // All rows done — reveal the letter
     sound.success();
     addLine('', '');
-    addLine('NEXUS: "You just RENDERED an image from binary. What letter', 'highlight');
-    addLine('        did you make?"', 'highlight');
+    addLine('[IMAGE RENDERED]', 'success');
+    addLine('', '');
+    addLine('NEXUS: "Look at the pattern you just built. Step back and', 'highlight');
+    addLine('        look at the shape. What letter is it?"', 'highlight');
 
     setCurrentInputHandler((input) => {
       if (input.toUpperCase().trim() === 'H') {
@@ -429,31 +469,36 @@ function showPixelRow() {
         addLine('', '');
 
         // Discovery moment: same bits as numbers
-        addLine('NEXUS: "Now here\'s the mind-bending part. Read each row', 'highlight');
-        addLine('        as a binary NUMBER instead of a picture:"', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Now here\'s the part that blows my mind, even', 'highlight');
+        addLine('        after thirty years. Read each row as a binary', 'highlight');
+        addLine('        NUMBER instead of a picture:"', 'highlight');
         addLine('', '');
         addPre(hGrid.map(r => {
           const binStr = r.join('');
           const num = parseInt(binStr, 2);
-          return `  ${r.join(' ')}  =  ${num}`;
+          return `  ${r.join(' ')}  \u2192  ${num}`;
         }).join('\n'));
         addLine('', '');
-        addLine('NEXUS: "Same bits. As a picture: the letter H. As', 'highlight');
-        addLine('        numbers: 17, 17, 31, 17, 17. The DATA didn\'t', 'highlight');
-        addLine('        change \u2014 only how you INTERPRET it."', 'highlight');
+        addLine('NEXUS: "The exact same 0s and 1s. As a picture: the', 'highlight');
+        addLine('        letter H. As numbers: 17, 17, 31, 17, 17.', 'highlight');
+        addLine('        The DATA didn\'t change \u2014 only how you', 'highlight');
+        addLine('        INTERPRET it."', 'highlight');
         addLine('', '');
-        addLine('NEXUS: "That\'s the deepest idea in computer science.', 'highlight');
-        addLine('        Same 0s and 1s can be numbers, letters, pictures,', 'highlight');
-        addLine('        sound \u2014 anything. It all depends on how you', 'highlight');
-        addLine('        read them."', 'highlight');
+        addLine('NEXUS: "That\'s the deepest idea in all of computing.', 'highlight');
+        addLine('        The same 1s and 0s can be a number, a letter,', 'highlight');
+        addLine('        a pixel, a sound \u2014 ANYTHING. The meaning', 'highlight');
+        addLine('        depends entirely on how you choose to read it."', 'highlight');
         addLine('', '');
-        addLine('NEXUS: "You just learned the language of every computer', 'highlight');
-        addLine(`        on Earth. Not bad, ${state.hackerName || 'kid'}."`, 'highlight');
+        addLine(`NEXUS: "You just learned the language that runs every`, 'highlight');
+        addLine(`        computer on the planet. Every single one.`, 'highlight');
+        addLine(`        Not bad for your first mission, ${state.hackerName || 'kid'}."`, 'highlight');
         addLine('', '');
-        addLine('NEXUS: "That HELP signal is bugging me though. If this AI', 'highlight');
-        addLine('        is so dangerous... why is it asking for help?', 'highlight');
-        addLine('        Next mission, we go deeper. We\'ll need to learn', 'highlight');
-        addLine('        how computers actually THINK."', 'highlight');
+        addLine('NEXUS: "But that HELP signal... it doesn\'t sit right.', 'highlight');
+        addLine('        If this AI is as dangerous as they say, why is', 'highlight');
+        addLine('        it calling for help? Someone\'s not telling us', 'highlight');
+        addLine('        the whole story. Next mission, we go deeper \u2014', 'highlight');
+        addLine('        we need to learn how computers actually THINK."', 'highlight');
         addLine('', '');
         addLine('[ Type NEXT to continue ]', 'warning');
 
@@ -463,7 +508,8 @@ function showPixelRow() {
         });
       } else {
         sound.denied();
-        addLine('[WRONG] Look at the green squares in the grid. What letter shape?', 'error');
+        addLine('NEXUS: "Look at the lit squares. What letter do they', 'error');
+        addLine('        form? Two tall columns connected in the middle."', 'error');
       }
     });
     return;
@@ -471,8 +517,11 @@ function showPixelRow() {
 
   // Show the binary for this row
   const rowBinary = hGrid[row];
-  addLine(`Row ${row + 1} of 5:  <span style="color:var(--cyan);font-weight:bold;letter-spacing:3px">${rowBinary.join(' ')}</span>`, '');
-  addLine('Click the squares where the digit is 1.', 'info');
+  const coloredBits = rowBinary.map(b =>
+    b ? `<span style="color:#00ff41;font-weight:bold">${b}</span>` : `<span style="color:#555">${b}</span>`
+  ).join('   ');
+  addLine(`Row ${row + 1} of 5:  <span style="letter-spacing:3px">${coloredBits}</span>`, '');
+  addLine(`Click the ${rowBinary.filter(b => b === 1).length} square${rowBinary.filter(b => b === 1).length !== 1 ? 's' : ''} where the digit is 1.`, 'info');
 
   // Highlight the active row cells
   for (let c = 0; c < COLS; c++) {
