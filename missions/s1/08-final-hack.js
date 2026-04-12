@@ -1178,41 +1178,40 @@ async function runShutdownAnimation() {
 
   addLine('', '');
   await typeLines([
-    { text: 'NEXUS: "Eight missions. You want to know what you', cls: 'highlight' },
-    { text: '        just proved you can do?"', cls: 'highlight' },
-    { text: '', cls: '' },
-  ]);
-  await sleep(800);
-
-  // Reveal skills one at a time — each one earned, not assigned
-  const skills = [
-    '  \u2713 Binary \u2014 you decoded the language computers actually speak',
-    '  \u2713 Programs \u2014 you followed instructions a machine would follow',
-    '  \u2713 Variables \u2014 you tracked values changing in real time',
-    '  \u2713 Reverse engineering \u2014 you worked backward from clues to answers',
-    '  \u2713 Logic gates \u2014 you mastered AND, OR, NOT, XOR',
-    '  \u2713 Encryption \u2014 you cracked a cipher that hid a secret',
-    '  \u2713 Evidence analysis \u2014 you spotted fakes that fooled everyone else',
-    '  \u2713 Conditionals & loops \u2014 you traced a program and shut down an AI',
-  ];
-  for (const skill of skills) {
-    addLine(skill, 'success');
-    await sleep(500);
-    terminal.scrollTop = terminal.scrollHeight;
-  }
-  addLine('', '');
-  await sleep(800);
-
-  await typeLines([
-    { text: 'NEXUS: "Variables to remember. Sequences to act. Conditions', cls: 'highlight' },
-    { text: '        to decide. Loops to repeat. Every program ever', cls: 'highlight' },
-    { text: '        written \u2014 every app, game, and AI \u2014 is built from', cls: 'highlight' },
-    { text: '        those four ideas."', cls: 'highlight' },
+    { text: 'NEXUS: "Eight missions. Let me tell you what just happened."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
   await sleep(1000);
+
+  // Reveal skills one at a time — framed as things the player DID, not skills they "have"
+  const skills = [
+    '  \u2713 You decoded BINARY \u2014 the language computers actually speak',
+    '  \u2713 You ran a PROGRAM step by step \u2014 like a human computer',
+    '  \u2713 You tracked VARIABLES as they changed \u2014 in your head',
+    '  \u2713 You REVERSE ENGINEERED code \u2014 working backward from clues',
+    '  \u2713 You mastered LOGIC GATES \u2014 AND, OR, NOT, XOR',
+    '  \u2713 You cracked ENCRYPTION \u2014 a cipher that hid a secret',
+    '  \u2713 You analyzed EVIDENCE \u2014 and spotted fakes others missed',
+    '  \u2713 You traced CONDITIONALS & LOOPS \u2014 and shut down an AI',
+  ];
+  for (const skill of skills) {
+    addLine(skill, 'success');
+    await sleep(600);
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+  addLine('', '');
+  await sleep(1000);
+
   await typeLines([
-    { text: 'NEXUS: "And now you know all of them."', cls: 'highlight' },
+    { text: 'NEXUS: "Variables to remember. Sequences to follow.', cls: 'highlight' },
+    { text: '        Conditions to decide. Loops to repeat. Every', cls: 'highlight' },
+    { text: '        program ever written \u2014 every app, game, and AI', cls: 'highlight' },
+    { text: '        \u2014 is built from those four ideas."', cls: 'highlight' },
+    { text: '', cls: '' },
+  ]);
+  await sleep(1200);
+  await typeLines([
+    { text: 'NEXUS: "And now you know all four."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
   await sleep(1500);
