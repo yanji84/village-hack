@@ -1100,35 +1100,59 @@ async function runShutdownAnimation() {
     { text: 'NEXUS: "That someone was you."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
-  await sleep(800);
+  await sleep(1200);
+
+  // Create a dramatic "VILLAGE SAVED" banner element
+  const banner = document.createElement('div');
+  banner.style.cssText = 'text-align:center;margin:20px 0;padding:16px;font-family:"Press Start 2P","Fira Mono",monospace;font-size:14px;color:#00ff41;letter-spacing:6px;text-shadow:0 0 20px #00ff41,0 0 40px rgba(0,255,65,0.3);opacity:0;transition:all 1.5s ease;border-top:1px solid #0a3a0a;border-bottom:1px solid #0a3a0a;';
+  banner.textContent = 'THE VILLAGE IS SAVED';
+  terminal.appendChild(banner);
+  terminal.scrollTop = terminal.scrollHeight;
+  await sleep(200);
+  banner.style.opacity = '1';
+  banner.style.letterSpacing = '8px';
+  await sleep(2000);
+
+  addLine('', '');
   await typeLines([
-    { text: 'THE VILLAGE IS SAVED.', cls: 'success big' },
+    { text: 'NEXUS: "Eight missions. You want to know what you', cls: 'highlight' },
+    { text: '        just proved you can do?"', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
   await sleep(800);
+
+  // Reveal skills one at a time — each one earned, not assigned
+  const skills = [
+    '  \u2713 Binary \u2014 you decoded the language computers actually speak',
+    '  \u2713 Programs \u2014 you followed instructions a machine would follow',
+    '  \u2713 Variables \u2014 you tracked values changing in real time',
+    '  \u2713 Reverse engineering \u2014 you worked backward from clues to answers',
+    '  \u2713 Logic gates \u2014 you mastered AND, OR, NOT, XOR',
+    '  \u2713 Encryption \u2014 you cracked a cipher that hid a secret',
+    '  \u2713 Evidence analysis \u2014 you spotted fakes that fooled everyone else',
+    '  \u2713 Conditionals & loops \u2014 you traced a program and shut down an AI',
+  ];
+  for (const skill of skills) {
+    addLine(skill, 'success');
+    await sleep(500);
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+  addLine('', '');
+  await sleep(800);
+
   await typeLines([
-    { text: 'NEXUS: "Eight missions. Look at what you actually learned:"', cls: 'highlight' },
-    { text: '', cls: '' },
-    { text: '  \u2022 Binary \u2014 how computers store everything as 1s and 0s', cls: 'info' },
-    { text: '  \u2022 Programs \u2014 step-by-step instructions that computers follow', cls: 'info' },
-    { text: '  \u2022 Variables \u2014 named boxes that store and update values', cls: 'info' },
-    { text: '  \u2022 Reverse engineering \u2014 working backward from output to input', cls: 'info' },
-    { text: '  \u2022 Logic gates \u2014 AND, OR, NOT, XOR: the building blocks of decisions', cls: 'info' },
-    { text: '  \u2022 Encryption \u2014 Caesar cipher and how to break it', cls: 'info' },
-    { text: '  \u2022 Evidence analysis \u2014 spotting patterns and forgeries in data', cls: 'info' },
-    { text: '  \u2022 Conditionals & loops \u2014 how programs choose and repeat', cls: 'info' },
+    { text: 'NEXUS: "Variables to remember. Sequences to act. Conditions', cls: 'highlight' },
+    { text: '        to decide. Loops to repeat. Every program ever', cls: 'highlight' },
+    { text: '        written \u2014 every app, game, and AI \u2014 is built from', cls: 'highlight' },
+    { text: '        those four ideas."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
-  await sleep(500);
+  await sleep(1000);
   await typeLines([
-    { text: 'NEXUS: "That last one is the final piece. Variables to', cls: 'highlight' },
-    { text: '        remember, sequences to act, conditions to decide,', cls: 'highlight' },
-    { text: '        loops to repeat. Every program ever written \u2014 every', cls: 'highlight' },
-    { text: '        app, every game, every AI \u2014 is built from those', cls: 'highlight' },
-    { text: '        four ideas. And now you know all of them."', cls: 'highlight' },
+    { text: 'NEXUS: "And now you know all of them."', cls: 'highlight' },
     { text: '', cls: '' },
   ]);
-  await sleep(600);
+  await sleep(1500);
   await typeLines([
     { text: 'NEXUS: "Victor\u2019s still out there. But that\u2019s a problem', cls: 'highlight' },
     { text: '        for Season 2."', cls: 'highlight' },
