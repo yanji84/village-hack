@@ -473,19 +473,19 @@ async function runPhase1a() {
   addLine('        That\u2019s TRUE, so the green path ran. The gray path?', 'highlight');
   addLine('        Completely skipped. It\u2019s like it doesn\u2019t exist."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Your turn. Same idea, different numbers.', 'highlight');
-  addLine('        Read the code, figure out which path runs:"', 'highlight');
+  addLine('NEXUS: "Your turn. But careful \u2014 this one\u2019s different.', 'highlight');
+  addLine('        Don\u2019t assume it\u2019ll go the same way:"', 'highlight');
   addLine('', '');
 
-  // PUZZLE
-  addPre('  x = 10\n  if x > 5:\n      result = x - 3\n  else:\n      result = x + 3');
+  // PUZZLE — condition is FALSE (unlike the demo), forcing kid to pick the else branch
+  addPre('  x = 3\n  if x > 5:\n      result = x - 3\n  else:\n      result = x + 3');
 
   addLine('', '');
   addLine('What is result?', 'warning');
 
   let attempts = 0;
   setCurrentInputHandler((input) => {
-    if (input.trim() === '7') {
+    if (input.trim() === '6') {
       sound.success();
       addLine('[CORRECT]', 'success');
       // Animate the execution path
@@ -493,24 +493,25 @@ async function runPhase1a() {
         const terminal = document.getElementById('terminal');
         await animateConditional(terminal, {
           lines: [
-            'x = 10',
+            'x = 3',
             'if x > 5:          \u2190 check',
-            '    result = x - 3  \u2190 this runs',
+            '    result = x - 3  \u2190 skipped',
             'else:',
-            '    result = x + 3  \u2190 skipped',
+            '    result = x + 3  \u2190 this runs',
           ],
           highlights: [
-            { lineIdx: 0, color: '#00ccff', label: 'x is 10' },
-            { lineIdx: 1, color: '#ffdd33', label: '10 > 5? YES' },
-            { lineIdx: 2, color: '#00ff41', bg: 'rgba(0,255,65,0.1)', label: 'result = 7' },
-            { lineIdx: 3, color: '#333' },
-            { lineIdx: 4, color: '#333', label: 'skipped' },
+            { lineIdx: 0, color: '#00ccff', label: 'x is 3' },
+            { lineIdx: 1, color: '#ffdd33', label: '3 > 5? NO' },
+            { lineIdx: 2, color: '#333', label: 'skipped' },
+            { lineIdx: 3, color: '#ffdd33' },
+            { lineIdx: 4, color: '#00ff41', bg: 'rgba(0,255,65,0.1)', label: 'result = 6' },
           ],
         });
         addLine('', '');
-        addLine('NEXUS: "Exactly right. 10 > 5 is TRUE, so the computer', 'highlight');
-        addLine('        took the IF path: result = 10 - 3 = 7.', 'highlight');
-        addLine('        The ELSE block? The computer never even looked at it."', 'highlight');
+        addLine('NEXUS: "This time the condition was FALSE. 3 is NOT', 'highlight');
+        addLine('        greater than 5, so the computer skipped the IF', 'highlight');
+        addLine('        block and took the ELSE path: result = 3 + 3 = 6.', 'highlight');
+        addLine('        The fork went the OTHER way this time."', 'highlight');
         addLine('', '');
         s.phase = 1;
         setTimeout(runPhase, 800);
@@ -519,11 +520,11 @@ async function runPhase1a() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] NEXUS: "Start at the fork. x is 10. Is 10 > 5? Which path opens?"', 'error');
+        addLine('[WRONG] NEXUS: "Start at the fork. x is 3. Is 3 > 5? Which path opens?"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] NEXUS: "10 > 5 is TRUE, so the top path runs: result = x - 3. Plug in x = 10."', 'error');
+        addLine('[WRONG] NEXUS: "3 > 5 is FALSE, so the ELSE path runs: result = x + 3. Plug in x = 3."', 'error');
       } else {
-        addLine('[WRONG] NEXUS: "result = 10 - 3 = 7. That\u2019s it. Type 7."', 'error');
+        addLine('[WRONG] NEXUS: "result = 3 + 3 = 6. That\u2019s it. Type 6."', 'error');
       }
     }
   });
