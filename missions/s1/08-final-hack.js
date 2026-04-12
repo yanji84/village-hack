@@ -58,8 +58,24 @@ function blockVictorBar(victorEl) {
 
 // ── Loop animation helper ──
 
+// ── Replay button helper ──
+
+function addReplayBtn(container, replayFn) {
+  // Remove existing replay btn if any
+  const old = container.querySelector('.replay-btn');
+  if (old) old.remove();
+  const btn = document.createElement('span');
+  btn.className = 'replay-btn';
+  btn.textContent = '[ replay ]';
+  btn.style.cssText = 'color:#00ffff;cursor:pointer;font-size:11px;opacity:0.6;transition:opacity 0.2s;margin-top:6px;display:inline-block;';
+  btn.onmouseenter = () => { btn.style.opacity = '1'; };
+  btn.onmouseleave = () => { btn.style.opacity = '0.6'; };
+  btn.onclick = () => replayFn();
+  container.appendChild(btn);
+}
+
 async function animateLoop(terminal, varUpdates) {
-  // varUpdates: array of { vars: {name: val, ...}, condition: string, result: bool }
+  const wrapper = document.createElement('div');
   const container = document.createElement('div');
   container.style.cssText = 'margin:10px 0;padding:10px 14px;border:1px solid #1a2a1a;border-radius:4px;background:#050505;font-family:"Fira Mono",monospace;';
 
@@ -70,46 +86,51 @@ async function animateLoop(terminal, varUpdates) {
 
   const stepsContainer = document.createElement('div');
   container.appendChild(stepsContainer);
-  terminal.appendChild(container);
-  terminal.scrollTop = terminal.scrollHeight;
+  wrapper.appendChild(container);
+  terminal.appendChild(wrapper);
 
-  for (let i = 0; i < varUpdates.length; i++) {
-    const step = varUpdates[i];
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin:3px 0;opacity:0;transition:opacity 0.3s;font-size:12px;';
-
-    // Variable values
-    const varsStr = Object.entries(step.vars).map(([k, v]) => `${k}=${v}`).join(', ');
-    const varsSpan = document.createElement('span');
-    varsSpan.style.cssText = 'color:#00ccff;min-width:100px;';
-    varsSpan.textContent = varsStr;
-    row.appendChild(varsSpan);
-
-    // Condition check
-    const condSpan = document.createElement('span');
-    condSpan.style.cssText = 'color:#aaa;min-width:80px;';
-    condSpan.textContent = step.condition;
-    row.appendChild(condSpan);
-
-    // Result icon
-    const resultSpan = document.createElement('span');
-    resultSpan.style.cssText = step.result
-      ? 'color:#00ff41;font-weight:bold;'
-      : 'color:#ff4444;font-weight:bold;';
-    resultSpan.textContent = step.result ? '\u2713' : '\u2717 STOP';
-    row.appendChild(resultSpan);
-
-    stepsContainer.appendChild(row);
-    await sleep(600);
-    row.style.opacity = '1';
+  async function runAnim() {
+    stepsContainer.innerHTML = '';
     terminal.scrollTop = terminal.scrollHeight;
+
+    for (let i = 0; i < varUpdates.length; i++) {
+      const step = varUpdates[i];
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;margin:4px 0;opacity:0;transition:opacity 0.4s;font-size:13px;';
+
+      const varsStr = Object.entries(step.vars).map(([k, v]) => `${k}=${v}`).join(', ');
+      const varsSpan = document.createElement('span');
+      varsSpan.style.cssText = 'color:#00ccff;min-width:100px;';
+      varsSpan.textContent = varsStr;
+      row.appendChild(varsSpan);
+
+      const condSpan = document.createElement('span');
+      condSpan.style.cssText = 'color:#aaa;min-width:80px;';
+      condSpan.textContent = step.condition;
+      row.appendChild(condSpan);
+
+      const resultSpan = document.createElement('span');
+      resultSpan.style.cssText = step.result
+        ? 'color:#00ff41;font-weight:bold;'
+        : 'color:#ff4444;font-weight:bold;';
+      resultSpan.textContent = step.result ? '\u2713' : '\u2717 STOP';
+      row.appendChild(resultSpan);
+
+      stepsContainer.appendChild(row);
+      await sleep(1000);
+      row.style.opacity = '1';
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+    addReplayBtn(wrapper, runAnim);
   }
+
+  await runAnim();
 }
 
 // ── Conditional execution animation ──
 
 async function animateConditional(terminal, trace) {
-  // trace: { lines: [...], highlights: [{lineIdx, color, label}...] }
+  const wrapper = document.createElement('div');
   const container = document.createElement('div');
   container.style.cssText = 'margin:10px 0;padding:10px 14px;border:1px solid #1a2a1a;border-radius:4px;background:#050505;font-family:"Fira Mono",monospace;font-size:13px;line-height:1.8;';
 
@@ -118,43 +139,53 @@ async function animateConditional(terminal, trace) {
   header.textContent = 'STEP-BY-STEP EXECUTION:';
   container.appendChild(header);
 
-  // Render all code lines dimmed
-  const lineEls = trace.lines.map((text, i) => {
-    const div = document.createElement('div');
-    div.style.cssText = 'padding:2px 6px;border-radius:3px;color:#555;transition:all 0.3s;display:flex;align-items:center;gap:10px;';
-    const code = document.createElement('span');
-    code.textContent = text;
-    div.appendChild(code);
-    const note = document.createElement('span');
-    note.style.cssText = 'font-size:11px;color:#555;transition:all 0.3s;';
-    div._note = note;
-    div.appendChild(note);
-    container.appendChild(div);
-    return div;
-  });
+  const linesContainer = document.createElement('div');
+  container.appendChild(linesContainer);
+  wrapper.appendChild(container);
+  terminal.appendChild(wrapper);
 
-  terminal.appendChild(container);
-  terminal.scrollTop = terminal.scrollHeight;
+  async function runAnim() {
+    linesContainer.innerHTML = '';
 
-  // Animate highlights one at a time
-  for (const step of trace.highlights) {
-    await sleep(500);
-    const el = lineEls[step.lineIdx];
-    el.style.color = step.color || '#00ff41';
-    if (step.bg) el.style.background = step.bg;
-    if (step.label) {
-      el._note.textContent = step.label;
-      el._note.style.color = step.color || '#00ff41';
-    }
+    // Render all lines dimmed
+    const lineEls = trace.lines.map((text) => {
+      const div = document.createElement('div');
+      div.style.cssText = 'padding:3px 6px;border-radius:3px;color:#555;transition:all 0.4s;display:flex;align-items:center;gap:10px;';
+      const code = document.createElement('span');
+      code.textContent = text;
+      div.appendChild(code);
+      const note = document.createElement('span');
+      note.style.cssText = 'font-size:11px;color:#555;transition:all 0.4s;';
+      div._note = note;
+      div.appendChild(note);
+      linesContainer.appendChild(div);
+      return div;
+    });
+
     terminal.scrollTop = terminal.scrollHeight;
+
+    for (const step of trace.highlights) {
+      await sleep(800);
+      const el = lineEls[step.lineIdx];
+      el.style.color = step.color || '#00ff41';
+      if (step.bg) el.style.background = step.bg;
+      if (step.label) {
+        el._note.textContent = step.label;
+        el._note.style.color = step.color || '#00ff41';
+      }
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+    await sleep(500);
+    addReplayBtn(wrapper, runAnim);
   }
-  await sleep(300);
+
+  await runAnim();
 }
 
 // ── Loop+conditional combined animation ──
 
 async function animateLoopWithConditional(terminal, iterations) {
-  // iterations: [{ vars: {}, condition: string, condResult: bool, ifCheck?: string, ifResult?: bool, action?: string }]
+  const wrapper = document.createElement('div');
   const container = document.createElement('div');
   container.style.cssText = 'margin:10px 0;padding:10px 14px;border:1px solid #1a2a1a;border-radius:4px;background:#050505;font-family:"Fira Mono",monospace;';
 
@@ -163,58 +194,63 @@ async function animateLoopWithConditional(terminal, iterations) {
   header.textContent = 'LOOP EXECUTION:';
   container.appendChild(header);
 
-  terminal.appendChild(container);
-  terminal.scrollTop = terminal.scrollHeight;
+  const stepsContainer = document.createElement('div');
+  container.appendChild(stepsContainer);
+  wrapper.appendChild(container);
+  terminal.appendChild(wrapper);
 
-  for (const iter of iterations) {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin:4px 0;opacity:0;transition:opacity 0.3s;font-size:12px;flex-wrap:wrap;';
-
-    // Variables
-    const varsStr = Object.entries(iter.vars).map(([k,v]) => `${k}=${v}`).join(' ');
-    const varsSpan = document.createElement('span');
-    varsSpan.style.cssText = 'color:#00ccff;min-width:80px;';
-    varsSpan.textContent = varsStr;
-    row.appendChild(varsSpan);
-
-    // While condition
-    const condSpan = document.createElement('span');
-    condSpan.style.cssText = 'color:#aaa;';
-    condSpan.textContent = iter.condition;
-    row.appendChild(condSpan);
-
-    // While result
-    const whileResult = document.createElement('span');
-    whileResult.style.cssText = iter.condResult ? 'color:#00ff41;font-weight:bold;' : 'color:#ff4444;font-weight:bold;';
-    whileResult.textContent = iter.condResult ? '\u2713' : '\u2717 STOP';
-    row.appendChild(whileResult);
-
-    // If check (inside the loop)
-    if (iter.condResult && iter.ifCheck) {
-      const ifSpan = document.createElement('span');
-      ifSpan.style.cssText = 'color:#ff8800;margin-left:8px;';
-      ifSpan.textContent = `\u2502 ${iter.ifCheck}`;
-      row.appendChild(ifSpan);
-
-      const ifResult = document.createElement('span');
-      ifResult.style.cssText = iter.ifResult ? 'color:#00ff41;' : 'color:#666;';
-      ifResult.textContent = iter.ifResult ? '\u2192 YES' : '\u2192 no';
-      row.appendChild(ifResult);
-    }
-
-    // Action taken
-    if (iter.action) {
-      const actionSpan = document.createElement('span');
-      actionSpan.style.cssText = 'color:#cc66ff;margin-left:8px;font-style:italic;';
-      actionSpan.textContent = iter.action;
-      row.appendChild(actionSpan);
-    }
-
-    container.appendChild(row);
-    await sleep(700);
-    row.style.opacity = '1';
+  async function runAnim() {
+    stepsContainer.innerHTML = '';
     terminal.scrollTop = terminal.scrollHeight;
+
+    for (const iter of iterations) {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;margin:5px 0;opacity:0;transition:opacity 0.4s;font-size:13px;flex-wrap:wrap;';
+
+      const varsStr = Object.entries(iter.vars).map(([k,v]) => `${k}=${v}`).join(' ');
+      const varsSpan = document.createElement('span');
+      varsSpan.style.cssText = 'color:#00ccff;min-width:80px;';
+      varsSpan.textContent = varsStr;
+      row.appendChild(varsSpan);
+
+      const condSpan = document.createElement('span');
+      condSpan.style.cssText = 'color:#aaa;';
+      condSpan.textContent = iter.condition;
+      row.appendChild(condSpan);
+
+      const whileResult = document.createElement('span');
+      whileResult.style.cssText = iter.condResult ? 'color:#00ff41;font-weight:bold;' : 'color:#ff4444;font-weight:bold;';
+      whileResult.textContent = iter.condResult ? '\u2713' : '\u2717 STOP';
+      row.appendChild(whileResult);
+
+      if (iter.condResult && iter.ifCheck) {
+        const ifSpan = document.createElement('span');
+        ifSpan.style.cssText = 'color:#ff8800;margin-left:8px;';
+        ifSpan.textContent = `\u2502 ${iter.ifCheck}`;
+        row.appendChild(ifSpan);
+
+        const ifResult = document.createElement('span');
+        ifResult.style.cssText = iter.ifResult ? 'color:#00ff41;' : 'color:#666;';
+        ifResult.textContent = iter.ifResult ? '\u2192 YES' : '\u2192 no';
+        row.appendChild(ifResult);
+      }
+
+      if (iter.action) {
+        const actionSpan = document.createElement('span');
+        actionSpan.style.cssText = 'color:#cc66ff;margin-left:8px;font-style:italic;';
+        actionSpan.textContent = iter.action;
+        row.appendChild(actionSpan);
+      }
+
+      stepsContainer.appendChild(row);
+      await sleep(1200);
+      row.style.opacity = '1';
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+    addReplayBtn(wrapper, runAnim);
   }
+
+  await runAnim();
 }
 
 // ── Code display with line highlighting ──
