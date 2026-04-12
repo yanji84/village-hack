@@ -246,19 +246,17 @@ export const mission = {
       { text: '[SYSTEM] 4 evidence files recovered. Integrity: UNKNOWN.', cls: 'system' },
       { text: '[SYSTEM] WARNING: Possible counter-forensics detected.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "This is it. Victor\'s vault \u2014 everything he\'s been hiding', cls: 'highlight' },
-      { text: '        is locked behind this encryption. His backdoor code,', cls: 'highlight' },
-      { text: '        his plans, all of it."', cls: 'highlight' },
+      { text: 'NEXUS: "This is it. Victor\'s vault \u2014 everything he\'s been', cls: 'highlight' },
+      { text: '        hiding is locked behind this encryption."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Here\'s the play: four evidence files, each encrypted', cls: 'highlight' },
-      { text: '        with a different method. Binary, ciphers, logic gates,', cls: 'highlight' },
-      { text: '        variable tracing \u2014 every skill you\'ve built this season.', cls: 'highlight' },
-      { text: '        Decode them all, then we chain the results together', cls: 'highlight' },
-      { text: '        to build a decryption machine that cracks the vault."', cls: 'highlight' },
+      { text: 'NEXUS: "Four evidence files. Each one uses a different skill', cls: 'highlight' },
+      { text: '        you\'ve learned: binary, ciphers, logic gates, and', cls: 'highlight' },
+      { text: '        variable tracing. Decode them all, then we chain', cls: 'highlight' },
+      { text: '        the results together to crack the vault."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "But Victor is clever. He knew someone might investigate.', cls: 'highlight' },
-      { text: '        He planted traps in these files \u2014 decoys designed to', cls: 'highlight' },
-      { text: '        mislead us. Trust the evidence, not the saboteur."', cls: 'highlight' },
+      { text: 'NEXUS: "But watch out \u2014 Victor knew someone might come looking.', cls: 'highlight' },
+      { text: '        He planted fake evidence to throw us off. You\'ll need', cls: 'highlight' },
+      { text: '        to figure out which clues are real and which are traps."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -323,7 +321,7 @@ function startExamine(num) {
     addLine('', '');
     addLine('NEXUS: "Two skills needed here: binary decoding, then variable tracing."', 'highlight');
     addLine('', '');
-    addPre('  System log:\n    raw = 1100      (binary)\n\n  Step 1 \u2014 Decode the binary:\n    Place values:  8  4  2  1\n    Binary digits: 1  1  0  0\n    Add the ON digits: 8 + 4 = ?\n\n  Step 2 \u2014 Trace the program:\n    value = raw          \u2190 your decoded number goes here\n    value = value - 4    \u2190 subtract 4\n    code_fragment = value');
+    addPre('  System log:\n    raw = 1100      (binary)\n\n  Step 1 \u2014 Decode the binary:\n    Place values:  8  4  2  1\n    Binary digits: 1  1  0  0\n                   ^  ^  ^  ^\n                  ON ON off off\n    Add the ON values: 8 + 4 = ?\n\n  Step 2 \u2014 Trace the program:\n    value = raw          \u2190 plug in your decoded number\n    value = value - 4    \u2190 subtract 4\n    code_fragment = value\n\n  (Solve Step 1, then use that number in Step 2)');
     addLine('', '');
     addLine('What is code_fragment? (decode binary first, then trace the program)', 'warning');
 
@@ -425,7 +423,7 @@ function startExamine(num) {
     addLine('        wired in series \u2014 the output of each feeds into the', 'highlight');
     addLine('        next. Follow the signal through the circuit."', 'highlight');
     addLine('', '');
-    addPre('  Input wires:  P = 1,  Q = 0,  R = 1\n\n  Circuit:\n    Step 1:  X = P AND Q     \u2190 are BOTH inputs 1?\n    Step 2:  Y = NOT X       \u2190 flip the bit\n    Step 3:  Z = Y XOR R     \u2190 are the inputs DIFFERENT?\n\n  Gate reference:\n    AND: both must be 1 \u2192 output 1, otherwise 0\n    NOT: flips the bit (0 becomes 1, 1 becomes 0)\n    XOR: inputs different \u2192 1, inputs same \u2192 0');
+    addPre('  Input wires:  P = 1,  Q = 0,  R = 1\n\n  Circuit:\n    Step 1:  X = P AND Q     \u2190 are BOTH inputs 1?\n    Step 2:  Y = NOT X       \u2190 flip the bit\n    Step 3:  Z = Y XOR R     \u2190 are the inputs DIFFERENT?\n\n  Gate reference:\n    AND: like two switches in a row \u2014 BOTH must be ON (1)\n         to let power through. Otherwise output is 0.\n    NOT: flips the bit (0 becomes 1, 1 becomes 0)\n    XOR: \"eXclusive OR\" \u2014 outputs 1 only when the\n         inputs DISAGREE (one is 0, one is 1).\n         If both match (both 0 or both 1), output is 0.');
     addLine('', '');
     addLine('What is the final output Z? (0 or 1)', 'warning');
 
@@ -508,10 +506,11 @@ function startContradiction() {
   addLine('        methods, same result? In forensics, that\'s a red flag.', 'highlight');
   addLine('        One of these is a DECOY \u2014 planted to mislead us."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "This is critical thinking, not just coding. Ask yourself:', 'highlight');
-  addLine('        which files are machine-generated records that Victor', 'highlight');
-  addLine('        COULDN\'T tamper with? And which ones did he write', 'highlight');
-  addLine('        himself, choosing every value?"', 'highlight');
+  addLine('NEXUS: "This is critical thinking, not just coding. Think of it', 'highlight');
+  addLine('        like this: some files are like security camera footage \u2014', 'highlight');
+  addLine('        recorded automatically, so Victor can\'t change them.', 'highlight');
+  addLine('        Others are like handwritten notes \u2014 Victor chose every', 'highlight');
+  addLine('        word. Which type could he use to plant a fake clue?"', 'highlight');
   addLine('', '');
   addLine('NEXUS: "Which file did Victor fabricate?"', 'highlight');
   addLine('', '');
@@ -626,41 +625,65 @@ function startModule2() {
   addLine('', '');
   addPre('  Processor program:\n\n    Line 1:  vault = 8              \u2190 key from Module 1\n    Line 2:  vault = vault - 3       \u2190 subtract File 2\'s shift\n    Line 3:  vault = vault * 0       \u2190 multiply by File 3\'s output (Z = 0)');
   addLine('', '');
-  addLine('NEXUS: "Trace it line by line. Watch what happens to vault."', 'highlight');
+  addLine('NEXUS: "Trace it line by line. What is vault after ALL three lines?"', 'highlight');
   addLine('', '');
-  addPre('  Trace:\n    After Line 1:  vault = 8\n    After Line 2:  vault = 8 - 3 = 5\n    After Line 3:  vault = 5 * 0 = 0    \u2190 Everything is wiped out!');
-  addLine('', '');
-  addLine('NEXUS: "See that? Multiplying by zero destroys all our work.', 'highlight');
-  addLine('        Any number times zero equals zero. That\'s Victor\'s', 'highlight');
-  addLine('        second booby trap \u2014 hidden right in the math."', 'highlight');
-  addLine('', '');
-  addLine('NEXUS: "Here\'s a real debugging principle: sometimes the fix', 'highlight');
-  addLine('        is to DELETE the bad code entirely. Remove Line 3."', 'highlight');
-  addLine('', '');
-  addLine('What is the vault code if you skip the buggy Line 3?', 'warning');
+  addLine('What is vault after running all 3 lines? (trace it step by step)', 'warning');
 
+  s.mod2SubPhase = 'trace';
   setCurrentInputHandler((input) => {
-    if (input.trim() === '5') {
-      sound.success();
-      activateModule(s.workbenchEl, 1, 'vault=5');
-      addLine('[MODULE 2 ONLINE] Booby trap neutralized. Vault code = 5.', 'success');
-      addLine('', '');
-      addLine('NEXUS: "8 minus 3 is 5. Line 3 was the trap \u2014 Victor knew', 'highlight');
-      addLine('        that multiplying by zero would silently erase the', 'highlight');
-      addLine('        real answer. Bugs like this are the hardest to find', 'highlight');
-      addLine('        because the code still RUNS \u2014 it just gives the', 'highlight');
-      addLine('        wrong answer. You caught it."', 'highlight');
-      addLine('', '');
-      setTimeout(startModule3, 600);
-    } else {
-      sound.denied();
-      s.wrongCount++;
-      if (s.wrongCount >= 3) {
-        addLine('NEXUS: "Line 1: vault = 8. Line 2: vault = 8 - 3 = 5. We skip Line 3 (the trap). So vault stays at 5."', 'error');
-      } else if (s.wrongCount >= 2) {
-        addLine('NEXUS: "After Line 2, vault equals 5. Line 3 is the trap we\'re removing. What does vault stay at?"', 'error');
+    const answer = input.trim();
+
+    if (s.mod2SubPhase === 'trace') {
+      // First ask them to trace all 3 lines (answer: 0)
+      if (answer === '0') {
+        sound.success();
+        addLine('[TRACED] vault = 8, then 5, then 0. Correct!', 'success');
+        addLine('', '');
+        addLine('NEXUS: "Wait \u2014 vault equals ZERO? That can\'t be right.', 'highlight');
+        addLine('        Multiplying by zero destroys everything! Any number', 'highlight');
+        addLine('        times zero equals zero. Victor hid a booby trap', 'highlight');
+        addLine('        right inside the math."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Here\'s a real debugging principle: sometimes the fix', 'highlight');
+        addLine('        is to DELETE the bad code. Line 3 is the trap \u2014', 'highlight');
+        addLine('        remove it entirely."', 'highlight');
+        addLine('', '');
+        addLine('What is the vault code if you skip the buggy Line 3?', 'warning');
+        s.mod2SubPhase = 'fix';
+        s.wrongCount = 0;
       } else {
-        addLine('NEXUS: "Only run Lines 1 and 2. Line 3 is the booby trap \u2014 delete it entirely. What does vault equal after just those two lines?"', 'error');
+        sound.denied();
+        s.wrongCount++;
+        if (s.wrongCount >= 3) {
+          addLine('NEXUS: "Line 1: vault = 8. Line 2: vault = 8 - 3 = 5. Line 3: vault = 5 * 0 = ? What is anything times zero?"', 'error');
+        } else if (s.wrongCount >= 2) {
+          addLine('NEXUS: "After Line 1, vault = 8. After Line 2, vault = 8 - 3 = 5. Now Line 3 multiplies by 0..."', 'error');
+        } else {
+          addLine('NEXUS: "Go line by line. Start with vault = 8. Then subtract 3. Then multiply by 0. What do you get at the end?"', 'error');
+        }
+      }
+    } else if (s.mod2SubPhase === 'fix') {
+      // Now ask what vault is without Line 3 (answer: 5)
+      if (answer === '5') {
+        sound.success();
+        activateModule(s.workbenchEl, 1, 'vault=5');
+        addLine('[MODULE 2 ONLINE] Booby trap neutralized. Vault code = 5.', 'success');
+        addLine('', '');
+        addLine('NEXUS: "You spotted the bug AND fixed it. Bugs like this', 'highlight');
+        addLine('        are the sneakiest kind \u2014 the code still RUNS, it', 'highlight');
+        addLine('        just gives the wrong answer. Great debugging."', 'highlight');
+        addLine('', '');
+        setTimeout(startModule3, 600);
+      } else {
+        sound.denied();
+        s.wrongCount++;
+        if (s.wrongCount >= 3) {
+          addLine('NEXUS: "Line 1: vault = 8. Line 2: vault = 8 - 3 = 5. We skip Line 3 (the trap). So vault stays at 5."', 'error');
+        } else if (s.wrongCount >= 2) {
+          addLine('NEXUS: "After Line 2, vault equals 5. Line 3 is the trap we\'re removing. What does vault stay at?"', 'error');
+        } else {
+          addLine('NEXUS: "Only run Lines 1 and 2. Line 3 is the booby trap \u2014 delete it entirely. What does vault equal after just those two lines?"', 'error');
+        }
       }
     }
   });
@@ -706,17 +729,18 @@ function startModule3() {
       addLine('', '');
       addLine('NEXUS: "Take a second to appreciate what you just did."', 'highlight');
       addLine('', '');
-      addLine('NEXUS: "You decoded binary, cracked a cipher with known-plaintext', 'highlight');
-      addLine('        analysis, traced logic gates through a circuit, identified', 'highlight');
-      addLine('        fabricated evidence, removed a zero-multiplication trap,', 'highlight');
-      addLine('        and independently verified your answer."', 'highlight');
+      addLine('NEXUS: "You decoded binary. Cracked a cipher. Traced logic', 'highlight');
+      addLine('        gates through a circuit. Spotted fake evidence.', 'highlight');
+      addLine('        Found a hidden zero-multiplication trap. And then', 'highlight');
+      addLine('        verified your answer independently."', 'highlight');
       addLine('', '');
-      addLine('NEXUS: "Every skill you\'ve learned this season \u2014 brought together', 'highlight');
-      addLine('        in one investigation. That\'s what real security work', 'highlight');
-      addLine('        looks like: no single skill is enough. You need them all."', 'highlight');
+      addLine('NEXUS: "That\'s SIX different skills in one mission. Real', 'highlight');
+      addLine('        security investigators do exactly this \u2014 no single', 'highlight');
+      addLine('        skill is ever enough. You need ALL of them working', 'highlight');
+      addLine('        together, like pieces of a puzzle."', 'highlight');
       addLine('', '');
-      addLine('NEXUS: "And inside the vault? Victor\'s backdoor code. The proof', 'highlight');
-      addLine('        we need \u2014 and the key to the final hack."', 'highlight');
+      addLine('NEXUS: "And inside the vault? Victor\'s backdoor code \u2014 the', 'highlight');
+      addLine('        proof we\'ve been hunting for. The final hack awaits."', 'highlight');
       addLine('', '');
       addLine('[ Type NEXT to continue ]', 'warning');
 

@@ -131,21 +131,27 @@ function loadProgramLevel(idx) {
   const s = state.missionState;
   s.level = level;
   s.attempts = 0;
+  s.hintIdx = 0;
 
   // Render the maze
   const maze = level.grid.map(r => r.split(''));
   renderMaze(maze);
 
   addLine('', '');
+  addLine('Type HINT if you get stuck.', 'info');
+  addLine('', '');
   if (idx === 0) {
-    addLine('NEXUS: "One step. @ needs to reach X. What direction?"', 'highlight');
-    addLine('        Type a single letter and press Enter.', 'info');
+    addLine('NEXUS: "Start simple. See the @ and the X?', 'highlight');
+    addLine('        @ is your data packet. X is where it needs to go.', 'highlight');
+    addLine('        Which direction moves @ to X? Just one letter."', 'highlight');
   } else if (idx === 1) {
     addLine('NEXUS: "Now X is farther away. This time, write ALL', 'highlight');
     addLine('        your steps at once \u2014 like R R D. The computer', 'highlight');
-    addLine('        runs them top to bottom, in order. No skipping."', 'highlight');
+    addLine('        runs them in order: first, second, third.', 'highlight');
+    addLine('        No skipping, no rearranging."', 'highlight');
     addLine('', '');
-    addLine('This is called a SEQUENCE \u2014 the building block of every program.', 'info');
+    addLine('This is called a SEQUENCE \u2014 a list of steps run in order.', 'info');
+    addLine('Every program ever written is built from sequences.', 'info');
   } else if (idx === 2) {
     addLine('NEXUS: "Walls in the way now. You can\'t go through them.', 'highlight');
     addLine('        Plan your ENTIRE route before typing anything.', 'highlight');
@@ -153,14 +159,29 @@ function loadProgramLevel(idx) {
     addLine('', '');
     addLine('Pro tip: count the steps in each direction before you type.', 'info');
   } else {
-    addLine('NEXUS: "Final maze. Bigger, trickier. Same rules.', 'highlight');
+    addLine('NEXUS: "Final maze. Bigger grid, more walls. Same rules.', 'highlight');
     addLine('        Real programmers plan before they code.', 'highlight');
     addLine('        Take your time \u2014 think first, type second."', 'highlight');
+    addLine('', '');
+    addLine(`Target: reach X in ${level.par} steps or fewer for optimal routing.`, 'info');
   }
 
   const inputHandler = (input) => {
     const dirMap = { UP:[-1,0], U:[-1,0], DOWN:[1,0], D:[1,0], LEFT:[0,-1], L:[0,-1], RIGHT:[0,1], R:[0,1] };
     const raw = input.toUpperCase().trim();
+
+    // HINT command
+    if (raw === 'HINT' || raw === 'HELP') {
+      const hints = mission.hints;
+      const hintIdx = s.hintIdx || 0;
+      if (hintIdx < hints.length) {
+        addLine(`[HINT ${hintIdx + 1}/${hints.length}] ${hints[hintIdx]}`, 'info');
+        s.hintIdx = hintIdx + 1;
+      } else {
+        addLine('[HINT] No more hints. Try tracing your path on the maze with your finger!', 'info');
+      }
+      return;
+    }
     // Accept both "R R D" and "RRD" \u2014 split on spaces/commas, then split
     // any remaining multi-char tokens into individual characters if they're
     // all valid single-letter commands (U/D/L/R)
@@ -314,8 +335,9 @@ function loadProgramLevel(idx) {
           addLine('        EXACTLY what you typed. Not what you meant.', 'highlight');
           addLine('        Not what made sense. What. You. Typed."', 'highlight');
           addLine('', '');
-          addLine('KEY IDEA: Computers are perfectly obedient and perfectly literal.', 'info');
-          addLine('They never guess what you wanted. That\'s a superpower AND a trap.', 'info');
+          addLine('KEY IDEA: Computers follow instructions perfectly \u2014 but they', 'info');
+          addLine('ONLY do what you tell them. If you say "go right" they go right,', 'info');
+          addLine('even if left was obviously better. They never guess.', 'info');
         } else if (idx === 1) {
           addLine('', '');
           addLine('NEXUS: "Multiple steps, one after another \u2014 that\'s a', 'highlight');
@@ -397,11 +419,12 @@ function loadProgramLevel(idx) {
         sound.denied();
         addLine(`[CRASH] Step ${crashStep + 1} of ${steps.length}: "${steps[crashStep]}" hit a wall!`, 'error');
         if (crashStep === 0) {
-          addLine('Your very first step hit a wall. Look at @ on the maze \u2014', 'info');
-          addLine('which directions have open space (.) next to it?', 'info');
+          addLine('Your very first step hit a wall! Look at @ on the maze \u2014', 'info');
+          addLine('which directions have open space (dots) next to it?', 'info');
+          addLine('Remember: # = wall (blocked!), . = open path (safe to move)', 'info');
         } else {
           addLine(`Steps 1\u2013${crashStep} worked fine. Step ${crashStep + 1} is the bug.`, 'info');
-          addLine(`Keep steps 1\u2013${crashStep}, fix step ${crashStep + 1}, then continue from there.`, 'info');
+          addLine(`Fix: keep your first ${crashStep} step${crashStep > 1 ? 's' : ''}, change step ${crashStep + 1}, then add the rest.`, 'info');
         }
         // Progressive hints on repeated failures
         if (s.attempts === 3) {
@@ -441,14 +464,19 @@ function loadProgramLevel(idx) {
       } else {
         sound.denied();
         addLine(`[INCOMPLETE] Your program ran all ${steps.length} steps but @ didn't reach X.`, 'error');
-        addLine('Your program needs more steps to reach the destination.', 'info');
+        addLine('Your program needs more steps. @ stopped but X is still ahead!', 'info');
         if (s.attempts >= 2) {
           addLine('', '');
-          addLine('NEXUS: "Count the squares from where @ stopped to X.', 'highlight');
-          addLine('        Add that many more steps to your program."', 'highlight');
+          addLine('NEXUS: "Look at the maze above \u2014 see where @ stopped?', 'highlight');
+          addLine('        Now find X. Count the squares between them', 'highlight');
+          addLine('        and add those directions to your program."', 'highlight');
         }
-        // Re-render fresh maze
+        // Show the maze with @ at its final position so the player can see where it stopped
         addLine('', '');
+        updateMazeInPlace();
+        // Re-render fresh maze below so they can plan the full route
+        addLine('', '');
+        addLine('Here is the original maze for planning:', 'info');
         const freshMaze = level.grid.map(r => r.split(''));
         renderMaze(freshMaze);
         // Re-enable input after incomplete

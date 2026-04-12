@@ -75,6 +75,7 @@ function createCipherStrip(shift) {
     cell.dataset.letter = ALPHA[i];
     cell.dataset.idx = i;
     cell.style.cssText = cellStyle;
+    cell.textContent = ALPHA[i];
     // Interactive: click plain row to highlight too
     cell.addEventListener('click', () => highlightCipherLetter(wrap, cipherAlpha[i]));
     plainRow.appendChild(cell);
@@ -153,20 +154,20 @@ const cipherPuzzles = [
     desc: 'Shift of 1 -- the simplest cipher. Each letter was pushed forward by 1 to encrypt it (A became B, B became C...). To decrypt, reverse the process: push each letter BACKWARD by 1.',
     hintOnWrong: 'Try just the first letter. The encrypted text starts with I. One step backward from I is... H. Now do the same for each letter.',
     narrativeIntro: 'First intercept. Weak encryption -- probably a test message.',
-    narrativeSuccess: 'Clean decode. The AI is definitely using Caesar ciphers.',
+    narrativeSuccess: 'Hello? That\'s strange. Why would attack code say hello?',
   },
   {
     plain: 'PIZZA',
     shift: 3,
     desc: 'Shift of 3 -- the original Caesar cipher! Julius Caesar himself used this exact shift. Use the decoder strip below: find each encrypted letter on the top row, read the original letter below it.',
     hintOnWrong: 'Use the strip. Click the first encrypted letter on the top row. The letter directly below it is the decrypted letter.',
-    narrativeIntro: 'Second intercept. Shift increased to 3 -- the AI is testing different strengths.',
-    narrativeSuccess: 'Interesting. That was... not what I expected from a rogue AI.',
+    narrativeIntro: 'Second intercept. Shift increased to 3 -- the AI is using harder encryption now.',
+    narrativeSuccess: 'Pizza? That\'s... a human word. Why would an attacking AI send that?',
   },
   {
     plain: 'SAVE US',
     shift: 5,
-    desc: 'Shift of 5 -- the strongest encryption yet, buried deepest in the attack traffic. Spaces stay as spaces. This message was hidden more carefully than the others. What was the AI trying to say?',
+    desc: 'Shift of 5 -- the strongest encryption yet, buried deepest in the attack traffic. Spaces are NOT encrypted -- they stay as spaces. Only the letters shift. This message was hidden more carefully than the others. What was the AI trying to say?',
     hintOnWrong: 'Same method, bigger shift. The strip does the work for you -- find each encrypted letter on top, read below.',
     narrativeIntro: 'Final intercept. This one was buried deep -- triple-layered inside the attack packets. Whatever this says, the AI did NOT want it found easily.',
     narrativeSuccess: null, // handled by finishMission
@@ -207,8 +208,11 @@ export const mission = {
       { text: 'NEXUS: "His solution was elegant. A single rule: shift', cls: 'highlight' },
       { text: '        every letter forward in the alphabet by a fixed', cls: 'highlight' },
       { text: '        number. With a shift of 3: A becomes D. B becomes', cls: 'highlight' },
-      { text: '        E. H becomes K. The message looks like nonsense', cls: 'highlight' },
-      { text: '        unless you know the shift number."', cls: 'highlight' },
+      { text: '        E. H becomes K. And if you go past Z? You wrap', cls: 'highlight' },
+      { text: '        back to the start -- X becomes A, Y becomes B,', cls: 'highlight' },
+      { text: '        Z becomes C. The alphabet loops like a circle.', cls: 'highlight' },
+      { text: '        The message looks like nonsense unless you know', cls: 'highlight' },
+      { text: '        the shift number."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -237,6 +241,15 @@ export const mission = {
     await sleep(400);
     addLine('');
     addLine('    FDW  decrypts back to  CAT', 'highlight');
+    addLine('');
+    await sleep(500);
+
+    addLine('  What about letters near the end? The alphabet wraps around:', 'info');
+    addLine('');
+    await sleep(400);
+    addLine('    Y  --> shift forward 3 --> wraps past Z -->  B', 'success');
+    await sleep(400);
+    addLine('    B  --> shift back 3    --> wraps past A -->  Y', 'success');
     addLine('');
 
     await sleep(500);
@@ -316,9 +329,10 @@ function showCipherPuzzle() {
         addLine('NEXUS: "You went the wrong way. The message was already', 'highlight');
         addLine('        shifted forward to encrypt it. To DECRYPT, you', 'highlight');
         addLine('        need to shift BACKWARD. Undo the shift."', 'highlight');
-      } else if (guess.length > 0 && guess.length !== p.plain.replace(/\s/g, '').length && !p.plain.includes(' ')) {
-        // Wrong number of letters
-        addLine(`[WRONG] Expected ${p.plain.length} letters, you typed ${guess.length}.`, 'error');
+      } else if (guess.length > 0 && guess.replace(/\s/g, '').length !== p.plain.replace(/\s/g, '').length) {
+        // Wrong number of letters (compare ignoring spaces for both)
+        const expectedLen = p.plain.replace(/\s/g, '').length;
+        addLine(`[WRONG] Expected ${expectedLen} letters, you typed ${guess.replace(/\s/g, '').length}.`, 'error');
         addLine('NEXUS: "Each encrypted letter decodes to exactly one letter.', 'highlight');
         addLine('        Same number of letters in, same number out."', 'highlight');
       } else if (s.wrongCount === 1) {

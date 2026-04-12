@@ -7,39 +7,9 @@ import {
   sleep,
 } from '../../engine.js';
 
-// ── Variable tracker helpers (local to this mission) ──
+import { createBoxElement, updateBoxValue, flashBox } from '../helpers.js';
 
-function createVarBox(name, value) {
-  const box = document.createElement('div');
-  box.style.cssText = 'display:inline-flex; flex-direction:column; align-items:center; border:1px solid #00aa2a; border-radius:4px; padding:8px 16px; min-width:60px; background:#0d1117;';
-
-  const nameEl = document.createElement('div');
-  nameEl.style.cssText = 'font-size:11px; color:#00aa2a; text-transform:uppercase;';
-  nameEl.textContent = name;
-
-  const valEl = document.createElement('div');
-  valEl.style.cssText = 'font-size:20px; color:#00ff41; font-weight:bold; transition: all 0.3s;';
-  valEl.textContent = value ?? '?';
-
-  box.appendChild(nameEl);
-  box.appendChild(valEl);
-  box._valEl = valEl;
-  return box;
-}
-
-function updateVarBox(box, newValue) {
-  return new Promise(resolve => {
-    const valEl = box._valEl;
-    valEl.style.opacity = '0';
-    valEl.style.transform = 'translateY(-8px)';
-    setTimeout(() => {
-      valEl.textContent = String(newValue);
-      valEl.style.opacity = '1';
-      valEl.style.transform = 'translateY(0)';
-      setTimeout(resolve, 300);
-    }, 300);
-  });
-}
+// ── Layout helpers (local to this mission) ──
 
 function makeTracker() {
   const tracker = document.createElement('div');
@@ -96,12 +66,13 @@ export const mission = {
       { text: '        might tell us why."', cls: 'highlight' },
       { text: '', cls: '' },
       { text: 'NEXUS: "Here\'s the thing \u2014 this isn\'t just one skill', cls: 'highlight' },
-      { text: '        anymore. You\'ll need to CHAIN skills together.', cls: 'highlight' },
-      { text: '        Decode binary, THEN trace the program. Read the', cls: 'highlight' },
-      { text: '        output, THEN work backward to the input."', cls: 'highlight' },
+      { text: '        anymore. You\'ll need to CHAIN skills together,', cls: 'highlight' },
+      { text: '        like links in a chain. Decode binary, THEN trace', cls: 'highlight' },
+      { text: '        the program. Read the output, THEN work backward', cls: 'highlight' },
+      { text: '        to figure out what the input must have been."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Three fragments. Each one layers on more', cls: 'highlight' },
-      { text: '        complexity. Ready?"', cls: 'highlight' },
+      { text: 'NEXUS: "Three fragments. Each one is harder than the', cls: 'highlight' },
+      { text: '        last. Let\'s go."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -121,9 +92,10 @@ function runRecoveryPhase() {
     addLine('', '');
     addPre('  Memory dump:\n    x = 0011     (binary)\n    y = 0101     (binary)\n\n  Program found:\n    z = x + y');
     addLine('', '');
-    addLine('  Step 1: Decode the binary. Place values: 8, 4, 2, 1', 'info');
-    addLine('          0011 = 0\u00d78 + 0\u00d74 + 1\u00d72 + 1\u00d71 = ?', 'info');
-    addLine('  Step 2: Once you know x and y as numbers, add them.', 'info');
+    addLine('  Step 1: Decode each binary number using place values 8, 4, 2, 1', 'info');
+    addLine('          Example: 0011 \u2192 0+0+2+1 = 3  (only the 2-place and 1-place are ON)', 'info');
+    addLine('          Now decode 0101 the same way.', 'info');
+    addLine('  Step 2: Once you know x and y as regular numbers, add them.', 'info');
     addLine('', '');
     addLine('What is z? (as a regular number)', 'warning');
 
@@ -144,19 +116,19 @@ function runRecoveryPhase() {
           scrollTerminal();
 
           // Step 1: x appears
-          const boxX = createVarBox('x', 3);
+          const boxX = createBoxElement('x', 3);
           tracker.appendChild(boxX);
           scrollTerminal();
           await sleep(800);
 
           // Step 2: y appears
-          const boxY = createVarBox('y', 5);
+          const boxY = createBoxElement('y', 5);
           tracker.appendChild(boxY);
           scrollTerminal();
           await sleep(800);
 
           // Step 3: z appears
-          const boxZ = createVarBox('z', 8);
+          const boxZ = createBoxElement('z', 8);
           tracker.appendChild(boxZ);
           scrollTerminal();
           await sleep(800);
@@ -169,16 +141,16 @@ function runRecoveryPhase() {
           await sleep(600);
 
           async function replayLevel1() {
-            await updateVarBox(boxX, '?');
-            await updateVarBox(boxY, '?');
-            await updateVarBox(boxZ, '?');
+            await updateBoxValue(boxX, '?');
+            await updateBoxValue(boxY, '?');
+            await updateBoxValue(boxZ, '?');
             ann.style.opacity = '0';
             await sleep(300);
-            await updateVarBox(boxX, 3);
+            await updateBoxValue(boxX, 3);
             await sleep(800);
-            await updateVarBox(boxY, 5);
+            await updateBoxValue(boxY, 5);
             await sleep(800);
-            await updateVarBox(boxZ, 8);
+            await updateBoxValue(boxZ, 8);
             await sleep(800);
             ann.style.opacity = '1';
             scrollTerminal();
@@ -216,14 +188,14 @@ function runRecoveryPhase() {
     // Level 2: Decode + trace multi-line program with overwriting
     addLine('\u2501\u2501\u2501 Memory Fragment 2 of 3 \u2501\u2501\u2501', 'highlight');
     addLine('NEXUS: "This one is trickier. The program OVERWRITES', 'highlight');
-    addLine('        a variable partway through. That means when', 'highlight');
-    addLine('        you see \'a\' later, it\'s NOT the same \'a\'', 'highlight');
-    addLine('        you started with."', 'highlight');
+    addLine('        a variable partway through. Think of it like', 'highlight');
+    addLine('        erasing a number on a whiteboard and writing', 'highlight');
+    addLine('        a new one. Same name, different value."', 'highlight');
     addLine('', '');
     addPre('  Memory dump:\n    a = 0100     (binary)\n    b = 0011     (binary)\n\n  Program found:\n    1  c = a + b\n    2  a = c - 1       \u2190 a gets overwritten here!\n    3  b = a + b');
     addLine('', '');
-    addLine('  Trace each line in order. After line 2, ask yourself:', 'info');
-    addLine('  what is a NOW? Use THAT value in line 3.', 'info');
+    addLine('  Trace each line in order, top to bottom.', 'info');
+    addLine('  After line 2, a holds a NEW value. Line 3 uses that new value.', 'info');
     addLine('', '');
     addLine('What are a and b after line 3? Type: a b', 'warning');
 
@@ -248,15 +220,15 @@ function runRecoveryPhase() {
           scrollTerminal();
 
           // Step 1: a=4, b=3 (decoded from binary)
-          const boxA = createVarBox('a', 4);
-          const boxB = createVarBox('b', 3);
+          const boxA = createBoxElement('a', 4);
+          const boxB = createBoxElement('b', 3);
           tracker.appendChild(boxA);
           tracker.appendChild(boxB);
           scrollTerminal();
           await sleep(800);
 
           // Step 2: c appears = 7
-          const boxC = createVarBox('c', 7);
+          const boxC = createBoxElement('c', 7);
           tracker.appendChild(boxC);
           const ann1 = makeAnnotation('c = a + b = 4 + 3 = 7');
           wrapper.appendChild(ann1);
@@ -264,38 +236,42 @@ function runRecoveryPhase() {
           scrollTerminal();
           await sleep(800);
 
-          // Step 3: a changes from 4 to 6
-          await updateVarBox(boxA, 6);
+          // Step 3: a changes from 4 to 6 — flash to highlight the overwrite
+          await updateBoxValue(boxA, 6);
+          await flashBox(boxA, '#ffaa00');
           ann1.textContent = 'a = c - 1 = 7 - 1 = 6  (a changed!)';
           scrollTerminal();
           await sleep(800);
 
           // Step 4: b changes from 3 to 9
-          await updateVarBox(boxB, 9);
-          ann1.textContent = 'b = a + b = 6 + 3 = 9  (a is 6 now, b was still 3)';
+          await updateBoxValue(boxB, 9);
+          await flashBox(boxB, '#ffaa00');
+          ann1.textContent = 'b = a + b = 6 + 3 = 9  (uses the NEW a=6, not the old a=4)';
           scrollTerminal();
           await sleep(600);
 
           async function replayLevel2() {
-            await updateVarBox(boxA, '?');
-            await updateVarBox(boxB, '?');
-            await updateVarBox(boxC, '?');
+            await updateBoxValue(boxA, '?');
+            await updateBoxValue(boxB, '?');
+            await updateBoxValue(boxC, '?');
             ann1.style.opacity = '0';
             await sleep(300);
-            await updateVarBox(boxA, 4);
-            await updateVarBox(boxB, 3);
+            await updateBoxValue(boxA, 4);
+            await updateBoxValue(boxB, 3);
             await sleep(800);
-            await updateVarBox(boxC, 7);
+            await updateBoxValue(boxC, 7);
             ann1.textContent = 'c = a + b = 4 + 3 = 7';
             ann1.style.opacity = '1';
             scrollTerminal();
             await sleep(800);
-            await updateVarBox(boxA, 6);
+            await updateBoxValue(boxA, 6);
+            await flashBox(boxA, '#ffaa00');
             ann1.textContent = 'a = c - 1 = 7 - 1 = 6  (a changed!)';
             scrollTerminal();
             await sleep(800);
-            await updateVarBox(boxB, 9);
-            ann1.textContent = 'b = a + b = 6 + 3 = 9  (a is 6 now, b was still 3)';
+            await updateBoxValue(boxB, 9);
+            await flashBox(boxB, '#ffaa00');
+            ann1.textContent = 'b = a + b = 6 + 3 = 9  (uses the NEW a=6, not the old a=4)';
             scrollTerminal();
             await sleep(600);
           }
@@ -318,11 +294,12 @@ function runRecoveryPhase() {
       } else {
         sound.denied();
         s.wrongCount++;
-        const parts2 = input.trim().split(/[\s,]+/).map(Number);
         if (s.wrongCount === 1) {
-          // Detect the common mistake: using original a=4 in line 3 instead of new a=6
-          if (parts2.length === 2 && parts2[0] === 4 && parts2[1] === 7) {
-            addLine('[WRONG] You used the ORIGINAL a=4 in line 3. But line 2 changed a! Re-trace line 2 first.', 'error');
+          // Detect common mistakes
+          if (parts.length === 2 && parts[0] === 4 && parts[1] === 7) {
+            addLine('[WRONG] You used the ORIGINAL a=4 in line 3. But line 2 changed a! Re-trace from line 2.', 'error');
+          } else if (parts.length === 2 && parts[0] === 6 && parts[1] === 3) {
+            addLine('[WRONG] a=6 is right! But b also changes on line 3. b = a + b = 6 + 3 = ?', 'error');
           } else {
             addLine('[WRONG] Decode first: 0100 = 4, 0011 = 3. Then trace each line, top to bottom.', 'error');
           }
@@ -341,18 +318,19 @@ function runRecoveryPhase() {
     addLine('        But we recovered the OUTPUT and the PROGRAM."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "Normally you go input \u2192 program \u2192 output.', 'highlight');
-    addLine('        But here we have the output and need the input.', 'highlight');
-    addLine('        So we run the program BACKWARD. Undo each', 'highlight');
-    addLine('        operation in reverse order. This is called', 'highlight');
+    addLine('        But here, one input is MISSING and we only', 'highlight');
+    addLine('        have the output. So we run the program BACKWARD.', 'highlight');
+    addLine('        Undo each step in reverse. Programmers call this', 'highlight');
     addLine('        REVERSE ENGINEERING."', 'highlight');
     addLine('', '');
     addPre('  Memory dump:\n    a = 0110     (binary)\n    b = ????     (corrupted!)\n\n  Program found:\n    1  c = a + b\n    2  c = c * 2\n\n  Output recovered:\n    c = 11000    (binary)');
     addLine('', '');
     addLine('  Strategy: work backward from the output.', 'info');
-    addLine('  1. Decode a (4-digit binary) and c (5-digit binary).', 'info');
-    addLine('     Hint: 5-digit binary places are 16, 8, 4, 2, 1', 'info');
-    addLine('  2. Undo line 2: if c = c * 2, then BEFORE that, c was c / 2.', 'info');
-    addLine('  3. Undo line 1: if c = a + b, then b = c - a.', 'info');
+    addLine('  1. Decode a: place values 8, 4, 2, 1', 'info');
+    addLine('     Decode c: it has 5 digits, so place values are 16, 8, 4, 2, 1', 'info');
+    addLine('     (each new digit on the left doubles: 1, 2, 4, 8, 16...)', 'info');
+    addLine('  2. Undo line 2: the program did c * 2, so BEFORE that, c was c / 2', 'info');
+    addLine('  3. Undo line 1: the program did c = a + b, so b = c - a', 'info');
     addLine('', '');
     addLine('What is b? (as a regular number)', 'warning');
 
@@ -377,9 +355,9 @@ function runRecoveryPhase() {
           scrollTerminal();
 
           // Step 1: Show starting state: a=6, b=?, c=24
-          const boxA = createVarBox('a', 6);
-          const boxB = createVarBox('b', '?');
-          const boxC = createVarBox('c', 24);
+          const boxA = createBoxElement('a', 6);
+          const boxB = createBoxElement('b', '?');
+          const boxC = createBoxElement('c', 24);
           tracker.appendChild(boxA);
           tracker.appendChild(boxB);
           tracker.appendChild(boxC);
@@ -390,30 +368,30 @@ function runRecoveryPhase() {
           const ann = makeAnnotation('c was 24, before \u00d72 it was 12');
           wrapper.appendChild(ann);
           requestAnimationFrame(() => { ann.style.opacity = '1'; });
-          await updateVarBox(boxC, 12);
+          await updateBoxValue(boxC, 12);
           scrollTerminal();
           await sleep(800);
 
           // Step 3: 12 = 6 + b, so b = 6
           ann.textContent = '12 = 6 + b, so b = 6';
-          await updateVarBox(boxB, 6);
+          await updateBoxValue(boxB, 6);
           scrollTerminal();
           await sleep(600);
 
           async function replayLevel3() {
-            await updateVarBox(boxA, 6);
-            await updateVarBox(boxB, '?');
-            await updateVarBox(boxC, 24);
+            await updateBoxValue(boxA, 6);
+            await updateBoxValue(boxB, '?');
+            await updateBoxValue(boxC, 24);
             ann.style.opacity = '0';
             scrollTerminal();
             await sleep(800);
             ann.textContent = 'c was 24, before \u00d72 it was 12';
             ann.style.opacity = '1';
-            await updateVarBox(boxC, 12);
+            await updateBoxValue(boxC, 12);
             scrollTerminal();
             await sleep(800);
             ann.textContent = '12 = 6 + b, so b = 6';
-            await updateVarBox(boxB, 6);
+            await updateBoxValue(boxB, 6);
             scrollTerminal();
             await sleep(600);
           }

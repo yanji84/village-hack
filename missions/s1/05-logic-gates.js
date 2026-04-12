@@ -136,8 +136,8 @@ function createHalfAdder() {
 
     const inp = document.createElement('span');
     inp.className = 'ha-input';
-    inp.textContent = gateName === 'XOR' ? 'A=?' : 'B=?';
-    Object.assign(inp.style, { color: '#00ff41', minWidth: '36px' });
+    inp.textContent = 'A=? B=?';
+    Object.assign(inp.style, { color: '#00ff41', minWidth: '72px' });
 
     const wire1 = document.createElement('span');
     wire1.className = 'ha-wire';
@@ -187,11 +187,11 @@ function createHalfAdder() {
 
 async function animateHalfAdder(ha, a, b, sum, carry) {
   const terminal = document.getElementById('terminal');
-  // Set inputs
-  ha._xor.inp.textContent = `A=${a}`;
-  ha._and.inp.textContent = `B=${b}`;
-  ha._xor.inp.style.color = a ? '#00ff41' : '#555';
-  ha._and.inp.style.color = b ? '#00ff41' : '#555';
+  // Set inputs — both gates receive both A and B
+  ha._xor.inp.textContent = `A=${a} B=${b}`;
+  ha._and.inp.textContent = `A=${a} B=${b}`;
+  ha._xor.inp.style.color = (a || b) ? '#00ff41' : '#555';
+  ha._and.inp.style.color = (a || b) ? '#00ff41' : '#555';
 
   // Animate wires (step 1: input wires light up)
   await sleep(200);
@@ -233,8 +233,8 @@ function addReplayButton(container, animationFn) {
 }
 
 function resetHalfAdder(ha) {
-  ha._xor.inp.textContent = 'A=?'; ha._xor.inp.style.color = '#00ff41';
-  ha._and.inp.textContent = 'B=?'; ha._and.inp.style.color = '#00ff41';
+  ha._xor.inp.textContent = 'A=? B=?'; ha._xor.inp.style.color = '#00ff41';
+  ha._and.inp.textContent = 'A=? B=?'; ha._and.inp.style.color = '#00ff41';
   [ha._xor, ha._and].forEach(r => {
     r.wire1.style.color = '#333';
     r.wire2.style.color = '#333';
@@ -407,7 +407,10 @@ function runLogicPhase() {
     addLine('        and override go into an OR gate."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "You don\'t have the key (key = 0). You DO have a', 'highlight');
-    addLine('        badge (badge = 1). Should you use the override?"', 'highlight');
+    addLine('        badge (badge = 1). The override is your call."', 'highlight');
+    addLine('', '');
+    addLine('  Hint: First figure out what key AND badge equals.', 'info');
+    addLine('  Then decide what override needs to be for the OR gate.', 'info');
     addLine('', '');
     addLine('What should override be? (0 or 1)', 'warning');
 
@@ -501,9 +504,11 @@ function runLogicPhase() {
           addPre('   OR says: "at least one"    \u2192  0, 1, 1, 1\n  XOR says: "exactly one"     \u2192  0, 1, 1, 0\n                                          \u2191\n                              both are 1, so XOR says NO');
           addLine('', '');
           addLine('NEXUS: "XOR is actually built FROM the basic gates \u2014', 'highlight');
-          addLine('        it\'s AND, OR, and NOT combined. But the key', 'highlight');
-          addLine('        insight is: SUM = XOR, CARRY = AND. Just two', 'highlight');
-          addLine('        gates, and you have a working calculator."', 'highlight');
+          addLine('        it\'s AND, OR, and NOT wired together. You can', 'highlight');
+          addLine('        build complex things from simple parts!"', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "The key insight: SUM = A XOR B, CARRY = A AND B.', 'highlight');
+          addLine('        Just two gates, and you have a calculator."', 'highlight');
           addLine('', '');
           // Create half-adder visual (replaces ASCII art)
           s.halfAdder = createHalfAdder();
@@ -603,11 +608,13 @@ function runLogicPhase() {
           addLine('        its adder works perfectly. But look at its', 'highlight');
           addLine('        DECISION gates..."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "An AND gate was swapped to OR. That changes', 'highlight');
-          addLine('        everything. AND says \'only if both conditions', 'highlight');
-          addLine('        are met.\' OR says \'either one is enough.\'', 'highlight');
-          addLine('        Someone loosened the AI\'s safety checks on', 'highlight');
-          addLine('        purpose. This wasn\'t a bug. It was sabotage."', 'highlight');
+          addLine('NEXUS: "An AND gate was swapped to OR. Think about', 'highlight');
+          addLine('        what that means. The safety check used to say:', 'highlight');
+          addLine('        \'proceed only if BOTH conditions are safe.\'', 'highlight');
+          addLine('        Now it says \'proceed if EITHER one is safe.\'', 'highlight');
+          addLine('        One tiny gate swap \u2014 and the AI skips half', 'highlight');
+          addLine('        its safety checks. This wasn\'t a bug.', 'highlight');
+          addLine('        It was sabotage."', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
           setCurrentInputHandler((input) => {

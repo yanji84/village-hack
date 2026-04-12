@@ -398,9 +398,10 @@ async function runPhase1a() {
   addLine('        Based on the answer, it takes one of two paths."', 'highlight');
   addLine('', '');
   addLine('NEXUS: "This is called a CONDITIONAL \u2014 an if/else statement.', 'highlight');
-  addLine('        Think of it like a fork in a road. The computer', 'highlight');
-  addLine('        checks the condition, then goes LEFT (if true) or', 'highlight');
-  addLine('        RIGHT (if false). It NEVER takes both paths."', 'highlight');
+  addLine('        Imagine you\u2019re at a fork in a road with a sign', 'highlight');
+  addLine('        that asks a yes-or-no question. If the answer is YES,', 'highlight');
+  addLine('        you go left. If NO, you go right. You can NEVER take', 'highlight');
+  addLine('        both paths \u2014 you always pick exactly one."', 'highlight');
   addLine('', '');
 
   // DEMO: guided walkthrough with animation
@@ -490,15 +491,16 @@ async function runPhase1a() {
 function runPhase1b() {
   const s = state.missionState;
   setPhaseProgress(2, 7);
-  addLine('\u2501\u2501\u2501 Puzzle 1b: Variables Before the Branch \u2501\u2501\u2501', 'highlight');
+  addLine('\u2501\u2501\u2501 Puzzle 1b: Changing Variables \u2501\u2501\u2501', 'highlight');
   addLine('', '');
   addLine('NEXUS: "This one\u2019s trickier. Two things to notice:', 'highlight');
-  addLine('        First, the variables are computed BEFORE the fork.', 'highlight');
-  addLine('        Second, the last line is OUTSIDE the if/else \u2014', 'highlight');
-  addLine('        it runs no matter which path was taken."', 'highlight');
+  addLine('        First, a and b are set up BEFORE the fork.', 'highlight');
+  addLine('        Second, the last line (result = a + 1) is NOT', 'highlight');
+  addLine('        indented under if or else \u2014 that means it runs', 'highlight');
+  addLine('        no matter what. It\u2019s AFTER the fork rejoins."', 'highlight');
   addLine('', '');
 
-  addPre('  a = 4\n  b = a * 2\n  if b > a:\n      a = b\n  result = a + 1');
+  addPre('  a = 4\n  b = a * 2\n  if b > a:\n      a = b\n  result = a + 1   \u2190 always runs');
 
   addLine('', '');
   addLine('What is result?', 'warning');
@@ -548,13 +550,14 @@ async function runPhase2a() {
   addLine('        shutdown code also uses LOOPS \u2014 code that REPEATS', 'highlight');
   addLine('        the same instructions over and over."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "A while loop works like this: the computer checks a', 'highlight');
-  addLine('        condition. If it\u2019s TRUE, it runs the indented code,', 'highlight');
-  addLine('        then jumps BACK to the top and checks again.', 'highlight');
-  addLine('        It keeps looping until the condition becomes FALSE.', 'highlight');
-  addLine('        That\u2019s the key: the loop ALWAYS checks before running."', 'highlight');
+  addLine('NEXUS: "Think of it like doing laps on a track. Before each', 'highlight');
+  addLine('        lap, you check: should I keep going? If YES, you run', 'highlight');
+  addLine('        the lap and come back to ask again. If NO, you stop."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Watch this one carefully:"', 'highlight');
+  addLine('NEXUS: "A while loop is exactly that. The computer checks a', 'highlight');
+  addLine('        condition BEFORE each pass. TRUE means \u2018do another', 'highlight');
+  addLine('        lap.\u2019 FALSE means \u2018stop right here.\u2019', 'highlight');
+  addLine('        Watch this one carefully:"', 'highlight');
   addLine('', '');
 
   addPre('  x = 0\n  while x < 4:\n      x = x + 1');
@@ -605,6 +608,8 @@ async function runPhase2a() {
         addLine('[CORRECT] The body ran 4 times (x went 0\u21921, 1\u21922, 2\u21923, 3\u21924).', 'success');
         addLine('', '');
         updateVictorBar(s.victorEl, 50);
+        addLine('NEXUS: "Victor\u2019s halfway there. Keep going \u2014 no time to waste."', 'highlight');
+        addLine('', '');
         s.phase = 3;
         setTimeout(runPhase, 800);
       } else {
@@ -626,15 +631,16 @@ function runPhase2b() {
   const s = state.missionState;
   setPhaseProgress(4, 7);
 
-  addLine('\u2501\u2501\u2501 Puzzle 2b: Loop with Accumulator \u2501\u2501\u2501', 'highlight');
+  addLine('\u2501\u2501\u2501 Puzzle 2b: Loop with a Running Total \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "This loop does something clever. It has TWO variables', 'highlight');
-  addLine('        changing each pass: i counts which step we\u2019re on, and', 'highlight');
-  addLine('        total ACCUMULATES a running sum. Each time through,', 'highlight');
-  addLine('        total grows by adding the current value of i."', 'highlight');
+  addLine('NEXUS: "This loop has TWO variables changing each pass.', 'highlight');
+  addLine('        Think of total like a piggy bank \u2014 each time', 'highlight');
+  addLine('        through the loop, i drops coins into it.', 'highlight');
+  addLine('        First lap i=1, so total gets 1 coin. Next lap', 'highlight');
+  addLine('        i=2, so total gets 2 more. And so on."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Trace both variables on each pass. Write them down', 'highlight');
-  addLine('        if you need to:"', 'highlight');
+  addLine('NEXUS: "Trace both variables on each pass. Grab a piece', 'highlight');
+  addLine('        of paper if you need to:"', 'highlight');
   addLine('', '');
 
   addPre('  total = 0\n  i = 1\n  while i <= 4:\n      total = total + i\n      i = i + 1');
@@ -648,16 +654,28 @@ function runPhase2b() {
       sound.success();
       addLine('[CORRECT] i=1: total=1, i=2: total=3, i=3: total=6, i=4: total=10. Done!', 'success');
       addLine('', '');
-      addLine('NEXUS: "You just traced a program that computes 1+2+3+4 = 10.', 'highlight');
-      addLine('        Five lines of code added up four numbers. Imagine if', 'highlight');
-      addLine('        it looped to 1000 \u2014 still five lines, still works."', 'highlight');
-      addLine('', '');
-      addLine('NEXUS: "Now you know Victor\u2019s two weapons: conditionals to', 'highlight');
-      addLine('        CHOOSE a path, and loops to REPEAT. His shutdown', 'highlight');
-      addLine('        program uses BOTH at once. Ready?"', 'highlight');
-      addLine('', '');
-      s.phase = 4;
-      setTimeout(runPhase, 800);
+      const terminal = document.getElementById('terminal');
+      (async () => {
+        await animateLoop(terminal, [
+          { vars: { i: 1, total: 0 }, condition: '1 \u2264 4?', result: true },
+          { vars: { i: 2, total: 1 }, condition: '2 \u2264 4?', result: true },
+          { vars: { i: 3, total: 3 }, condition: '3 \u2264 4?', result: true },
+          { vars: { i: 4, total: 6 }, condition: '4 \u2264 4?', result: true },
+          { vars: { i: 5, total: 10 }, condition: '5 \u2264 4?', result: false },
+        ]);
+        addLine('', '');
+        addLine('NEXUS: "You just traced a program that computes 1+2+3+4 = 10.', 'highlight');
+        addLine('        Five lines of code added up four numbers. Imagine if', 'highlight');
+        addLine('        it looped to 1000 \u2014 still five lines, still works.', 'highlight');
+        addLine('        That\u2019s the power of loops."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Now you know Victor\u2019s two weapons: conditionals to', 'highlight');
+        addLine('        CHOOSE a path, and loops to REPEAT. His shutdown', 'highlight');
+        addLine('        program uses BOTH at once. Ready?"', 'highlight');
+        addLine('', '');
+        s.phase = 4;
+        setTimeout(runPhase, 800);
+      })();
     } else {
       sound.denied();
       attempts++;
@@ -686,11 +704,12 @@ function runPhase3a() {
   addLine('NEXUS: "This is Victor\u2019s actual shutdown program. It uses', 'highlight');
   addLine('        EVERYTHING at once: a loop with a conditional INSIDE.', 'highlight');
   addLine('        Each time the loop repeats, the if-check decides', 'highlight');
-  addLine('        whether to change code. Most passes will skip it."', 'highlight');
+  addLine('        whether to change code. You need to trace every', 'highlight');
+  addLine('        pass to know when code actually changes."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Be careful with > versus >=. The symbol > means', 'highlight');
-  addLine('        STRICTLY greater than. So 5 > 5 is FALSE, but', 'highlight');
-  addLine('        6 > 5 is TRUE. That detail matters here."', 'highlight');
+  addLine('NEXUS: "One tricky detail: > means STRICTLY greater than.', 'highlight');
+  addLine('        So 5 > 5 is FALSE \u2014 they\u2019re equal, not greater.', 'highlight');
+  addLine('        But 6 > 5 is TRUE. Watch for that."', 'highlight');
   addLine('', '');
   addLine('NEXUS: "Trace it step by step to find the first digit:"', 'highlight');
   addLine('', '');
@@ -749,9 +768,11 @@ function runPhase3b() {
   const s = state.missionState;
   setPhaseProgress(6, 7);
 
-  addLine('NEXUS: "Second program. This one\u2019s simpler \u2014 a straight', 'highlight');
-  addLine('        loop, no conditional inside. The loop subtracts', 'highlight');
-  addLine('        from key while counting up with n. Trace it:"', 'highlight');
+  addLine('NEXUS: "Almost there \u2014 one more program to crack.', 'highlight');
+  addLine('        This one\u2019s a straight loop, no if-check inside.', 'highlight');
+  addLine('        Two variables: key starts high and gets smaller,', 'highlight');
+  addLine('        n counts how many times the loop has run.', 'highlight');
+  addLine('        Trace it carefully:"', 'highlight');
   addLine('', '');
 
   addPre('  key = 5\n  n = 0\n  while n < 3:\n      key = key - 1\n      n = n + 1');

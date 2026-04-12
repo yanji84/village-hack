@@ -35,7 +35,7 @@ export const mission = {
     'For the pixel grid: step back and look at which squares are green. What letter do they form?',
   ],
   run: async function() {
-    state.missionState = { phase: 0, hintIdx: 0 };
+    state.missionState = { phase: 0, hintIdx: 0, wrongCount: 0 };
 
     await typeLines([
       { text: '[INCOMING COMMS]', cls: 'system' },
@@ -220,13 +220,17 @@ async function runBinaryPhase() {
     addLine('', '');
     addPre('         hundreds   tens   ones\n            3        5      2\n          3\u00d7100  +  5\u00d710  +  2\u00d71  =  352');
     addLine('', '');
-    addLine('NEXUS: "Each place is 10\u00d7 bigger than the one before it.', 'highlight');
-    addLine('        That\'s why we call it BASE 10."', 'highlight');
+    addLine('NEXUS: "Each place is 10\u00d7 bigger than the one before.', 'highlight');
+    addLine('        ones, tens, hundreds... that\'s BASE 10."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "Binary is BASE 2 \u2014 same idea, but each place is', 'highlight');
-    addLine('        2\u00d7 bigger instead of 10\u00d7. And you only get two', 'highlight');
-    addLine('        digits: 0 and 1. Think of each place like a', 'highlight');
-    addLine('        light switch \u2014 either ON (1) or OFF (0)."', 'highlight');
+    addLine('NEXUS: "Binary is BASE 2 \u2014 same idea, but each place', 'highlight');
+    addLine('        doubles instead of going up by 10\u00d7:"', 'highlight');
+    addLine('', '');
+    addPre('    BASE 10:   ...  100    10     1\n                     \u00d710   \u00d710\n\n    BASE 2:    ...    8     4     2     1\n                      \u00d72    \u00d72    \u00d72');
+    addLine('', '');
+    addLine('NEXUS: "And you only get two digits: 0 and 1.', 'highlight');
+    addLine('        Think of each place like a light switch \u2014', 'highlight');
+    addLine('        either ON (1) or OFF (0)."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "Let me walk you through one. Watch carefully."', 'highlight');
     addLine('', '');
@@ -279,7 +283,8 @@ async function runBinaryPhase() {
     addLine('', '');
     addLine('NEXUS: "To send a letter, a computer converts it to its', 'highlight');
     addLine('        number, then writes THAT number in binary.', 'highlight');
-    addLine('        So the letter C becomes 3, which becomes 00011."', 'highlight');
+    addLine('        So the letter C is 3, which in binary is 00011', 'highlight');
+    addLine('        (twos ON + ones ON = 2 + 1 = 3)."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "That signal we intercepted has 4 binary groups \u2014', 'highlight');
     addLine('        4 letters. Each group uses 5 digits, which adds', 'highlight');
@@ -322,14 +327,7 @@ async function runBinaryPhase() {
       } else {
         s.wrongCount = (s.wrongCount || 0) + 1;
         sound.denied();
-        let correct = 0;
-        const inp = input.toUpperCase().trim();
-        for (let i = 0; i < Math.min(inp.length, secretWord.length); i++) {
-          if (inp[i] === secretWord[i]) correct++;
-        }
-        if (correct > 0 && inp.length === secretWord.length) {
-          addLine(`[PARTIAL] ${correct} of ${secretWord.length} letters correct. Re-check the others.`, 'warning');
-        } else if (s.wrongCount === 1) {
+        if (s.wrongCount === 1) {
           addLine('NEXUS: "Same method. For each group: find the 1s, add', 'error');
           addLine('        their place values, then look up the letter."', 'error');
         } else if (s.wrongCount === 2) {
@@ -337,7 +335,17 @@ async function runBinaryPhase() {
           addLine('        Only the eights switch is ON. 8 = H.', 'error');
           addLine('        Now do the same for the other three."', 'error');
         } else {
-          addLine('[HINT] Letter 1: 01000 = 8 = H. Do the same for each group, then type all 4 letters as one word.', 'error');
+          // After 2 method hints, show partial-match feedback if applicable
+          let correct = 0;
+          const inp = input.toUpperCase().trim();
+          for (let i = 0; i < Math.min(inp.length, secretWord.length); i++) {
+            if (inp[i] === secretWord[i]) correct++;
+          }
+          if (correct > 0 && inp.length === secretWord.length) {
+            addLine(`[PARTIAL] ${correct} of ${secretWord.length} letters correct. Re-check the others.`, 'warning');
+          } else {
+            addLine('[HINT] Letter 1: 01000 = 8 = H. Do the same for each group, then type all 4 letters as one word.', 'error');
+          }
         }
       }
     });

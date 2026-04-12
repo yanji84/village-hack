@@ -42,8 +42,10 @@ export const mission = {
       { text: '', cls: '' },
       { text: 'NEXUS: "I cracked open part of the AI\'s memory. It stores', cls: 'highlight' },
       { text: '        everything in named slots \u2014 programmers call them', cls: 'highlight' },
-      { text: '        VARIABLES. If you want to read its secrets, you', cls: 'highlight' },
-      { text: '        need to understand how these slots work."', cls: 'highlight' },
+      { text: '        VARIABLES. Think of them like labeled boxes that', cls: 'highlight' },
+      { text: '        can each hold one thing. If you want to read the', cls: 'highlight' },
+      { text: '        AI\'s secrets, you need to understand how these', cls: 'highlight' },
+      { text: '        boxes work."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -214,12 +216,18 @@ function runVariablesPhase() {
         addLine('  Read it as an arrow: x + 2 \u2192 x. That\'s 3 + 2 \u2192 x. What goes in?', 'info');
       } else if (input.trim() === '2') {
         sound.denied();
-        addLine('[WRONG] Don\'t ignore the x! It has a value already.', 'error');
-        addLine('  x is 3, so x + 2 means 3 + 2. What\'s that?', 'info');
+        addLine('[WRONG] Don\'t ignore the x! It already holds 3.', 'error');
+        addLine('  x = x + 2 means: take what\'s IN x (3), add 2. What\'s 3 + 2?', 'info');
+      } else if (input.trim() === '6' || input.trim() === '8') {
+        sound.denied();
+        addLine('[WRONG] Careful \u2014 there\'s only ONE variable here, not two.', 'error');
+        addLine('  Line 1: x = 3. Line 2: x = x + 2.', 'info');
+        addLine('  Replace x on the right with 3: x = 3 + 2. What\'s 3 + 2?', 'info');
       } else {
         sound.denied();
         addLine('[WRONG] Use the arrow trick. Line 1: x = 3.', 'error');
-        addLine('  Line 2: x = x + 2. Substitute: x = 3 + 2. What\'s 3 + 2?', 'info');
+        addLine('  Line 2: x = x + 2. Replace x with its current value:', 'info');
+        addLine('  x = 3 + 2. What\'s 3 + 2?', 'info');
       }
     });
 
@@ -227,8 +235,13 @@ function runVariablesPhase() {
     // Phase 2: Copy, not link — teach then test
     addLine('\u2501\u2501\u2501 The Snapshot Rule \u2501\u2501\u2501', 'highlight');
     addLine('NEXUS: "This next one is the trap I fell into when I was', 'highlight');
-    addLine('        learning. When you write b = a, it COPIES the', 'highlight');
-    addLine('        value. It does NOT link the two variables together."', 'highlight');
+    addLine('        learning. It catches almost everyone."', 'highlight');
+    addLine('', '');
+    addLine('NEXUS: "When you write b = a, the computer looks inside', 'highlight');
+    addLine('        the a box RIGHT NOW, takes a PHOTO of the number,', 'highlight');
+    addLine('        and puts a copy in the b box. After that, a and b', 'highlight');
+    addLine('        are completely separate. No invisible wire between', 'highlight');
+    addLine('        them. Got it? Let\'s see if you really do."', 'highlight');
     addLine('', '');
     addPre('  1  a = 5\n  2  b = a\n  3  a = 99');
     addLine('', '');
@@ -391,22 +404,30 @@ function runVariablesPhase() {
           addLine('NEXUS: "Overwriting, the arrow rule, and snapshots \u2014', 'highlight');
           addLine('        all in four lines. You traced that perfectly."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "You now understand the three foundations:', 'highlight');
+          addLine('NEXUS: "You just traced code in your head. That\'s the', 'highlight');
+          addLine('        single most important skill in programming \u2014', 'highlight');
+          addLine('        running the machine in your mind."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "You now understand three foundations:', 'highlight');
           addLine('        DATA \u2014 how machines store things (binary).', 'highlight');
-          addLine('        INSTRUCTIONS \u2014 how they act (programs).', 'highlight');
+          addLine('        INSTRUCTIONS \u2014 how they follow steps (programs).', 'highlight');
           addLine('        MEMORY \u2014 how they remember (variables).', 'highlight');
           addLine('        Every system ever built rests on these three."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "Wait. I just found something in the AI\'s', 'highlight');
+          addLine('NEXUS: "Hold on. I just found something in the AI\'s', 'highlight');
           addLine('        memory. A variable called target_count. Its', 'highlight');
-          addLine('        value keeps incrementing \u2014 going up by one,', 'highlight');
-          addLine('        over and over. The AI is counting something.', 'highlight');
-          addLine('        ...Or someone. I need to dig deeper."', 'highlight');
+          addLine('        value keeps going up by one, over and over.', 'highlight');
+          addLine('        The AI is counting something... or someone.', 'highlight');
+          addLine('        I need to recover more of its memory."', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
-          setCurrentInputHandler(() => {
-            setCurrentInputHandler(null);
-            completeMission(2);
+          setCurrentInputHandler((input) => {
+            if (input.trim().toLowerCase() === 'next') {
+              setCurrentInputHandler(null);
+              completeMission(2);
+            } else {
+              addLine('Type NEXT to continue.', 'warning');
+            }
           });
         })();
       } else if (parts.length === 2 && parts[0] === 15 && parts[1] === 13) {
@@ -422,6 +443,12 @@ function runVariablesPhase() {
         addLine('[PARTIAL] x=15 is right! Now for y:', 'error');
         addLine('  y got a COPY of x\'s value (10) at line 2. x changed later,', 'info');
         addLine('  but y still has 10. Then line 4: y = 10 - 2 = ?', 'info');
+      } else if (parts.length === 2 && parts[1] === 8) {
+        // y is right, x is wrong
+        sound.denied();
+        addLine('[PARTIAL] y=8 is right! Now for x:', 'error');
+        addLine('  Line 1: x = 10. Line 3: x = x + 5.', 'info');
+        addLine('  Replace x with 10: x = 10 + 5 = ?', 'info');
       } else if (parts.length === 1) {
         sound.denied();
         addLine('[FORMAT] I need TWO numbers \u2014 x then y, separated by a space.', 'error');
@@ -430,8 +457,8 @@ function runVariablesPhase() {
         sound.denied();
         addLine('[WRONG] Go line by line using everything you learned:', 'error');
         addLine('  Line 1: x = 10. Line 2: y gets a COPY of x (y = 10).', 'info');
-        addLine('  Line 3: x = x + 5 (arrow rule). Line 4: y = y - 2 (arrow rule).', 'info');
-        addLine('  Remember: y has its OWN copy. It doesn\'t follow x.', 'info');
+        addLine('  Line 3: x = x + 5 \u2192 use the arrow rule: 10 + 5 = ?', 'info');
+        addLine('  Line 4: y = y - 2 \u2192 y still has 10 (snapshot!): 10 - 2 = ?', 'info');
       }
     });
   }
