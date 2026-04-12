@@ -148,6 +148,11 @@ async function animateLoop(terminal, varUpdates) {
       const row = document.createElement('div');
       row.style.cssText = 'display:flex;align-items:center;gap:10px;margin:4px 0;opacity:0;transition:opacity 0.4s;font-size:13px;';
 
+      const passLabel = document.createElement('span');
+      passLabel.style.cssText = 'color:#666;min-width:44px;font-size:10px;letter-spacing:1px;';
+      passLabel.textContent = step.result ? `#${i + 1}` : 'END';
+      row.appendChild(passLabel);
+
       const varsStr = Object.entries(step.vars).map(([k, v]) => `${k}=${v}`).join(', ');
       const varsSpan = document.createElement('span');
       varsSpan.style.cssText = 'color:#00ccff;min-width:100px;';
@@ -253,9 +258,15 @@ async function animateLoopWithConditional(terminal, iterations) {
     stepsContainer.innerHTML = '';
     terminal.scrollTop = terminal.scrollHeight;
 
-    for (const iter of iterations) {
+    for (let idx = 0; idx < iterations.length; idx++) {
+      const iter = iterations[idx];
       const row = document.createElement('div');
       row.style.cssText = 'display:flex;align-items:center;gap:8px;margin:5px 0;opacity:0;transition:opacity 0.4s;font-size:13px;flex-wrap:wrap;';
+
+      const passLabel = document.createElement('span');
+      passLabel.style.cssText = 'color:#666;min-width:44px;font-size:10px;letter-spacing:1px;';
+      passLabel.textContent = iter.condResult ? `#${idx + 1}` : 'END';
+      row.appendChild(passLabel);
 
       const varsStr = Object.entries(iter.vars).map(([k,v]) => `${k}=${v}`).join(' ');
       const varsSpan = document.createElement('span');
