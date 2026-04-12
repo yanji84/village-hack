@@ -334,21 +334,51 @@ function runPhase() {
 // PHASE 1: CONDITIONALS (if/else) — "Programs Choose"
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function runPhase1a() {
+async function runPhase1a() {
   const s = state.missionState;
+  const terminal = document.getElementById('terminal');
   setPhaseProgress(1, 7);
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 1: Conditionals \u2014 Programs Choose \u2501\u2501\u2501', 'highlight');
   addLine('', '');
   addLine('NEXUS: "Victor hid the shutdown code inside a PROGRAM. But this', 'highlight');
-  addLine('        program makes DECISIONS. You haven\u2019t seen this before \u2014', 'highlight');
-  addLine('        but you know logic gates."', 'highlight');
+  addLine('        program makes DECISIONS. Let me show you how."', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "An if is just a logic gate applied to code flow.', 'highlight');
-  addLine('        If the condition is true (1), run the first block.', 'highlight');
-  addLine('        If false (0), run the second."', 'highlight');
+  addLine('NEXUS: "Watch this example. The computer checks a condition,', 'highlight');
+  addLine('        then picks ONE path:"', 'highlight');
   addLine('', '');
 
+  // DEMO: guided walkthrough with animation
+  addPre('  age = 12\n  if age >= 10:\n      msg = "big kid"\n  else:\n      msg = "little kid"');
+  addLine('', '');
+  addLine('NEXUS: "Watch the computer run it step by step:"', 'highlight');
+  addLine('', '');
+
+  await animateConditional(terminal, {
+    lines: [
+      'age = 12',
+      'if age >= 10:        \u2190 check this',
+      '    msg = "big kid"  \u2190 runs if TRUE',
+      'else:',
+      '    msg = "little kid" \u2190 runs if FALSE',
+    ],
+    highlights: [
+      { lineIdx: 0, color: '#00ccff', label: 'age is 12' },
+      { lineIdx: 1, color: '#ffdd33', label: '12 >= 10? YES \u2192 true' },
+      { lineIdx: 2, color: '#00ff41', bg: 'rgba(0,255,65,0.1)', label: '\u2713 this runs' },
+      { lineIdx: 3, color: '#333' },
+      { lineIdx: 4, color: '#333', label: 'skipped' },
+    ],
+  });
+
+  addLine('', '');
+  addLine('NEXUS: "Result: msg = \\"big kid\\". The green line ran. The', 'highlight');
+  addLine('        gray line was skipped. The condition decided."', 'highlight');
+  addLine('', '');
+  addLine('NEXUS: "Your turn. Same idea, different program:"', 'highlight');
+  addLine('', '');
+
+  // PUZZLE
   addPre('  x = 10\n  if x > 5:\n      result = x - 3\n  else:\n      result = x + 3');
 
   addLine('', '');
@@ -449,17 +479,22 @@ async function runPhase2a() {
   addLine('', '');
   addLine('\u2501\u2501\u2501 Phase 2: Loops \u2014 Programs Repeat \u2501\u2501\u2501', 'highlight');
   addLine('', '');
-  addLine('NEXUS: "Conditionals let programs choose. LOOPS let them repeat.', 'highlight');
-  addLine('        A while loop runs the same code over and over \u2014 until', 'highlight');
-  addLine('        its condition becomes false."', 'highlight');
+  addLine('NEXUS: "Conditionals let programs CHOOSE. Loops let them', 'highlight');
+  addLine('        REPEAT. Think of it like this:"', 'highlight');
+  addLine('', '');
+  addLine('NEXUS: "You tell a kid: keep bouncing the ball WHILE you', 'highlight');
+  addLine('        have fewer than 4 bounces. They bounce: 1, 2, 3, 4.', 'highlight');
+  addLine('        Then they stop \u2014 because 4 is not fewer than 4."', 'highlight');
+  addLine('', '');
+  addLine('NEXUS: "In code, it looks like this:"', 'highlight');
   addLine('', '');
 
   addPre('  x = 0\n  while x < 4:\n      x = x + 1');
 
   addLine('', '');
-  addLine('NEXUS: "The computer checks \'is x < 4?\' If yes, it runs the', 'highlight');
-  addLine('        indented line and checks AGAIN. If no, it STOPS and moves on.', 'highlight');
-  addLine('        Watch:"', 'highlight');
+  addLine('NEXUS: "The computer checks the condition BEFORE each pass.', 'highlight');
+  addLine('        If true \u2192 run the code, check again. If false \u2192', 'highlight');
+  addLine('        stop. Watch it happen:"', 'highlight');
   addLine('', '');
 
   // Animated variable trace
