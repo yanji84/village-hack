@@ -595,20 +595,22 @@ async function runPhase2a() {
   addPre('  x = 0\n  while x < 4:\n      x = x + 1');
 
   addLine('', '');
-  addLine('NEXUS: "Green check = keep looping. Red X = stop."', 'highlight');
+  addLine('NEXUS: "Green check = keep looping. Red X = stop.', 'highlight');
+  addLine('        Watch the first two laps:"', 'highlight');
   addLine('', '');
 
-  // Animated variable trace
+  // Show only first 2 iterations as a demo — kid must predict the rest
   await animateLoop(terminal, [
     { vars: { x: 0 }, condition: '0 < 4?', result: true },
     { vars: { x: 1 }, condition: '1 < 4?', result: true },
-    { vars: { x: 2 }, condition: '2 < 4?', result: true },
-    { vars: { x: 3 }, condition: '3 < 4?', result: true },
-    { vars: { x: 4 }, condition: '4 < 4?', result: false },
   ]);
 
   addLine('', '');
-  addLine('What is x after the loop ends?', 'warning');
+  addLine('NEXUS: "See the pattern? Each lap, x goes up by 1, then', 'highlight');
+  addLine('        the computer checks: is x STILL less than 4?', 'highlight');
+  addLine('        Keep going in your head \u2014 when does it stop?"', 'highlight');
+  addLine('', '');
+  addLine('What is x when the loop finally stops?', 'warning');
 
   s.loopSubPhase = 'value';
   let attempts = 0;
@@ -618,14 +620,28 @@ async function runPhase2a() {
         sound.success();
         addLine('[CORRECT] x = 4 when the loop stops.', 'success');
         addLine('', '');
-        addLine('How many times did the loop body run?', 'warning');
-        s.loopSubPhase = 'count';
-        attempts = 0;
+        // Now show the full trace as confirmation
+        addLine('NEXUS: "Here\u2019s the full execution \u2014 see if it matches what you predicted:"', 'highlight');
+        addLine('', '');
+        (async () => {
+          await animateLoop(terminal, [
+            { vars: { x: 0 }, condition: '0 < 4?', result: true },
+            { vars: { x: 1 }, condition: '1 < 4?', result: true },
+            { vars: { x: 2 }, condition: '2 < 4?', result: true },
+            { vars: { x: 3 }, condition: '3 < 4?', result: true },
+            { vars: { x: 4 }, condition: '4 < 4?', result: false },
+          ]);
+          addLine('', '');
+          addLine('How many times did the loop body run?', 'warning');
+          s.loopSubPhase = 'count';
+          attempts = 0;
+        })();
+        return;
       } else {
         sound.denied();
         attempts++;
         if (attempts === 1) {
-          addLine('[WRONG] NEXUS: "Look at the last row of the trace \u2014 the one with the red X. What is x there?"', 'error');
+          addLine('[WRONG] NEXUS: "Continue the pattern: x=2, is 2 < 4? Yes. x=3, is 3 < 4? Yes. Keep going \u2014 when is x NOT less than 4?"', 'error');
         } else if (attempts === 2) {
           addLine('[WRONG] NEXUS: "The loop stops when x < 4 is FALSE. What\u2019s the smallest number that\u2019s NOT less than 4?"', 'error');
         } else {
