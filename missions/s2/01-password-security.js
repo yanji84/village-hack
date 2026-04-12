@@ -70,7 +70,9 @@ function runS2M1Phase() {
     addLine('AI CORE: "The backdoor stores hash = <span class="highlight">40</span>. Which password', 'purple');
     addLine('          from this list has that hash?"', 'purple');
     addLine('', '');
-    addPre('  ┌──────────────────────────────────────────┐\n  │  Candidates:                              │\n  │                                            │\n  │         DOG       KIT       FOX            │\n  │                                            │\n  └──────────────────────────────────────────┘\n\n   A=1  B=2  C=3  D=4  E=5  F=6  G=7\n   H=8  I=9  J=10 K=11 L=12 M=13 N=14\n   O=15 P=16 Q=17 R=18 S=19 T=20 U=21\n   V=22 W=23 X=24 Y=25 Z=26');
+    addPre('  ┌─────────────────────────────────┐\n  │         ╔═══╗  ╔═══╗  ╔═══╗     │\n  │         ║DOG║  ║KIT║  ║FOX║     │\n  │         ╚═══╝  ╚═══╝  ╚═══╝     │\n  └─────────────────────────────────┘');
+    addLine('', '');
+    addPre('   A=1   B=2   C=3   D=4   E=5\n   F=6   G=7   H=8   I=9   J=10\n   K=11  L=12  M=13  N=14  O=15\n   P=16  Q=17  R=18  S=19  T=20\n   U=21  V=22  W=23  X=24  Y=25\n   Z=26');
     addLine('', '');
     addLine('Which password has hash = 40?', 'warning');
 
@@ -142,7 +144,7 @@ function runS2M1Phase() {
     addLine('          with 2 digit wheels, each going from 0-9.', 'purple');
     addLine('          How many possible combinations?"', 'purple');
     addLine('', '');
-    addPre('  ┌──────────┐  ┌──────────┐\n  │ Wheel 1   │  │ Wheel 2   │\n  │ 10 options │  │ 10 options │\n  │  (0-9)    │  │  (0-9)    │\n  └──────────┘  └──────────┘\n\n  Total = 10 × 10 = ???');
+    addPre('   ╔════════╗   ╔════════╗\n   ║ Wheel 1 ║   ║ Wheel 2 ║\n   ║  0 - 9  ║   ║  0 - 9  ║\n   ║ (10 ea) ║   ║ (10 ea) ║\n   ╚════════╝   ╚════════╝\n\n   Total = 10 × 10 = ???');
     addLine('', '');
     addLine('Type the total number of combinations:', 'warning');
 
@@ -159,7 +161,7 @@ function runS2M1Phase() {
           addLine('AI CORE: "Good. Now you add just ONE more digit wheel.', 'purple');
           addLine('          Three wheels total, still 0-9 each."', 'purple');
           addLine('', '');
-          addPre('  ┌──────────┐  ┌──────────┐  ┌──────────┐\n  │ Wheel 1   │  │ Wheel 2   │  │ Wheel 3   │\n  │ 10 options │  │ 10 options │  │ 10 options │\n  │  (0-9)    │  │  (0-9)    │  │  (0-9)    │\n  └──────────┘  └──────────┘  └──────────┘');
+          addPre('   ╔════════╗   ╔════════╗   ╔════════╗\n   ║ Wheel 1 ║   ║ Wheel 2 ║   ║ Wheel 3 ║\n   ║  0 - 9  ║   ║  0 - 9  ║   ║  0 - 9  ║\n   ║ (10 ea) ║   ║ (10 ea) ║   ║ (10 ea) ║\n   ╚════════╝   ╚════════╝   ╚════════╝');
           addLine('', '');
           addLine('AI CORE: "Does the total go to 110 (added 10 more)', 'purple');
           addLine('          or 1000 (multiplied by 10)?"', 'purple');
@@ -239,7 +241,7 @@ function runS2M1Phase() {
     addLine('          affects where the others can go. You\'ll need to', 'purple');
     addLine('          think about the structure, not just guess."', 'purple');
     addLine('', '');
-    addPre('  ┌───────────────────────────────────────────┐\n  │  PASSWORD POLICY                           │\n  │                                             │\n  │  Rule 1: Exactly 5 characters               │\n  │  Rule 2: Must start with a CAPITAL letter   │\n  │  Rule 3: Must end with a digit (0-9)        │\n  │  Rule 4: Must contain exactly 2 of: ! @ #   │\n  │  Rule 5: The 2 symbols cannot be next        │\n  │          to each other                       │\n  │                                             │\n  └───────────────────────────────────────────┘');
+    addPre('  ╔═══════════════════════════════════════════╗\n  ║  PASSWORD POLICY                           ║\n  ║                                             ║\n  ║  1. Exactly 5 characters                    ║\n  ║  2. Must start with a CAPITAL letter        ║\n  ║  3. Must end with a digit (0-9)             ║\n  ║  4. Must contain exactly 2 of: ! @ #        ║\n  ║  5. The 2 symbols cannot be next             ║\n  ║     to each other                            ║\n  ║                                             ║\n  ║  Positions:  [ 1 ][ 2 ][ 3 ][ 4 ][ 5 ]     ║\n  ╚═══════════════════════════════════════════╝');
     addLine('', '');
     addLine('AI CORE: "Think about WHERE each piece can go. The rules', 'purple');
     addLine('          lock some positions — figure out the pattern."', 'purple');
