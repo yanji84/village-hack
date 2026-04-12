@@ -764,8 +764,7 @@ function runPhase3a() {
   setCurrentInputHandler((input) => {
     if (input.trim() === '1') {
       sound.success();
-      fillCodeSlot(s.codeSlots[0], '1');
-      addLine('[CORRECT] code = 1. Watch the execution:', 'success');
+      addLine('[CORRECT] code = 1 \u2014 that\u2019s the first digit! Remember it.', 'success');
       addLine('', '');
       const terminal = document.getElementById('terminal');
       (async () => {
@@ -828,8 +827,7 @@ function runPhase3b() {
   setCurrentInputHandler((input) => {
     if (input.trim() === '2') {
       sound.success();
-      fillCodeSlot(s.codeSlots[1], '2');
-      addLine('[CORRECT] code = 2!', 'success');
+      addLine('[CORRECT] code = 2 \u2014 that\u2019s the second digit! Remember it.', 'success');
       addLine('', '');
       const terminal = document.getElementById('terminal');
       (async () => {
@@ -876,6 +874,10 @@ function runPhase4() {
   setPhaseProgress(7, 7);
 
   addLine('', '');
+  addLine('NEXUS: "You cracked both programs. The shutdown code is', 'highlight');
+  addLine('        the two digits you found, first then second,', 'highlight');
+  addLine('        combined into one number. What is it?"', 'highlight');
+  addLine('', '');
   addLine('[CRITICAL] Enter the two-digit shutdown code:', 'warning');
 
   let attempts = 0;
@@ -883,6 +885,9 @@ function runPhase4() {
     if (input.trim() === '12') {
       sound.success();
       setCurrentInputHandler(null);
+      // NOW fill the code slots for the dramatic reveal
+      fillCodeSlot(s.codeSlots[0], '1');
+      fillCodeSlot(s.codeSlots[1], '2');
       addLine('[CODE ACCEPTED] Initiating shutdown...', 'success');
       blockVictorBar(s.victorEl);
       setTimeout(() => runShutdownAnimation(), 500);
@@ -890,9 +895,9 @@ function runPhase4() {
       sound.denied();
       attempts++;
       if (attempts === 1) {
-        addLine('[WRONG] NEXUS: "Look at the green digits in the SHUTDOWN CODE slots above!"', 'error');
+        addLine('[WRONG] NEXUS: "Think back \u2014 what did the first program compute? And the second?"', 'error');
       } else if (attempts === 2) {
-        addLine('[WRONG] NEXUS: "First program gave us 1. Second gave us 2. Combine them into one number!"', 'error');
+        addLine('[WRONG] NEXUS: "First program: code = 1. Second program: code = 2. Put them together!"', 'error');
       } else {
         addLine('[WRONG] NEXUS: "The code is 12! Hurry!"', 'error');
       }
