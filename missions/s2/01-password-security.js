@@ -228,18 +228,18 @@ function runS2M1Phase() {
     // Phase 3: Constraint construction
     addLine('━━━ LAYER 3 of 3: Constraint Construction ━━━', 'highlight');
     addLine('', '');
-    addLine('AI CORE: "Last layer. This one is different — VICTOR didn\'t', 'purple');
-    addLine('          just lock it. He set up a PASSWORD POLICY with', 'purple');
-    addLine('          five rules. You have to BUILD a password that', 'purple');
-    addLine('          passes every single one."', 'purple');
+    addLine('AI CORE: "Last layer. And this one\'s my favorite — VICTOR', 'purple');
+    addLine('          set up a PASSWORD POLICY with five rules. You', 'purple');
+    addLine('          don\'t crack this one. You BUILD a password that', 'purple');
+    addLine('          passes every rule at once."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "This is called constraint satisfaction — fitting', 'purple');
-    addLine('          through all the filters at once. Same idea behind', 'purple');
-    addLine('          how computers plan schedules and solve puzzles."', 'purple');
+    addLine('AI CORE: "This is called constraint satisfaction. Same idea', 'purple');
+    addLine('          behind Sudoku, school timetables, even how GPS', 'purple');
+    addLine('          finds the fastest route."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "Warning: these rules INTERACT. Satisfying one', 'purple');
-    addLine('          affects where the others can go. You\'ll need to', 'purple');
-    addLine('          think about the structure, not just guess."', 'purple');
+    addLine('AI CORE: "Fair warning: the rules INTERACT. Choosing one', 'purple');
+    addLine('          thing limits where everything else can go. Think', 'purple');
+    addLine('          about the structure, not just the characters."', 'purple');
     addLine('', '');
     addPre('  ╔═══════════════════════════════════════════╗\n  ║  PASSWORD POLICY                           ║\n  ║                                             ║\n  ║  1. Exactly 5 characters                    ║\n  ║  2. Must start with a CAPITAL letter        ║\n  ║  3. Must end with a digit (0-9)             ║\n  ║  4. Must contain exactly 2 of: ! @ #        ║\n  ║  5. The 2 symbols cannot be next             ║\n  ║     to each other                            ║\n  ║                                             ║\n  ║  Positions:  [ 1 ][ 2 ][ 3 ][ 4 ][ 5 ]     ║\n  ╚═══════════════════════════════════════════╝');
     addLine('', '');
