@@ -10,7 +10,7 @@ import { caesarEncrypt } from '../helpers.js';
 
 // ─── Evidence Board (Act 1) ───
 
-function createEvidenceBoard() {
+function createEvidenceBoard(onCardClick) {
   const board = document.createElement('div');
   board.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;padding:12px;border:1px solid #1a2a1a;border-radius:6px;background:#050505;';
 
@@ -25,7 +25,24 @@ function createEvidenceBoard() {
     const card = document.createElement('div');
     card.className = 'evidence-card';
     card.dataset.fileNum = f.num;
-    card.style.cssText = 'border:1px solid #333;border-radius:4px;padding:10px;background:#0a0a0a;font-family:"Fira Mono",monospace;transition:all 0.4s ease;';
+    card.style.cssText = 'border:1px solid #333;border-radius:4px;padding:10px;background:#0a0a0a;font-family:"Fira Mono",monospace;transition:all 0.3s;cursor:pointer;';
+
+    card.onmouseenter = () => {
+      if (!card.dataset.decoded) {
+        card.style.borderColor = '#ffaa00';
+        card.style.boxShadow = '0 0 8px rgba(255,170,0,0.3)';
+      }
+    };
+    card.onmouseleave = () => {
+      if (!card.dataset.decoded) {
+        card.style.borderColor = '#333';
+        card.style.boxShadow = 'none';
+      }
+    };
+    card.onclick = () => {
+      if (card.dataset.decoded) return;
+      if (onCardClick) onCardClick(f.num);
+    };
 
     const header = document.createElement('div');
     header.style.cssText = 'font-size:11px;color:#ffaa00;margin-bottom:4px;font-weight:bold;';
@@ -40,7 +57,7 @@ function createEvidenceBoard() {
     const status = document.createElement('div');
     status.className = 'evidence-status';
     status.style.cssText = 'font-size:10px;color:#555;';
-    status.textContent = '[ UNEXAMINED ]';
+    status.textContent = '[ CLICK TO EXAMINE ]';
     card.appendChild(status);
 
     board.appendChild(card);
@@ -52,8 +69,10 @@ function createEvidenceBoard() {
 function updateEvidenceCard(board, fileNum, value) {
   const card = board.querySelector(`[data-file-num="${fileNum}"]`);
   if (!card) return;
+  card.dataset.decoded = '1';
   card.style.borderColor = '#00ff41';
   card.style.boxShadow = '0 0 8px rgba(0,255,65,0.2)';
+  card.style.cursor = 'default';
   const status = card.querySelector('.evidence-status');
   status.style.color = '#00ff41';
   status.textContent = `DECODED: ${value}`;
@@ -224,48 +243,30 @@ export const mission = {
       { text: '', cls: '' },
     ]);
 
-    // Show evidence board
-    const boardEl = createEvidenceBoard();
+    // Show evidence board (clickable cards)
+    const boardEl = createEvidenceBoard((fileNum) => {
+      const s = state.missionState;
+      if (s.phase !== 'board') return;
+      if (s.decoded[fileNum] !== null) return;
+      s.phase = `examine${fileNum}`;
+      sound.click();
+      startExamine(fileNum);
+    });
     terminal.appendChild(boardEl);
     terminal.scrollTop = terminal.scrollHeight;
     state.missionState.boardEl = boardEl;
 
     addLine('', '');
-    addLine('Four evidence files on the board. Examine them in any order.', 'warning');
-    addLine('Type EXAMINE 1, EXAMINE 2, EXAMINE 3, or EXAMINE 4', 'warning');
+    addLine('Click any file to examine it.', 'info');
     addLine('', '');
 
     state.missionState.phase = 'board';
     setPhaseProgress(1, 8);
-    setBoardHandler();
+    setCurrentInputHandler(null); // no typing needed — click the cards
   },
 };
 
-// ─── Act 1: Evidence Board Handler ───
-
-function setBoardHandler() {
-  setCurrentInputHandler((input) => {
-    const s = state.missionState;
-    const trimmed = input.trim().toUpperCase();
-
-    if (trimmed.startsWith('EXAMINE')) {
-      const num = parseInt(trimmed.replace(/^EXAMINE\s*/, ''), 10);
-      if (num >= 1 && num <= 4) {
-        // Already decoded? Show result again.
-        if (s.decoded[num] !== null) {
-          addLine(`File ${num} already decoded. Result: ${s.decoded[num]}`, 'success');
-          return;
-        }
-        s.phase = `examine${num}`;
-        startExamine(num);
-      } else {
-        addLine('Type EXAMINE 1, EXAMINE 2, EXAMINE 3, or EXAMINE 4.', 'error');
-      }
-    } else {
-      addLine('Type EXAMINE 1, EXAMINE 2, EXAMINE 3, or EXAMINE 4.', 'error');
-    }
-  });
-}
+// ─── Act 1: Return to Board ───
 
 function returnToBoard() {
   const s = state.missionState;
@@ -277,9 +278,9 @@ function returnToBoard() {
     setTimeout(startContradiction, 800);
   } else {
     s.phase = 'board';
+    setCurrentInputHandler(null); // clicks handle it
     addLine('', '');
-    addLine(`${4 - s.decodedCount} file(s) remaining. Type EXAMINE 1/2/3/4.`, 'warning');
-    setBoardHandler();
+    addLine(`${4 - s.decodedCount} file(s) remaining. Click a file to examine.`, 'info');
   }
 }
 
