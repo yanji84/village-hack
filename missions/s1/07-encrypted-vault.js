@@ -288,33 +288,35 @@ function startExamine(num) {
   s.wrongCount = 0;
 
   if (num === 1) {
-    // FILE 1: access_log.bin (Binary + Math)
+    // FILE 1: access_log.bin (Binary + Variable trace + Reverse engineering)
     addLine('', '');
     addLine('\u2501\u2501\u2501 FILE 1: access_log.bin \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Victor\'s login record. Stored in binary."', 'highlight');
+    addLine('NEXUS: "Victor\'s system log. Binary data processed by a', 'highlight');
+    addLine('        short program. Decode the binary, then trace."', 'highlight');
     addLine('', '');
-    addPre('  Victor\'s login record (binary):\n\n    hour         = 0010\n    minute       = 0110\n    code_fragment = hour + minute\n\n  Binary places:  eights  fours  twos  ones\n\n  Convert each to decimal, then ADD them.');
+    addPre('  System log:\n    raw = 1100      (binary)\n\n  Processing program:\n    value = raw\n    value = value - 4\n    code_fragment = value');
     addLine('', '');
     addLine('What is code_fragment?', 'warning');
 
     setCurrentInputHandler((input) => {
+      // 1100 = 8+4 = 12. value=12, value=12-4=8, code_fragment=8
       if (input.trim() === '8') {
         sound.success();
         s.decoded[1] = 'code_fragment = 8';
         s.decodedCount++;
         updateEvidenceCard(s.boardEl, 1, 'code_fragment = 8');
         setPhaseProgress(1 + s.decodedCount, 8);
-        addLine('[FILE 1 DECODED] 0010 = 2, 0110 = 6, 2 + 6 = 8.', 'success');
+        addLine('[FILE 1 DECODED] 1100 = 12, 12 - 4 = 8.', 'success');
         returnToBoard();
       } else {
         sound.denied();
         s.wrongCount++;
         if (s.wrongCount >= 3) {
-          addLine('[WRONG] 0010: the twos place is ON = 2. 0110: fours + twos = 4+2 = 6. 2+6 = ?', 'error');
+          addLine('[WRONG] 1100 = 8+4 = 12. Then 12 - 4 = ?', 'error');
         } else if (s.wrongCount >= 2) {
-          addLine('[WRONG] 0010 = 0+0+2+0 = 2. 0110 = 0+4+2+0 = 6. Now add them.', 'error');
+          addLine('[WRONG] Decode 1100 first (eights + fours), then trace the program.', 'error');
         } else {
-          addLine('[WRONG] Convert each binary number to decimal first. Places: eights, fours, twos, ones.', 'error');
+          addLine('[WRONG] Two steps: decode the binary, then trace the variable.', 'error');
         }
       }
     });
