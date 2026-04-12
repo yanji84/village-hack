@@ -7,7 +7,7 @@ import {
   sleep,
 } from '../../engine.js';
 
-import { renderBox, createBoxElement, updateBoxValue, flashBox } from '../helpers.js';
+import { createBoxElement, updateBoxValue, flashBox } from '../helpers.js';
 
 function addReplayButton(container, animationFn) {
   const btn = document.createElement('span');
@@ -43,13 +43,6 @@ export const mission = {
       { text: '        read it, you need to understand how computers', cls: 'highlight' },
       { text: '        remember things. They use VARIABLES."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "You keep score in games, right? You start at 0...', cls: 'highlight' },
-      { text: '        score a point... now it\'s 1... another... 2. The', cls: 'highlight' },
-      { text: '        number changes but the LABEL stays the same: score."', cls: 'highlight' },
-      { text: '', cls: '' },
-      { text: 'NEXUS: "That\'s what a VARIABLE is. A name that holds a', cls: 'highlight' },
-      { text: '        value. The value can change. The name stays."', cls: 'highlight' },
-      { text: '', cls: '' },
     ]);
 
     runVariablesPhase();
@@ -64,59 +57,72 @@ function runVariablesPhase() {
   const s = state.missionState;
 
   if (s.phase === 0) {
-    // Phase 0: The box metaphor — visual
-    addLine('NEXUS: "In code, it looks like this:"', 'highlight');
+    // Phase 0: The box metaphor — visual + first interaction fast
+    addLine('NEXUS: "A variable is like a scoreboard. The NAME stays', 'highlight');
+    addLine('        the same, but the NUMBER on it can change."', 'highlight');
     addLine('', '');
-    addLine('    score = 0', 'info');
-    addPre(renderBox('score', '0'));
-    addLine('', '');
-    addLine('    score = 10', 'info');
-    addPre(renderBox('score', '10'));
-    addLine('', '');
-    addLine('NEXUS: "The 0 is GONE. Replaced. A variable only holds ONE', 'highlight');
-    addLine('        value at a time. When a new value goes in, the old', 'highlight');
-    addLine('        one is erased."', 'highlight');
-    addLine('', '');
-    addLine('NEXUS: "Quick check. I run these two lines:"', 'highlight');
-    addPre('  1  age = 7\n  2  age = 9');
-    addLine('', '');
-    addLine('What is age now?', 'warning');
+
+    // Show animated box so the kid SEES the concept, not just reads it
+    const term0 = getTerminal();
+    const wrapper0intro = document.createElement('div');
+    const scoreBoxIntro = createBoxElement('score');
+    wrapper0intro.appendChild(scoreBoxIntro);
+    term0.appendChild(wrapper0intro);
+    term0.scrollTop = term0.scrollHeight;
+
+    (async () => {
+      await sleep(400);
+      addLine('    score = 0', 'info');
+      await updateBoxValue(scoreBoxIntro, '0');
+      await sleep(700);
+      addLine('    score = 10', 'info');
+      await updateBoxValue(scoreBoxIntro, '10');
+      await sleep(500);
+
+      addLine('', '');
+      addLine('NEXUS: "See? The 0 is GONE. A variable only holds ONE', 'highlight');
+      addLine('        value at a time. New value in, old value erased."', 'highlight');
+      addLine('', '');
+      addLine('NEXUS: "Your turn. I run these two lines:"', 'highlight');
+      addPre('  1  age = 7\n  2  age = 9');
+      addLine('', '');
+      addLine('What is age now?', 'warning');
+      term0.scrollTop = term0.scrollHeight;
+    })();
 
     setCurrentInputHandler((input) => {
       if (input.trim() === '9') {
         sound.success();
         addLine('[CORRECT] age was 7, then replaced with 9.', 'success');
-        addLine('NEXUS: "The 7 is gone. Only 9 remains."', 'highlight');
+        addLine('NEXUS: "Exactly. The 7 is gone. Only 9 remains."', 'highlight');
         addLine('', '');
 
-        // Animated demo: show the replacement visually
-        addLine('NEXUS: "Watch it happen:"', 'highlight');
+        // Quick animated confirmation with an age box
         const term = getTerminal();
         const wrapper0 = document.createElement('div');
-        const scoreBox = createBoxElement('score');
-        wrapper0.appendChild(scoreBox);
+        const ageBox = createBoxElement('age');
+        wrapper0.appendChild(ageBox);
         term.appendChild(wrapper0);
         term.scrollTop = term.scrollHeight;
 
         async function replayPhase0() {
-          await updateBoxValue(scoreBox, '?');
+          await updateBoxValue(ageBox, '?');
           await sleep(500);
-          await updateBoxValue(scoreBox, '0');
+          await updateBoxValue(ageBox, '7');
           await sleep(800);
-          await updateBoxValue(scoreBox, '10');
+          await updateBoxValue(ageBox, '9');
           await sleep(600);
         }
 
         (async () => {
+          await sleep(400);
+          await updateBoxValue(ageBox, '7');
+          addLine('    age = 7', 'info');
+          await sleep(700);
+          addLine('    age = 9  \u2192  7 is gone, 9 takes its place', 'info');
+          await updateBoxValue(ageBox, '9');
           await sleep(500);
-          await updateBoxValue(scoreBox, '0');
-          addLine('    score = 0', 'info');
-          await sleep(800);
-          addLine('    score = 10', 'info');
-          await updateBoxValue(scoreBox, '10');
-          await sleep(600);
           addReplayButton(wrapper0, replayPhase0);
-          addLine('NEXUS: "See? The 0 vanished. 10 took its place."', 'highlight');
           s.phase = 1;
           addLine('');
           setTimeout(runVariablesPhase, 800);
@@ -196,17 +202,25 @@ function runVariablesPhase() {
         })();
       } else if (input.trim() === '3') {
         sound.denied();
-        addLine('[WRONG] Line 2 changes x. It takes the old x (3), adds 2. What\'s 3+2?', 'error');
+        addLine('[WRONG] x doesn\'t stay at 3. Line 2 changes it.', 'error');
+        addLine('  x = x + 2 means: take x (which is 3), add 2. What\'s 3 + 2?', 'info');
+      } else if (input.trim() === '2') {
+        sound.denied();
+        addLine('[WRONG] x + 2 doesn\'t mean "just 2." The x has a value!', 'error');
+        addLine('  x is 3 right now. So x + 2 = 3 + 2 = ?', 'info');
       } else {
         sound.denied();
-        addLine('[WRONG] Line 1: x is 3. Line 2: x = x + 2 = 3 + 2 = ?', 'error');
+        addLine('[WRONG] Go line by line. Line 1: x = 3. Now x is 3.', 'error');
+        addLine('  Line 2: x = x + 2. Replace x with 3: 3 + 2 = ?', 'info');
       }
     });
 
   } else if (s.phase === 2) {
-    // Phase 2: Copy, not link — let them get it wrong first
+    // Phase 2: Copy, not link — teach then test
     addLine('\u2501\u2501\u2501 Tricky One \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Read this carefully."', 'highlight');
+    addLine('NEXUS: "Here\'s something that tricks almost everyone.', 'highlight');
+    addLine('        Remember: = COPIES the value. It doesn\'t create', 'highlight');
+    addLine('        a connection between the variables."', 'highlight');
     addLine('', '');
     addPre('  1  a = 5\n  2  b = a\n  3  a = 99');
     addLine('', '');
@@ -217,11 +231,12 @@ function runVariablesPhase() {
         sound.success();
         addLine('[CORRECT] b is 5.', 'success');
         addLine('', '');
-        addLine('NEXUS: "Most people get this wrong the first time. They', 'highlight');
-        addLine('        think b = a LINKS them \u2014 like b is a shortcut to', 'highlight');
-        addLine('        a. It\'s not. b = a COPIES the value. After line 2,', 'highlight');
-        addLine('        b has its own 5. When a changes in line 3, b', 'highlight');
-        addLine('        doesn\'t know and doesn\'t care."', 'highlight');
+        addLine('NEXUS: "You got it! Most people think b = a LINKS them', 'highlight');
+        addLine('        together. It doesn\'t. It COPIES the value."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "Think of it like a photo. b = a takes a SNAPSHOT', 'highlight');
+        addLine('        of a\'s value right now. If a changes later, the', 'highlight');
+        addLine('        photo doesn\'t update."', 'highlight');
         addLine('', '');
 
         // Animated demo: two boxes side by side showing copy behavior
@@ -302,7 +317,7 @@ function runVariablesPhase() {
     addLine('', '');
     addPre('  1  x = 10\n  2  y = x\n  3  x = x + 5\n  4  y = y - 2');
     addLine('', '');
-    addLine('What are x and y after line 4? Type: x y', 'warning');
+    addLine('What are x and y after line 4? (Type two numbers, like: 15 8)', 'warning');
 
     // x=10, y=10 (copy), x=10+5=15, y=10-2=8
     setCurrentInputHandler((input) => {
@@ -363,7 +378,7 @@ function runVariablesPhase() {
 
           addLine('', '');
           addLine('NEXUS: "Assignment, overwriting, the arrow rule, and', 'highlight');
-          addLine('        copies \u2014 all in four lines. You nailed it."', 'highlight');
+          addLine('        snapshots \u2014 all in four lines. You nailed it."', 'highlight');
           addLine('', '');
           addLine('NEXUS: "Three missions, three pillars:', 'highlight');
           addLine('        DATA (binary) \u2014 how computers store things.', 'highlight');
@@ -371,10 +386,10 @@ function runVariablesPhase() {
           addLine('        MEMORY (variables) \u2014 how they remember things.', 'highlight');
           addLine('        Everything in CS is built from these three."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "One more thing. I found something in the AI\'s', 'highlight');
-          addLine('        memory. A counter variable, incrementing since', 'highlight');
-          addLine('        the attack started. It\'s counting something.', 'highlight');
-          addLine('        I don\'t know what yet."', 'highlight');
+          addLine('NEXUS: "I found something in the AI\'s memory. A variable', 'highlight');
+          addLine('        called target_count. It keeps going up. The AI', 'highlight');
+          addLine('        is counting something... or someone. I need to', 'highlight');
+          addLine('        recover more of its memory to find out what."', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
           setCurrentInputHandler(() => {
@@ -385,11 +400,23 @@ function runVariablesPhase() {
       } else if (parts.length === 2 && parts[0] === 15 && parts[1] === 13) {
         // Common mistake: thinking y tracks x, so y = 15 - 2 = 13
         sound.denied();
-        addLine('[WRONG] y didn\'t follow x\'s change. y got a COPY of 10 at line 2.', 'error');
-        addLine('  x changed to 15, but y is still 10. Then line 4: 10 - 2 = ?', 'info');
+        addLine('[WRONG] Close! x=15 is right, but y didn\'t follow x.', 'error');
+        addLine('  Remember the snapshot rule: y got a COPY of 10 at line 2.', 'info');
+        addLine('  x changed to 15, but y still has 10. Then line 4: 10 - 2 = ?', 'info');
+      } else if (parts.length === 2 && parts[0] === 15) {
+        // x is right, y is wrong (but not 13)
+        sound.denied();
+        addLine('[WRONG] x=15 is right! For y: it got a COPY of 10 at line 2.', 'error');
+        addLine('  Then line 4 does y = y - 2. So: 10 - 2 = ?', 'info');
+      } else if (parts.length === 1) {
+        sound.denied();
+        addLine('[WRONG] I need TWO numbers: the value of x and the value of y.', 'error');
+        addLine('  Type them separated by a space, like: 15 8', 'info');
       } else {
         sound.denied();
-        addLine('[WRONG] Trace each line. Remember: y = x copies the value, not a link.', 'error');
+        addLine('[WRONG] Trace it line by line. Use the snapshot rule from the last puzzle.', 'error');
+        addLine('  Line 1: x = 10. Line 2: y gets a COPY of x (so y = 10).', 'info');
+        addLine('  Line 3: x = x + 5. Line 4: y = y - 2. What are they now?', 'info');
       }
     });
   }

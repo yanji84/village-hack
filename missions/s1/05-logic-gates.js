@@ -245,45 +245,6 @@ function resetHalfAdder(ha) {
   ha._and.out.textContent = 'CARRY=?';
 }
 
-const gatePuzzles = [
-  {
-    desc: 'Gate 1: Simple AND gate',
-    explain: 'AND means BOTH inputs must be 1 to output 1.\n\n  A \u2500\u2500\u2510\n      \u251c\u2500[AND]\u2500\u2500 Output\n  B \u2500\u2500\u2518\n\nTruth table:\n  0 AND 0 = 0\n  0 AND 1 = 0\n  1 AND 0 = 0\n  1 AND 1 = 1',
-    question: 'Set A and B so the output is 1. Type: A B (example: 1 0)',
-    check: (a, b) => (a & b) === 1,
-    answer: '1 1',
-  },
-  {
-    desc: 'Gate 2: OR gate',
-    explain: 'OR means AT LEAST ONE input must be 1.\n\n  A \u2500\u2500\u2510\n      \u251c\u2500[OR]\u2500\u2500 Output\n  B \u2500\u2500\u2518\n\nTruth table:\n  0 OR 0 = 0\n  0 OR 1 = 1\n  1 OR 0 = 1\n  1 OR 1 = 1',
-    question: 'The firewall is checking: A OR B = 1. But A is stuck at 0!\nWhat should B be? Type: 0 B',
-    check: (a, b) => a === 0 && (a | b) === 1,
-    answer: '0 1',
-  },
-  {
-    desc: 'Gate 3: NOT gate',
-    explain: 'NOT flips the value: NOT 1 = 0, NOT 0 = 1\n\n  A \u2500\u2500[NOT]\u2500\u2500 Output',
-    question: 'The lock needs: NOT A = 1. What should A be? Type just the value.',
-    check: (a) => a === 0,
-    answer: '0',
-    single: true,
-  },
-  {
-    desc: 'Gate 4: Combined - AND + NOT',
-    explain: 'Now combine them!\n\n  A \u2500\u2500[NOT]\u2500\u2500\u2510\n             \u251c\u2500[AND]\u2500\u2500 Output\n  B \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\nSo it\'s: (NOT A) AND B',
-    question: 'Make the output 1. Type: A B',
-    check: (a, b) => ((1-a) & b) === 1,
-    answer: '0 1',
-  },
-  {
-    desc: 'Gate 5: Final Lock - OR + AND',
-    explain: 'The final firewall!\n\n  A \u2500\u2500\u2510\n      \u251c\u2500[OR]\u2500\u2500\u2510\n  B \u2500\u2500\u2518       \u251c\u2500[AND]\u2500\u2500 Output\n  C \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\nSo it\'s: (A OR B) AND C',
-    question: 'Make the output 1. Type: A B C',
-    check: (a, b, c) => ((a | b) & c) === 1,
-    answers: ['1 0 1', '0 1 1', '1 1 1'],
-  },
-];
-
 export const mission = {
   id: 4,
   num: '05',
@@ -301,14 +262,17 @@ export const mission = {
 
     await typeLines([
       { text: '[TRAFFIC CONTROL OFFLINE] Firewall blocking access.', cls: 'system' },
+      { text: '[ANALYZING DECISION CIRCUITS...]', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "The AI\'s decision system is exposed. If someone', cls: 'highlight' },
-      { text: '        sabotaged it, the gates will show us HOW. But', cls: 'highlight' },
-      { text: '        first you need to learn how computers decide."', cls: 'highlight' },
+      { text: 'NEXUS: "The AI\'s decision system is exposed. Every choice', cls: 'highlight' },
+      { text: '        it makes \u2014 stop or go, allow or block, yes or', cls: 'highlight' },
+      { text: '        no \u2014 runs through logic gates. If someone', cls: 'highlight' },
+      { text: '        sabotaged them, the gates will show us HOW."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "Every decision a computer makes comes down to', cls: 'highlight' },
-      { text: '        three simple rules. You already know them \u2014', cls: 'highlight' },
-      { text: '        you just don\'t know their names yet."', cls: 'highlight' },
+      { text: 'NEXUS: "But first you need to understand how computers', cls: 'highlight' },
+      { text: '        decide. It comes down to three simple rules.', cls: 'highlight' },
+      { text: '        You already know them \u2014 you just don\'t know', cls: 'highlight' },
+      { text: '        their names yet."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -371,8 +335,10 @@ function runLogicPhase() {
   } else if (s.phase === 2) {
     // Phase 3: NOT — simplest
     addLine('\u2501\u2501\u2501 Rule 3: NOT \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Simplest one. NOT just flips the answer.', 'highlight');
-    addLine('        Raining? Stay inside. NOT raining? Go outside."', 'highlight');
+    addLine('NEXUS: "Last rule, and it\'s the simplest. NOT just', 'highlight');
+    addLine('        flips the answer. Think of a light switch \u2014', 'highlight');
+    addLine('        if the light is ON, NOT makes it OFF.', 'highlight');
+    addLine('        If it\'s OFF, NOT makes it ON."', 'highlight');
     addLine('', '');
     // Create NOT gate widget
     s.notWidget = createGateWidget('NOT');
@@ -395,25 +361,26 @@ function runLogicPhase() {
           s.notStep = 1;
         } else {
           sound.denied();
-          addLine('[WRONG] NOT flips. 1 becomes...?', 'error');
+          addLine('[WRONG] NOT flips the value. If raining is 1 (ON), NOT flips it to...?', 'error');
         }
       } else {
         if (n === 1) {
           sound.success();
           if (s.notWidget) updateGateWidget(s.notWidget, 0, 0, 1, true);
-          addLine('[CORRECT] NOT 0 = 1.', 'success');
+          addLine('[CORRECT] NOT 0 = 1. The switch flips.', 'success');
           addLine('', '');
-          addLine('NEXUS: "NOT just flips: 1\u21920, 0\u21921. That\'s the whole rule."', 'highlight');
+          addLine('NEXUS: "NOT just flips: 1\u21920, 0\u21921. One input, one', 'highlight');
+          addLine('        output. That\'s the whole rule."', 'highlight');
           addLine('', '');
           addLine('NEXUS: "Three rules. AND, OR, NOT. Every decision every', 'highlight');
-          addLine('        computer ever makes is built from these three.', 'highlight');
-          addLine('        Let\'s use them together."', 'highlight');
+          addLine('        computer has EVER made is built from just these', 'highlight');
+          addLine('        three. Now let\'s use them together."', 'highlight');
           s.phase = 3;
           addLine('');
           setTimeout(runLogicPhase, 800);
         } else {
           sound.denied();
-          addLine('[WRONG] NOT flips. 0 becomes...?', 'error');
+          addLine('[WRONG] NOT flips the value. If raining is 0 (OFF), NOT flips it to...?', 'error');
         }
       }
     });
@@ -421,9 +388,12 @@ function runLogicPhase() {
   } else if (s.phase === 3) {
     // Phase 4: Combined puzzle
     addLine('\u2501\u2501\u2501 Firewall Lock \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "The firewall has a combination lock. It opens when:"', 'highlight');
+    addLine('NEXUS: "Time to put your skills to work. The firewall', 'highlight');
+    addLine('        has a combination lock built from gates:"', 'highlight');
     addLine('', '');
-    addPre('  (key AND badge) OR override = 1');
+    addPre('  key \u2500\u2500\u2510\n       \u251c\u2500[AND]\u2500\u2500\u2510\n  badge\u2500\u2518        \u251c\u2500[OR]\u2500\u2500 OPEN?\n  override\u2500\u2500\u2500\u2500\u2500\u2500\u2518');
+    addLine('', '');
+    addPre('  Formula: (key AND badge) OR override = 1');
     addLine('', '');
     addLine('NEXUS: "You don\'t have the key (key = 0). You DO have a', 'highlight');
     addLine('        badge (badge = 1). Should you use the override?"', 'highlight');
@@ -435,25 +405,28 @@ function runLogicPhase() {
       if (n === 1) {
         sound.success();
         addLine('[CORRECT] key=0 AND badge=1 = 0. So you need override=1.', 'success');
-        addLine('  0 OR 1 = 1. Firewall opens!', 'success');
+        addLine('  (0 AND 1) OR 1 = 0 OR 1 = 1. Firewall opens!', 'success');
         addLine('', '');
-        addLine('NEXUS: "You combined AND and OR to solve a real problem.', 'highlight');
-        addLine('        Now for the mind-blowing part."', 'highlight');
+        addLine('NEXUS: "You just combined AND and OR to bypass a', 'highlight');
+        addLine('        security system. That\'s real hacking \u2014 thinking', 'highlight');
+        addLine('        through logic. Now for the mind-blowing part."', 'highlight');
         s.phase = 4;
         addLine('');
         setTimeout(runLogicPhase, 800);
       } else {
         sound.denied();
-        addLine('[WRONG] key AND badge = 0 AND 1 = 0. So (0) OR override must equal 1.', 'error');
-        addLine('  What does override need to be for (0 OR override) = 1?', 'info');
+        addLine('[WRONG] Work through it step by step:', 'error');
+        addLine('  Step 1: key AND badge = 0 AND 1 = ? (AND needs BOTH to be 1)', 'info');
+        addLine('  Step 2: result OR override must equal 1', 'info');
       }
     });
 
   } else if (s.phase === 4) {
     // Phase 5: Build a binary adder from gates
     addLine('\u2501\u2501\u2501 Building a Calculator \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Now I\'m going to show you something that connects', 'highlight');
-    addLine('        everything. How does a computer actually ADD numbers?"', 'highlight');
+    addLine('NEXUS: "You\'ve learned the rules. Now I\'m going to show', 'highlight');
+    addLine('        you something that connects everything \u2014 how a', 'highlight');
+    addLine('        computer actually ADDS numbers using gates."', 'highlight');
     addLine('', '');
     addLine('NEXUS: "In binary, there are only 4 possible additions:"', 'highlight');
     addLine('', '');
@@ -474,7 +447,7 @@ function runLogicPhase() {
     addLine('Which gate matches the CARRY column? (AND, OR, or NOT)', 'warning');
 
     s.adderStep = 0;
-    setCurrentInputHandler((input) => {
+    setCurrentInputHandler(async (input) => {
       const guess = input.toUpperCase().trim();
       if (s.adderStep === 0) {
         if (guess === 'AND') {
@@ -504,11 +477,11 @@ function runLogicPhase() {
           sound.success();
           addLine('[CORRECT] SUM = 1 when the inputs are DIFFERENT.', 'success');
           addLine('', '');
-          addLine('NEXUS: "That pattern has a name: XOR. Exclusive OR.', 'highlight');
+          addLine('NEXUS: "That pattern has a name: XOR \u2014 Exclusive OR.', 'highlight');
           addLine('        Regular OR says \'at least one.\' XOR says', 'highlight');
           addLine('        \'exactly one \u2014 not both.\'"', 'highlight');
           addLine('', '');
-          addPre('  Compare:\n    OR:   0,1,1,1   \u2190 at least one is 1\n    XOR:  0,1,1,0   \u2190 EXACTLY one is 1 (not both)');
+          addPre('  Compare (A=0,0  A=0,B=1  A=1,B=0  A=1,B=1):\n    OR:   0, 1, 1, 1   \u2190 at least one is 1\n    XOR:  0, 1, 1, 0   \u2190 EXACTLY one is 1 (not both)');
           addLine('', '');
           addLine('NEXUS: "So: SUM = XOR, CARRY = AND. Two gates, and', 'highlight');
           addLine('        you have a circuit that adds binary numbers."', 'highlight');
@@ -544,7 +517,7 @@ function runLogicPhase() {
           sound.success();
           // Animate half-adder: A=1, B=1 -> SUM=0, CARRY=1
           if (s.halfAdder) {
-            animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
+            await animateHalfAdder(s.halfAdder, 1, 1, 0, 1);
             // Remove any previous replay button
             const oldBtn = s.halfAdderWrapper.querySelector('span');
             if (oldBtn && oldBtn.textContent === '[ replay ]') oldBtn.remove();
@@ -573,7 +546,7 @@ function runLogicPhase() {
           // Animate half-adder: A=1, B=0 -> SUM=1, CARRY=0
           if (s.halfAdder) {
             resetHalfAdder(s.halfAdder);
-            animateHalfAdder(s.halfAdder, 1, 0, 1, 0);
+            await animateHalfAdder(s.halfAdder, 1, 0, 1, 0);
             // Remove any previous replay button
             const oldBtn = s.halfAdderWrapper.querySelector('span');
             if (oldBtn && oldBtn.textContent === '[ replay ]') oldBtn.remove();
@@ -584,27 +557,36 @@ function runLogicPhase() {
           }
           addLine('[CORRECT] SUM=1, CARRY=0. That\'s just 1. Because 1+0=1.', 'success');
           addLine('', '');
-          addLine('NEXUS: "This is called a HALF-ADDER. It\'s inside every', 'highlight');
-          addLine('        computer ever made. Your phone has about 15', 'highlight');
-          addLine('        BILLION of these, running 3 billion times per', 'highlight');
-          addLine('        second. But each one is exactly what you just', 'highlight');
-          addLine('        built \u2014 an XOR and an AND. Two gates."', 'highlight');
+          addLine('NEXUS: "What you just built is called a HALF-ADDER.', 'highlight');
+          addLine('        It\'s inside every computer ever made. Your', 'highlight');
+          addLine('        phone has about 15 BILLION of these, running', 'highlight');
+          addLine('        3 billion times per second. But each one is', 'highlight');
+          addLine('        exactly what you just built \u2014 an XOR and an', 'highlight');
+          addLine('        AND. Just two gates."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "AND, OR, NOT. Three rules. Enough to build XOR.', 'highlight');
-          addLine('        Enough to build a calculator. Enough to build', 'highlight');
-          addLine('        every computer on Earth. Not metaphorically.', 'highlight');
-          addLine(`        Literally. And you, ${state.hackerName || 'kid'}, just proved it."`, 'highlight');
+          addLine('NEXUS: "AND, OR, NOT. Three rules. Enough to build', 'highlight');
+          addLine('        XOR. Enough to build a calculator. Enough to', 'highlight');
+          addLine('        build every computer on Earth. Not', 'highlight');
+          addLine(`        metaphorically. Literally. And you,`, 'highlight');
+          addLine(`        ${state.hackerName || 'hacker'}, just proved it."`, 'highlight');
           addLine('', '');
-          addLine('NEXUS: "Look at this \u2014 the AI\'s math circuits are FINE.', 'highlight');
-          addLine('        Its adder works perfectly. But its DECISION gates', 'highlight');
-          addLine('        were rewired. Someone changed the AI\'s logic from', 'highlight');
-          addLine('        the outside. This wasn\'t a malfunction. It was', 'highlight');
-          addLine('        sabotage."', 'highlight');
+          addLine('[SCANNING AI DECISION CIRCUITS...]', 'system');
+          addLine('', '');
+          addLine('NEXUS: "Wait. Look at this \u2014 the AI\'s math circuits', 'highlight');
+          addLine('        are FINE. Its adder works perfectly. But its', 'highlight');
+          addLine('        DECISION gates were rewired. An AND gate was', 'highlight');
+          addLine('        swapped to OR. Someone changed the AI\'s logic', 'highlight');
+          addLine('        from the outside. This wasn\'t a malfunction.', 'highlight');
+          addLine('        It was sabotage."', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
-          setCurrentInputHandler(() => {
-            setCurrentInputHandler(null);
-            completeMission(4);
+          setCurrentInputHandler((input) => {
+            if (input.trim().toUpperCase() === 'NEXT') {
+              setCurrentInputHandler(null);
+              completeMission(4);
+            } else {
+              addLine('Type NEXT to continue.', 'info');
+            }
           });
         } else {
           sound.denied();
@@ -682,8 +664,9 @@ function showOrScenario() {
       s.orIdx++;
       if (s.orIdx >= s.orScenarios.length) {
         addLine('', '');
-        addLine('NEXUS: "OR means: at least ONE must be 1. Both is fine', 'highlight');
-        addLine('        too. Only fails when NEITHER is 1."', 'highlight');
+        addLine('NEXUS: "OR means: at least ONE must be 1. Both is', 'highlight');
+        addLine('        fine too. It only outputs 0 when NEITHER is 1.', 'highlight');
+        addLine('        Two rules down, one to go."', 'highlight');
         s.phase = 2;
         addLine('');
         setTimeout(runLogicPhase, 800);

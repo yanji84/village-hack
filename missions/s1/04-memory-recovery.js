@@ -87,14 +87,17 @@ export const mission = {
 
     await typeLines([
       { text: '[SYSTEM] Deeper memory fragments recovered from AI core.', cls: 'system' },
+      { text: '[SYSTEM] Warning: fragments contain mixed encodings.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "We pulled deeper fragments of the AI\'s memory.', cls: 'highlight' },
-      { text: '        Binary data mixed with program traces. Whatever', cls: 'highlight' },
+      { text: 'NEXUS: "We pulled deeper fragments from the AI\'s memory.', cls: 'highlight' },
+      { text: '        Binary data tangled with program traces. Whatever', cls: 'highlight' },
       { text: '        that counter is tracking, the answer might be', cls: 'highlight' },
-      { text: '        in here."', cls: 'highlight' },
+      { text: '        buried in here."', cls: 'highlight' },
       { text: '', cls: '' },
-      { text: 'NEXUS: "This is digital forensics. Everything you\'ve', cls: 'highlight' },
-      { text: '        learned so far, working together."', cls: 'highlight' },
+      { text: 'NEXUS: "This is digital forensics. Binary, variables,', cls: 'highlight' },
+      { text: '        tracing \u2014 everything you\'ve learned, working', cls: 'highlight' },
+      { text: '        together. Three fragments. Each one harder', cls: 'highlight' },
+      { text: '        than the last."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -107,16 +110,19 @@ function runRecoveryPhase() {
 
   if (s.phase === 0) {
     // Level 1: Decode binary values, run a simple computation
-    addLine('\u2501\u2501\u2501 Memory Fragment 1 \u2501\u2501\u2501', 'highlight');
+    addLine('\u2501\u2501\u2501 Memory Fragment 1 of 3 \u2501\u2501\u2501', 'highlight');
     addLine('NEXUS: "First fragment. Two variables stored in binary.', 'highlight');
-    addLine('        Decode them, then run the program to find the result."', 'highlight');
+    addLine('        Two skills chained: decode the binary, THEN', 'highlight');
+    addLine('        run the program to find the result."', 'highlight');
     addLine('', '');
     addPre('  Memory dump:\n    x = 0011     (binary)\n    y = 0101     (binary)\n\n  Program found:\n    z = x + y');
     addLine('', '');
-    addLine('  (Remember: places are eights, fours, twos, ones)', 'info');
+    addLine('  Tip: binary place values are 8, 4, 2, 1', 'info');
+    addLine('  So 0011 = 0\u00d78 + 0\u00d74 + 1\u00d72 + 1\u00d71 = ?', 'info');
     addLine('', '');
     addLine('What is z? (as a regular number)', 'warning');
 
+    s.wrongCount = 0;
     setCurrentInputHandler((input) => {
       // 0011=3, 0101=5, z=3+5=8
       if (input.trim() === '8') {
@@ -175,30 +181,37 @@ function runRecoveryPhase() {
           }
           addReplayButton(wrapper, replayLevel1);
 
-          addLine('NEXUS: "Binary to decimal, then variable tracing. Two', 'highlight');
-          addLine('        skills chained together."', 'highlight');
+          addLine('NEXUS: "See what just happened? You decoded binary,', 'highlight');
+          addLine('        then fed those numbers into a program. Two', 'highlight');
+          addLine('        skills chained together. That\'s how real', 'highlight');
+          addLine('        analysis works."', 'highlight');
           s.phase = 1;
           addLine('');
           setTimeout(runRecoveryPhase, 800);
         })();
       } else {
         sound.denied();
-        s.wrongCount = (s.wrongCount || 0) + 1;
+        s.wrongCount++;
         if (s.wrongCount === 1) {
-          addLine('[WRONG] Two steps: decode the binary first, then add.', 'error');
+          addLine('[WRONG] Two steps: first decode each binary number, then add them together.', 'error');
+        } else if (s.wrongCount === 2) {
+          addLine('[WRONG] 0011: the 2-place and 1-place are ON. 0+0+2+1 = 3. Now decode 0101 the same way.', 'error');
         } else {
-          addLine('[WRONG] 0011 = 0+0+2+1 = 3. 0101 = 0+4+0+1 = 5. Now add them.', 'error');
+          addLine('[WRONG] x = 0011 = 3. y = 0101 = 5. z = x + y = ?', 'error');
         }
       }
     });
 
   } else if (s.phase === 1) {
     // Level 2: Decode + trace multi-line program with overwriting
-    addLine('\u2501\u2501\u2501 Memory Fragment 2 \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "Harder one. More variables, more lines. Trace', 'highlight');
-    addLine('        carefully \u2014 values change."', 'highlight');
+    addLine('\u2501\u2501\u2501 Memory Fragment 2 of 3 \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Harder one. Three lines, and variables get', 'highlight');
+    addLine('        OVERWRITTEN. When a value changes, the old', 'highlight');
+    addLine('        value is gone forever. Trace carefully."', 'highlight');
     addLine('', '');
     addPre('  Memory dump:\n    a = 0100     (binary)\n    b = 0011     (binary)\n\n  Program found:\n    1  c = a + b\n    2  a = c - 1\n    3  b = a + b');
+    addLine('', '');
+    addLine('  Careful: after line 2, a has a NEW value!', 'info');
     addLine('', '');
     addLine('What are a and b after line 3? Type: a b', 'warning');
 
@@ -247,7 +260,7 @@ function runRecoveryPhase() {
 
           // Step 4: b changes from 3 to 9
           await updateVarBox(boxB, 9);
-          ann1.textContent = 'b = new a + old b = 6 + 3 = 9';
+          ann1.textContent = 'b = a + b = 6 + 3 = 9  (a is 6 now, b was still 3)';
           scrollTerminal();
           await sleep(600);
 
@@ -270,7 +283,7 @@ function runRecoveryPhase() {
             scrollTerminal();
             await sleep(800);
             await updateVarBox(boxB, 9);
-            ann1.textContent = 'b = new a + old b = 6 + 3 = 9';
+            ann1.textContent = 'b = a + b = 6 + 3 = 9  (a is 6 now, b was still 3)';
             scrollTerminal();
             await sleep(600);
           }
@@ -279,10 +292,11 @@ function runRecoveryPhase() {
           addLine('NEXUS: "Let me trace it:', 'highlight');
           addLine('  a=0100=4, b=0011=3', 'info');
           addLine('  Line 1: c = 4+3 = 7', 'info');
-          addLine('  Line 2: a = 7-1 = 6  (a changed!)', 'info');
-          addLine('  Line 3: b = 6+3 = 9  (using NEW a)"', 'info');
-          addLine('NEXUS: "Binary decoding, variable assignment, overwriting,', 'highlight');
-          addLine('        and the copy rule \u2014 all in one problem."', 'highlight');
+          addLine('  Line 2: a = 7-1 = 6       \u2190 a is overwritten!', 'info');
+          addLine('  Line 3: b = 6+3 = 9       \u2190 uses the NEW a, not 4', 'info');
+          addLine('NEXUS: "The trap is line 3. Most people use the ORIGINAL', 'highlight');
+          addLine('        a=4 and get 7. But a changed in line 2. You', 'highlight');
+          addLine('        have to use the current value, not the original."', 'highlight');
           s.phase = 2;
           addLine('');
           setTimeout(runRecoveryPhase, 800);
@@ -302,19 +316,19 @@ function runRecoveryPhase() {
 
   } else if (s.phase === 2) {
     // Level 3: Reverse engineering — work backward from output
-    addLine('\u2501\u2501\u2501 Memory Fragment 3: Corrupted \u2501\u2501\u2501', 'highlight');
-    addLine('NEXUS: "This fragment is damaged. One input is missing.', 'highlight');
-    addLine('        But we have the OUTPUT and the PROGRAM. You have', 'highlight');
-    addLine('        to work BACKWARD to find the missing value."', 'highlight');
+    addLine('\u2501\u2501\u2501 Memory Fragment 3 of 3: CORRUPTED \u2501\u2501\u2501', 'highlight');
+    addLine('NEXUS: "Last fragment, and it\'s damaged. One input is', 'highlight');
+    addLine('        missing. But we have the OUTPUT and the PROGRAM."', 'highlight');
     addLine('', '');
-    addLine('NEXUS: "This is called REVERSE ENGINEERING \u2014 figuring out', 'highlight');
-    addLine('        the input from the output. Real hackers do this', 'highlight');
-    addLine('        every day."', 'highlight');
+    addLine('NEXUS: "This is REVERSE ENGINEERING \u2014 running a program', 'highlight');
+    addLine('        BACKWARD. Instead of input \u2192 output, you go', 'highlight');
+    addLine('        output \u2192 input. Undo each step in reverse', 'highlight');
+    addLine('        order. Real hackers do this every day."', 'highlight');
     addLine('', '');
     addPre('  Memory dump:\n    a = 0110     (binary)\n    b = ????     (corrupted!)\n\n  Program found:\n    1  c = a + b\n    2  c = c * 2\n\n  Output recovered:\n    c = 11000    (binary)');
     addLine('', '');
-    addLine('NEXUS: "You know a. You know c. Work backward through the', 'highlight');
-    addLine('        program to find b."', 'highlight');
+    addLine('  Strategy: decode a and c, then undo line 2, then undo line 1.', 'info');
+    addLine('  Note: 11000 is a 5-digit binary number (16 + 8 + 0 + 0 + 0)', 'info');
     addLine('', '');
     addLine('What is b? (as a regular number)', 'warning');
 
@@ -381,24 +395,27 @@ function runRecoveryPhase() {
           }
           addReplayButton(wrapper, replayLevel3);
 
-          addLine('NEXUS: "Here\'s the reverse trace:', 'highlight');
-          addLine('  a = 0110 = 6', 'info');
-          addLine('  c = 11000 = 24', 'info');
-          addLine('  Reverse line 2: c = c * 2, so before that, c = 24 / 2 = 12', 'info');
-          addLine('  Reverse line 1: c = a + b, so 12 = 6 + b, so b = 6', 'info');
+          addLine('NEXUS: "Here\'s the full reverse trace:', 'highlight');
+          addLine('  START:  a = 0110 = 6,  c = 11000 = 24', 'info');
+          addLine('  Undo line 2:  c = c * 2  \u2192  c was 24 / 2 = 12', 'info');
+          addLine('  Undo line 1:  c = a + b  \u2192  12 = 6 + b  \u2192  b = 6', 'info');
           addLine('', '');
-          addLine('NEXUS: "You just did reverse engineering. You took an', 'highlight');
-          addLine('        output, a program, and worked BACKWARD to find', 'highlight');
-          addLine('        a missing input. That\'s real forensic analysis."', 'highlight');
+          addLine('NEXUS: "You just did reverse engineering. Given an', 'highlight');
+          addLine('        output and a program, you worked BACKWARD to', 'highlight');
+          addLine('        recover a missing input. That\'s real forensic', 'highlight');
+          addLine('        analysis \u2014 the same technique used to crack', 'highlight');
+          addLine('        passwords and decode encrypted messages."', 'highlight');
           addLine('', '');
-          addLine('NEXUS: "Binary, variables, tracing, and now reverse', 'highlight');
-          addLine('        engineering. Your toolkit is growing,', 'highlight');
-          addLine(`        ${state.hackerName || 'kid'}."`, 'highlight');
+          addLine('NEXUS: "Binary, variables, tracing, reverse engineering.', 'highlight');
+          addLine(`        Your toolkit is growing, ${state.hackerName || 'kid'}."`, 'highlight');
           addLine('', '');
-          addLine('NEXUS: "Wait \u2014 one of the recovered fragments had a', 'highlight');
-          addLine('        name. Partial, corrupted. Three letters: V-I-C.', 'highlight');
-          addLine('        Someone\'s name is in the AI\'s memory. Who is', 'highlight');
-          addLine('        VIC?"', 'highlight');
+          addLine('NEXUS: "Hold on \u2014 something else in the recovered data.', 'highlight');
+          addLine('        A name fragment. Partial, corrupted. Three', 'highlight');
+          addLine('        letters: V... I... C..."', 'highlight');
+          addLine('', '');
+          addLine('NEXUS: "Someone\'s name is stored in the AI\'s core', 'highlight');
+          addLine('        memory. Who is VIC? And why does the AI', 'highlight');
+          addLine('        remember them?"', 'highlight');
           addLine('', '');
           addLine('[ Type NEXT to continue ]', 'warning');
           setCurrentInputHandler(() => {
@@ -410,11 +427,13 @@ function runRecoveryPhase() {
         sound.denied();
         s.wrongCount++;
         if (s.wrongCount === 1) {
-          addLine('[WRONG] Start from the end. c is 11000 in binary \u2014 what number is that?', 'error');
+          addLine('[WRONG] Start from the end. Decode both binary numbers: a = 0110, c = 11000.', 'error');
         } else if (s.wrongCount === 2) {
-          addLine('[WRONG] c = 11000 = 24. Line 2 doubled it. So BEFORE line 2, c was 24 \u00f7 2 = ?', 'error');
+          addLine('[WRONG] a=6, c=24. Now UNDO line 2: it doubled c, so before that, c was 24 / 2 = ?', 'error');
+        } else if (s.wrongCount === 3) {
+          addLine('[WRONG] Before line 2, c was 12. Line 1 says c = a + b. So 12 = 6 + b. Solve for b.', 'error');
         } else {
-          addLine('[WRONG] Before line 2: c = 12. Line 1: c = a + b. a = 6. So 12 = 6 + b. b = ?', 'error');
+          addLine('[WRONG] 12 = 6 + b. Subtract 6 from both sides: b = 12 - 6 = ?', 'error');
         }
       }
     });
