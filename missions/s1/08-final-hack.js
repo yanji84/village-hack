@@ -79,19 +79,19 @@ function updateVictorBar(victorEl, pct) {
   }
   victorEl._pctLabel.textContent = `[VICTOR: ${'\u2588'.repeat(Math.floor(pct / 7))}${'\u2591'.repeat(Math.max(0, 14 - Math.floor(pct / 7)))} ${pct}%]`;
 
-  // Status messages that escalate tension
+  // Status messages that escalate tension — Victor fights back harder each phase
   if (victorEl._statusMsg) {
     if (pct >= 90) {
-      victorEl._statusMsg.textContent = 'ALERT: override nearly complete — HURRY';
+      victorEl._statusMsg.textContent = 'VICTOR IS ALMOST BACK — YOU\'RE OUT OF TIME';
       victorEl._statusMsg.style.color = '#ff0000';
     } else if (pct >= 75) {
-      victorEl._statusMsg.textContent = 'WARNING: regaining control of subsystems...';
+      victorEl._statusMsg.textContent = 'VICTOR is ripping through your firewall...';
       victorEl._statusMsg.style.color = '#ff4400';
     } else if (pct >= 50) {
-      victorEl._statusMsg.textContent = 'rebuilding firewall... intruder detected...';
+      victorEl._statusMsg.textContent = 'VICTOR is fighting back — he knows you\'re here...';
       victorEl._statusMsg.style.color = '#cc6600';
     } else if (pct >= 25) {
-      victorEl._statusMsg.textContent = 'analyzing breach point...';
+      victorEl._statusMsg.textContent = 'VICTOR is hunting for your location...';
       victorEl._statusMsg.style.color = '#996600';
     }
   }
@@ -101,7 +101,7 @@ function blockVictorBar(victorEl) {
   victorEl._barInner.style.width = '100%';
   victorEl._barInner.style.background = '#333';
   victorEl._barInner.style.boxShadow = 'none';
-  victorEl._pctLabel.textContent = '[VICTOR: BLOCKED]';
+  victorEl._pctLabel.textContent = '[VICTOR: LOCKED OUT]';
   victorEl._pctLabel.style.color = '#ff0000';
   victorEl.style.borderColor = '#440000';
 }
