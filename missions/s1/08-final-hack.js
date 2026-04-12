@@ -640,7 +640,12 @@ async function runPhase2a() {
             { vars: { x: 4 }, condition: '4 < 4?', result: false },
           ]);
           addLine('', '');
-          addLine('How many times did the loop body run?', 'warning');
+          addLine('NEXUS: "Now a twist. What if the condition was ALREADY', 'highlight');
+          addLine('        false before the loop even started?"', 'highlight');
+          addLine('', '');
+          addPre('  x = 0\n  while x < 0:\n      x = x + 1');
+          addLine('', '');
+          addLine('How many times does the loop body run?', 'warning');
           s.loopSubPhase = 'count';
           attempts = 0;
         })();
@@ -657,9 +662,16 @@ async function runPhase2a() {
         }
       }
     } else if (s.loopSubPhase === 'count') {
-      if (input.trim() === '4') {
+      if (input.trim() === '0') {
         sound.success();
-        addLine('[CORRECT] The body ran 4 times (x went 0\u21921, 1\u21922, 2\u21923, 3\u21924).', 'success');
+        addLine('[CORRECT] Zero times! The body never runs \u2014 not even once.', 'success');
+        addLine('', '');
+        addLine('NEXUS: "A while loop checks BEFORE it runs. 0 < 0 is', 'highlight');
+        addLine('        FALSE right away, so the computer skips the', 'highlight');
+        addLine('        entire loop. Zero passes. Zero changes."', 'highlight');
+        addLine('', '');
+        addLine('NEXUS: "That\u2019s the key: while doesn\u2019t mean \u2018do this at', 'highlight');
+        addLine('        least once.\u2019 It means \u2018check FIRST, then decide.\u2019"', 'highlight');
         addLine('', '');
         updateVictorBar(s.victorEl, 50);
         addLine('NEXUS: "Victor\u2019s halfway there. Keep going \u2014 no time to waste."', 'highlight');
@@ -670,11 +682,11 @@ async function runPhase2a() {
         sound.denied();
         attempts++;
         if (attempts === 1) {
-          addLine('[WRONG] NEXUS: "Count the green checkmarks \u2014 each one means the loop body ran once."', 'error');
+          addLine('[WRONG] NEXUS: "x starts at 0. The FIRST thing a while loop does is check its condition. Is 0 < 0?"', 'error');
         } else if (attempts === 2) {
-          addLine('[WRONG] NEXUS: "x=0 \u2713, x=1 \u2713, x=2 \u2713, x=3 \u2713, x=4 \u2717. How many checkmarks?"', 'error');
+          addLine('[WRONG] NEXUS: "0 < 0 is FALSE. What does the loop do when the condition is false \u2014 even on the very first check?"', 'error');
         } else {
-          addLine('[WRONG] NEXUS: "4 checkmarks = 4 times. The answer is 4."', 'error');
+          addLine('[WRONG] NEXUS: "The body runs 0 times. The loop never even starts! Type 0."', 'error');
         }
       }
     }
