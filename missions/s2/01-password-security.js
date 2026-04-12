@@ -64,7 +64,7 @@ function runS2M1Phase() {
     addLine('AI CORE: "The backdoor stores hash = <span class="highlight">40</span>. Which password', 'purple');
     addLine('          from this list has that hash?"', 'purple');
     addLine('', '');
-    addPre('  ┌─────────────────────────────────────┐\n  │  Candidates:                         │\n  │                                       │\n  │    DOG    CAT    KIT    FOX    HEN    │\n  │                                       │\n  └─────────────────────────────────────┘\n\n   A=1  B=2  C=3  D=4  E=5  F=6  G=7\n   H=8  I=9  J=10 K=11 L=12 M=13 N=14\n   O=15 P=16 Q=17 R=18 S=19 T=20 U=21\n   V=22 W=23 X=24 Y=25 Z=26');
+    addPre('  ┌──────────────────────────────────────────┐\n  │  Candidates:                              │\n  │                                            │\n  │    DOG    CAT    KIT    FOX    HEN    OWL  │\n  │                                            │\n  └──────────────────────────────────────────┘\n\n   A=1  B=2  C=3  D=4  E=5  F=6  G=7\n   H=8  I=9  J=10 K=11 L=12 M=13 N=14\n   O=15 P=16 Q=17 R=18 S=19 T=20 U=21\n   V=22 W=23 X=24 Y=25 Z=26');
     addLine('', '');
     addLine('Which password has hash = 40? (Compute the sum for each)', 'warning');
 
