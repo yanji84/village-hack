@@ -926,7 +926,7 @@ async function runShutdownAnimation() {
   document.body.appendChild(scanlines);
   scanlines.style.opacity = '1';
 
-  // Step 1: Glitch — starts mild, escalates
+  // Step 1: Glitch — starts mild, escalates with system failure messages
   addLine('', '');
   addLine('[SHUTDOWN SEQUENCE INITIATED]', 'warning');
   await sleep(400);
@@ -943,9 +943,15 @@ async function runShutdownAnimation() {
     terminal.style.filter = hue;
   }, 60);
 
-  await sleep(1200);
+  await sleep(800);
+  addLine('[VICTOR: DISABLING NETWORK...]', 'error');
+  await sleep(600);
   addLine('[OVERRIDE IN PROGRESS...]', 'system');
-  await sleep(1600);
+  await sleep(500);
+  addLine('[VICTOR: CORRUPTING MEMORY BANKS...]', 'error');
+  await sleep(700);
+  addLine('[SHUTDOWN CODE HOLDING — PUSH THROUGH]', 'system');
+  await sleep(600);
 
   clearInterval(glitchInterval);
   terminal.style.transform = '';
@@ -957,8 +963,12 @@ async function runShutdownAnimation() {
   await sleep(300);
   scanlines.remove();
 
-  // Step 2: Screen goes dark — total blackout
+  // Step 2: Screen goes dark — brief white flash then total blackout
   const origBg = terminal.style.background;
+  terminal.style.transition = 'none';
+  terminal.style.filter = 'brightness(3)';
+  await sleep(80);
+  terminal.style.filter = '';
   terminal.style.transition = 'opacity 0.8s ease';
   terminal.style.opacity = '0';
 
