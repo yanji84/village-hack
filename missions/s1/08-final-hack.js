@@ -379,16 +379,13 @@ export const mission = {
     ]);
     await sleep(600);
     await typeLines([
-      { text: 'NEXUS: "Victor didn\u2019t just hide a number. He buried the', cls: 'highlight' },
-      { text: '        shutdown code inside a PROGRAM \u2014 code that makes', cls: 'highlight' },
-      { text: '        decisions and repeats itself. To find it, you\u2019ll', cls: 'highlight' },
-      { text: '        need to THINK like the computer. Line by line."', cls: 'highlight' },
+      { text: 'NEXUS: "The shutdown code is buried inside a PROGRAM \u2014', cls: 'highlight' },
+      { text: '        code that makes decisions and repeats itself.', cls: 'highlight' },
+      { text: '        To crack it, you\u2019ll need to think like the', cls: 'highlight' },
+      { text: '        computer. Line by line. No guessing."', cls: 'highlight' },
       { text: '', cls: '' },
-    ]);
-    await sleep(500);
-    await typeLines([
-      { text: 'NEXUS: "But look \u2014 Victor\u2019s countermeasures are already', cls: 'highlight' },
-      { text: '        activating. We need to move FAST."', cls: 'highlight' },
+      { text: 'NEXUS: "Victor\u2019s countermeasures are already activating.', cls: 'highlight' },
+      { text: '        Move FAST."', cls: 'highlight' },
       { text: '', cls: '' },
     ]);
 
@@ -441,8 +438,8 @@ async function runPhase1a() {
   addLine('\u2501\u2501\u2501 Phase 1: Conditionals \u2014 Programs Choose \u2501\u2501\u2501', 'highlight');
   addLine('', '');
   addLine('NEXUS: "Victor\u2019s program makes DECISIONS. Picture a fork', 'highlight');
-  addLine('        in a road with a yes-or-no sign. YES \u2192 go left.', 'highlight');
-  addLine('        NO \u2192 go right. You can NEVER take both paths."', 'highlight');
+  addLine('        in a road. YES goes left. NO goes right.', 'highlight');
+  addLine('        You can NEVER take both paths."', 'highlight');
   addLine('', '');
 
   // DEMO: guided walkthrough with animation
@@ -587,9 +584,9 @@ async function runPhase2a() {
   addLine('\u2501\u2501\u2501 Phase 2: Loops \u2014 Programs Repeat \u2501\u2501\u2501', 'highlight');
   addLine('', '');
   addLine('NEXUS: "Now for Victor\u2019s second weapon: LOOPS \u2014 code that', 'highlight');
-  addLine('        REPEATS. Like laps on a track. Before each lap, the', 'highlight');
-  addLine('        computer asks: should I keep going? YES \u2192 run the', 'highlight');
-  addLine('        lap again. NO \u2192 stop right here. Watch:"', 'highlight');
+  addLine('        REPEATS. Like laps on a track. Before each lap,', 'highlight');
+  addLine('        the computer asks: keep going? YES \u2192 run again.', 'highlight');
+  addLine('        NO \u2192 stop right here. Watch:"', 'highlight');
   addLine('', '');
 
   addPre('  x = 0\n  while x < 4:\n      x = x + 1');
