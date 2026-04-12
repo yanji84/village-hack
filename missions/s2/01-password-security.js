@@ -178,15 +178,21 @@ function runS2M1Phase() {
     });
   } else if (s.phase === 2) {
     // Phase 3: Constraint construction
-    addLine('\u2501\u2501\u2501 Backdoor #3: Constraint Construction \u2501\u2501\u2501', 'highlight');
-    addLine('AI CORE: "The final backdoor uses a password POLICY. You have', 'purple');
-    addLine('          to BUILD a password that satisfies every rule at', 'purple');
-    addLine('          once. This is constraint satisfaction \u2014 the same', 'purple');
-    addLine('          technique used in scheduling, puzzle-solving, and', 'purple');
-    addLine('          AI planning."', 'purple');
-    addPre('  1. Exactly 6 characters\n  2. Must start with a LETTER\n  3. Must contain the digit 7\n  4. Must end with "!"\n  5. Must contain the letter "z" somewhere');
-    addLine('AI CORE: "Every rule eliminates most options. Your job: find', 'purple');
-    addLine('          one that slips through ALL five filters."', 'purple');
+    addLine('━━━ LAYER 3 of 3: Constraint Construction ━━━', 'highlight');
+    addLine('', '');
+    addLine('AI CORE: "Last layer. This one is different — VICTOR didn\'t', 'purple');
+    addLine('          just lock it. He set up a PASSWORD POLICY with', 'purple');
+    addLine('          five rules. You have to BUILD a password that', 'purple');
+    addLine('          passes every single one."', 'purple');
+    addLine('', '');
+    addLine('AI CORE: "This is called constraint satisfaction — fitting', 'purple');
+    addLine('          through all the filters at once. Same idea behind', 'purple');
+    addLine('          how computers plan schedules and solve puzzles."', 'purple');
+    addLine('', '');
+    addPre('  ┌─────────────────────────────────────┐\n  │  PASSWORD POLICY                     │\n  │                                       │\n  │  Rule 1: Exactly 6 characters         │\n  │  Rule 2: Must start with a LETTER     │\n  │  Rule 3: Must contain the digit 7     │\n  │  Rule 4: Must end with "!"            │\n  │  Rule 5: Must contain the letter "z"  │\n  │                                       │\n  └─────────────────────────────────────┘');
+    addLine('', '');
+    addLine('AI CORE: "Every rule eliminates most options. Build one that', 'purple');
+    addLine('          slips through ALL five filters."', 'purple');
 
     setCurrentInputHandler((input) => {
       const pw = input.trim();
@@ -200,16 +206,27 @@ function runS2M1Phase() {
       const failed = checks.filter(c => !c.ok);
       if (failed.length === 0) {
         sound.success();
-        addLine(`[ACCEPTED] "${pw}" passes all 5 constraints.`, 'success');
-        addLine('AI CORE: "Three real concepts mastered: hashing, password', 'purple');
-        addLine('          strength math, and constraint satisfaction. These', 'purple');
-        addLine('          are the foundations of real-world password', 'purple');
-        addLine('          security."', 'purple');
+        addLine('', '');
+        addLine('>>> ALL 3 LAYERS SEALED <<<', 'success big');
+        addLine(`"${pw}" passes all 5 constraints.`, 'success');
+        addLine('', '');
+        addLine('AI CORE: "Backdoor sealed. And you just used three real', 'purple');
+        addLine('          computer science concepts to do it — hashing,', 'purple');
+        addLine('          combinatorics, and constraint satisfaction."', 'purple');
+        addLine('', '');
+        addLine('AI CORE: "VICTOR built this thinking no one would', 'purple');
+        addLine('          understand it. He was wrong about that too."', 'purple');
         setCurrentInputHandler(null);
         setTimeout(() => completeMission(8), 1200);
       } else {
         sound.denied();
-        addLine(`[REJECTED] Failed: ${failed.map(f => f.msg).join(', ')}`, 'error');
+        const passed = checks.filter(c => c.ok);
+        if (passed.length > 0) {
+          addLine(`[${passed.length}/5 RULES PASSED] ${failed.map(f => '✗ ' + f.msg).join(' | ')}`, 'error');
+        } else {
+          addLine(`[REJECTED] ${failed.map(f => '✗ ' + f.msg).join(' | ')}`, 'error');
+        }
+        addLine('AI CORE: "Check each rule. Adjust and try again."', 'purple');
       }
     });
   }
