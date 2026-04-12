@@ -23,7 +23,10 @@ export const mission = {
 
     await typeLines([
       { text: '[AI CORE — DEEP SCAN INITIATED]', cls: 'system' },
-      { text: '[......................................................]', cls: 'system' },
+      { text: '[scanning] ██░░░░░░░░░░░░░░░░░░  9%', cls: 'system' },
+      { text: '[scanning] ████████░░░░░░░░░░░░  41%', cls: 'system' },
+      { text: '[scanning] ██████████████░░░░░░  72%', cls: 'system' },
+      { text: '[scanning] ████████████████████  100%', cls: 'system' },
       { text: '[BACKDOOR FOUND] Password security layer active.', cls: 'system' },
       { text: '', cls: '' },
       { text: 'AI CORE: "There you are. I\'ve been waiting for you."', cls: 'purple' },
@@ -52,7 +55,9 @@ function runS2M1Phase() {
 
   if (s.phase === 0) {
     // Phase 1: Hash cracking + collision insight
-    addLine('━━━ LAYER 1 of 3: Hash Cracking ━━━', 'highlight');
+    addLine('╔══════════════════════════════════════╗', 'highlight');
+    addLine('║   ▶ LAYER 1 of 3 — HASH CRACKING    ║', 'highlight');
+    addLine('╚══════════════════════════════════════╝', 'highlight');
     addLine('', '');
     addLine('AI CORE: "When you make a password on a website, they don\'t', 'purple');
     addLine('          save the actual word. They run it through a HASH', 'purple');
@@ -134,7 +139,9 @@ function runS2M1Phase() {
     });
   } else if (s.phase === 1) {
     // Phase 2: Password strength / combinatorics
-    addLine('━━━ LAYER 2 of 3: Password Strength ━━━', 'highlight');
+    addLine('╔══════════════════════════════════════╗', 'highlight');
+    addLine('║  ▶ LAYER 2 of 3 — PASSWORD STRENGTH  ║', 'highlight');
+    addLine('╚══════════════════════════════════════╝', 'highlight');
     addLine('', '');
     addLine('AI CORE: "VICTOR chose a short, simple password for his', 'purple');
     addLine('          first lock. Sloppy. But his next layer is about', 'purple');
@@ -237,7 +244,9 @@ function runS2M1Phase() {
     });
   } else if (s.phase === 2) {
     // Phase 3: Constraint construction
-    addLine('━━━ LAYER 3 of 3: Constraint Construction ━━━', 'highlight');
+    addLine('╔═══════════════════════════════════════════╗', 'highlight');
+    addLine('║  ▶ LAYER 3 of 3 — CONSTRAINT CONSTRUCTION ║', 'highlight');
+    addLine('╚═══════════════════════════════════════════╝', 'highlight');
     addLine('', '');
     addLine('AI CORE: "Last layer. And this one\'s my favorite — VICTOR', 'purple');
     addLine('          set up a PASSWORD POLICY with five rules. You', 'purple');
@@ -286,7 +295,10 @@ function runS2M1Phase() {
         addLine('          to schedule flights, plan routes, and solve', 'purple');
         addLine('          problems with millions of moving pieces."', 'purple');
         addLine('', '');
-        addLine('[BACKDOOR SEALED]', 'system');
+        addLine('╔══════════════════════════════════════╗', 'system');
+        addLine('║        [BACKDOOR SEALED]             ║', 'system');
+        addLine('║     ALL SECURITY LAYERS LOCKED       ║', 'system');
+        addLine('╚══════════════════════════════════════╝', 'system');
         addLine('', '');
         addLine('AI CORE: "Three layers. Three real ideas — hashing,', 'purple');
         addLine('          combinatorics, constraint satisfaction. The same', 'purple');
