@@ -877,29 +877,49 @@ function runPhase4() {
 async function runShutdownAnimation() {
   const terminal = document.getElementById('terminal');
 
-  // Step 1: Glitch effect
+  // Inject scanline overlay
+  const scanlines = document.createElement('div');
+  scanlines.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);opacity:0;transition:opacity 0.3s;';
+  document.body.appendChild(scanlines);
+  scanlines.style.opacity = '1';
+
+  // Step 1: Glitch — starts mild, escalates
+  addLine('', '');
+  addLine('[SHUTDOWN SEQUENCE INITIATED]', 'warning');
+  await sleep(400);
+  addLine('[VICTOR: RESISTING... FIGHTING BACK...]', 'error');
+  await sleep(600);
+
   const glitchInterval = setInterval(() => {
-    const skew = (Math.random() * 4 - 2).toFixed(1);
-    const opacity = (0.6 + Math.random() * 0.4).toFixed(2);
-    const hue = Math.random() > 0.5 ? 'hue-rotate(90deg)' : '';
-    terminal.style.transform = `skewX(${skew}deg)`;
+    const skew = (Math.random() * 6 - 3).toFixed(1);
+    const opacity = (0.5 + Math.random() * 0.5).toFixed(2);
+    const hue = Math.random() > 0.4 ? `hue-rotate(${Math.floor(Math.random() * 180)}deg)` : '';
+    const translateY = Math.random() > 0.7 ? `translateY(${Math.floor(Math.random() * 4 - 2)}px)` : '';
+    terminal.style.transform = `skewX(${skew}deg) ${translateY}`;
     terminal.style.opacity = opacity;
     terminal.style.filter = hue;
-  }, 80);
+  }, 60);
 
-  await sleep(2000);
+  await sleep(1200);
+  addLine('[OVERRIDE IN PROGRESS...]', 'system');
+  await sleep(1600);
 
   clearInterval(glitchInterval);
   terminal.style.transform = '';
   terminal.style.opacity = '1';
   terminal.style.filter = '';
 
-  // Step 2: Screen goes dark
-  const origBg = terminal.style.background;
-  terminal.style.transition = 'opacity 0.5s ease';
-  terminal.style.opacity = '0.1';
+  // Remove scanlines
+  scanlines.style.opacity = '0';
+  await sleep(300);
+  scanlines.remove();
 
-  await sleep(1000);
+  // Step 2: Screen goes dark — total blackout
+  const origBg = terminal.style.background;
+  terminal.style.transition = 'opacity 0.8s ease';
+  terminal.style.opacity = '0';
+
+  await sleep(1500);
 
   // Step 3: Code display — digit boxes [ 1 ] [ 2 ]
   terminal.style.opacity = '1';
@@ -949,37 +969,56 @@ async function runShutdownAnimation() {
   heading.style.opacity = '1';
   await sleep(400);
 
-  // Reveal each digit
+  // Reveal each digit with slot-machine scroll effect
   for (let i = 0; i < 2; i++) {
-    await sleep(400);
-    sound.success();
+    await sleep(600);
     const { box, lbracket, rbracket } = digitBoxes[i];
     lbracket.style.opacity = '1';
-    lbracket.style.color = '#00ff41';
+    lbracket.style.color = '#555';
     rbracket.style.opacity = '1';
-    rbracket.style.color = '#00ff41';
+    rbracket.style.color = '#555';
+
+    // Rapid scroll through random digits before landing
+    for (let j = 0; j < 8; j++) {
+      box.textContent = String(Math.floor(Math.random() * 10));
+      box.style.color = '#335533';
+      await sleep(60);
+    }
+
+    // Land on the real digit
+    sound.success();
     box.textContent = digits[i];
     box.style.color = '#00ff41';
     box.style.textShadow = '0 0 16px #00ff41, 0 0 32px rgba(0,255,65,0.4)';
+    lbracket.style.color = '#00ff41';
+    rbracket.style.color = '#00ff41';
     terminal.scrollTop = terminal.scrollHeight;
+    await sleep(200);
   }
 
-  // Step 4: ACCESS TERMINATED flash
-  await sleep(1000);
+  // Step 4: ACCESS TERMINATED — strobe flash then hold
+  await sleep(800);
 
   const terminated = document.createElement('div');
-  terminated.style.cssText = 'text-align:center;margin:16px 0;padding:12px;font-family:"Press Start 2P","Fira Mono",monospace;font-size:16px;color:#ff0000;letter-spacing:4px;text-shadow:0 0 20px #ff0000,0 0 40px rgba(255,0,0,0.5);opacity:0;transition:opacity 0.5s;';
+  terminated.style.cssText = 'text-align:center;margin:16px 0;padding:12px;font-family:"Press Start 2P","Fira Mono",monospace;font-size:16px;color:#ff0000;letter-spacing:4px;text-shadow:0 0 20px #ff0000,0 0 40px rgba(255,0,0,0.5);opacity:0;';
   terminated.textContent = 'ACCESS TERMINATED';
   terminal.appendChild(terminated);
   terminal.scrollTop = terminal.scrollHeight;
 
-  await sleep(100);
+  // Strobe 3 times then hold
+  for (let flash = 0; flash < 3; flash++) {
+    terminated.style.opacity = '1';
+    await sleep(120);
+    terminated.style.opacity = '0';
+    await sleep(80);
+  }
   terminated.style.opacity = '1';
-  await sleep(1500);
+  await sleep(2000);
+  terminated.style.transition = 'opacity 1s ease';
   terminated.style.opacity = '0';
 
-  // Step 5: Screen restores
-  await sleep(1500);
+  // Step 5: Long silence — let the weight of shutdown settle
+  await sleep(2000);
   terminal.style.background = origBg || '';
 
   await sleep(500);
