@@ -408,15 +408,16 @@ function runStep4() {
   addPre('  sorted =  [  2 ,  5 ,  8 , 11 , 15 , 19 , 23 , 27 ]\n  index =   [  0 ,  1 ,  2 ,  3 ,  4 ,  5 ,  6 ,  7 ]\n\n  find 15 \u2192 index = ?');
 
   addLine('', '');
-  addLine('AI CORE: "You can binary-search it if you want \u2014 middle,', 'purple');
-  addLine('          too low, right half, middle again. Or just read', 'purple');
-  addLine('          off its position. Either works."', 'purple');
+  addLine('AI CORE: "Don\u2019t crawl the list \u2014 HALVE it. Check the middle.', 'purple');
+  addLine('          Decide which half 15 lives in. Throw the other', 'purple');
+  addLine('          half away. Repeat. That\u2019s the move that crushed', 'purple');
+  addLine('          Season 2."', 'purple');
   addLine('', '');
   addLine('What index holds the value 15?', 'warning');
 
   setCurrentInputHandler(makeHintHandler(4, [
-    'AI CORE: "Count the slots: 2 is at 0, 5 is at 1, 8 is at 2... keep going to 15."',
-    'NEXUS: "2,5,8,11 are indexes 0-3. 15 comes right after \u2014 what\u2019s its index?"',
+    'AI CORE: "Middle of 8 slots is index 3 (value 11). 11 < 15, so 15 hides in the RIGHT half \u2014 indexes 4-7."',
+    'NEXUS: "Middle of the right half is index 5 (value 19). 19 > 15, so go LEFT. Only index 4 is left standing."',
     'AI CORE: "15 is at index 4. Type 4."',
   ], () => {
     addLine('[CORRECT] 15 found at index 4', 'success');
