@@ -604,7 +604,7 @@ async function runFinale() {
     '  \u2713 [S1] PROGRAMS \u2014 ran code line by line like a machine',
     '  \u2713 [S1] VARIABLES \u2014 tracked values as they changed',
     '  \u2713 [S1] MEMORY \u2014 reverse-engineered data from scraps',
-    '  \u2713 [S1] LOGIC GATES \u2014 AND, OR, NOT, XOR in your head',
+    '  \u2713 [S1] LOGIC GATES \u2014 AND, OR, NOT in your head',
     '  \u2713 [S1] ENCRYPTION \u2014 your first cipher cracked',
     '  \u2713 [S1] EVIDENCE \u2014 spotted the fakes',
     '  \u2713 [S1] CONDITIONALS & LOOPS \u2014 shut down the rogue AI',
@@ -630,7 +630,7 @@ async function runFinale() {
 
   addLine('\u2501\u2501\u2501 SEASON 2 SKILLS \u2501\u2501\u2501', 'purple');
   for (let i = 0; i < skillsS2.length; i++) {
-    const div = addLine(skillsS2[i], 'purple');
+    addLine(skillsS2[i], 'purple');
     await sleep(i < 2 ? 450 : 320);
   }
   addLine('', '');
