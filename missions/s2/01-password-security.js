@@ -264,7 +264,7 @@ function phaseVideo() {
 
   addLine('', '');
   addLine('╔══════════════════════════════════════════╗', 'highlight');
-  addLine('║   ▶ PART 3 of 4 — VIDEO IS NUMBERS × TIME║', 'highlight');
+  addLine('║   ▶ PART 3 of 4 — VIDEO IS NUMBERS+TIME  ║', 'highlight');
   addLine('╚══════════════════════════════════════════╝', 'highlight');
   addLine('', '');
   addLine('AI CORE: "Last one before I tie it all together. VIDEO."', 'purple');
