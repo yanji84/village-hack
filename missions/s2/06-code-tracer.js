@@ -63,7 +63,7 @@ function runPhase() {
     addLine('AI CORE: "Your first circuit. Two gates wired together —', 'purple');
     addLine('          an AND and a NOT, joined by an OR."', 'purple');
     addLine('', '');
-    addPre('            ┌───────┐\n     A ────▶│  AND  │──┐\n            └───────┘  │   ┌──────┐\n     B ────────────┘   ├──▶│  OR  │──▶ OUTPUT\n                       │   └──────┘\n            ┌───────┐  │\n     A ────▶│  NOT  │──┘\n            └───────┘\n\n          Formula:  (A AND B) OR (NOT A)');
+    addPre('          ┌─────────────┐\n   A ────▶│             │\n          │   A AND B   │──┐\n   B ────▶│             │  │   ┌────────┐\n          └─────────────┘  ├──▶│   OR   │──▶ OUTPUT\n          ┌─────────────┐  │   └────────┘\n   A ────▶│    NOT A    │──┘\n          └─────────────┘\n\n       Formula:  (A AND B) OR (NOT A)');
     addLine('', '');
     addLine('AI CORE: "Walk each row slowly. Compute (A AND B) first.', 'purple');
     addLine('          Then (NOT A). Then OR those two results together."', 'purple');
