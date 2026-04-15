@@ -5,318 +5,414 @@ import {
   setPhaseProgress, setCurrentInputHandler,
   completeMission,
 } from '../../engine.js';
+import { renderPixelGrid } from '../helpers.js';
 
 export const mission = {
   id: 8,
   num: 'S2-01',
-  title: 'PASSWORD SECURITY',
-  name: 'Password Security',
-  desc: 'Learn how passwords are REALLY stored (hashing), why longer passwords are stronger (math), and constraint satisfaction.',
-  skill: 'SKILL: Hashing + Combinatorics + Constraints',
+  title: 'BINARY MEDIA',
+  name: 'Binary Media',
+  desc: 'Discover the big secret: images, sound, and video are ALL just numbers. Everything on every screen is binary.',
+  skill: 'SKILL: Binary Representation of Media',
   hints: [
-    'For hash cracking: add up letter values (A=1, B=2...). For the collision question: what does the system actually check?',
-    'For combinations: each new position MULTIPLIES the total, not adds. Think ×10, not +10.',
-    'For constraints: positions 1 and 5 are locked. Where can 2 non-adjacent symbols fit in positions 2, 3, 4?',
+    'For RGB: R is Red, G is Green, B is Blue. Red + Green light = Yellow. Red + Blue = Magenta/Pink.',
+    'For sound samples: samples per second × seconds = total samples. 44100 × 3.',
+    'For video: multiply width × height to get pixels per frame. Then × 3 bytes each. Then × frames per second.',
   ],
   run: async function() {
-    state.missionState = { phase: 0, hintIdx: 0 };
+    state.missionState = { phase: 0, step: 0 };
 
     await typeLines([
-      { text: '[AI CORE — DEEP SCAN INITIATED]', cls: 'system' },
-      { text: '[scanning] ██░░░░░░░░░░░░░░░░░░  9%', cls: 'system' },
-      { text: '[scanning] ████████░░░░░░░░░░░░  41%', cls: 'system' },
-      { text: '[scanning] ██████████████░░░░░░  72%', cls: 'system' },
+      { text: '[AI CORE — SIGNAL LOCK ESTABLISHED]', cls: 'system' },
+      { text: '[scanning] ████░░░░░░░░░░░░░░░░  19%', cls: 'system' },
+      { text: '[scanning] ██████████░░░░░░░░░░  54%', cls: 'system' },
       { text: '[scanning] ████████████████████  100%', cls: 'system' },
-      { text: '[BACKDOOR FOUND] Password security layer active.', cls: 'system' },
+      { text: '[READY] — AI CORE online. Transmission clean.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "There you are. I\'ve been waiting for you."', cls: 'purple' },
+      { text: 'AI CORE: "Hey. You\'re back. Good — I want to show you', cls: 'purple' },
+      { text: '          something that blew MY circuits when I first', cls: 'purple' },
+      { text: '          realized it."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Remember when you freed me? I promised I\'d help', cls: 'purple' },
-      { text: '          protect the village. Well — VICTOR left a', cls: 'purple' },
-      { text: '          backdoor. Three layers of password security,', cls: 'purple' },
-      { text: '          hidden deep. He thought nobody could touch it."', cls: 'purple' },
+      { text: 'AI CORE: "Last season you learned that letters are secretly', cls: 'purple' },
+      { text: '          numbers. A=1, B=2... 1s and 0s under the hood."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "But now there are two of us. I know how these', cls: 'purple' },
-      { text: '          locks work from the inside, and you — you\'ve', cls: 'purple' },
-      { text: '          already proven you can learn anything."', cls: 'purple' },
+      { text: 'AI CORE: "That was just the beginning. Here is the BIG', cls: 'purple' },
+      { text: '          secret of computers:"', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Three layers, three real computer science ideas.', cls: 'purple' },
-      { text: '          No tricks. The real thing. Ready?"', cls: 'purple' },
+      { text: '   ▶ EVERYTHING is secretly numbers.', cls: 'success big' },
+      { text: '', cls: '' },
+      { text: 'AI CORE: "Photos. Music. Movies. Games. Video calls.', cls: 'purple' },
+      { text: '          Every single one — just numbers in disguise.', cls: 'purple' },
+      { text: '          Let me prove it to you."', cls: 'purple' },
       { text: '', cls: '' },
     ]);
 
-    runS2M1Phase();
+    runPhase();
   },
 };
 
-function runS2M1Phase() {
+function runPhase() {
   const s = state.missionState;
-  setPhaseProgress(s.phase + 1, 3);
+  setPhaseProgress(s.phase + 1, 4);
 
-  if (s.phase === 0) {
-    // Phase 1: Hash cracking + collision insight
-    addLine('╔══════════════════════════════════════╗', 'highlight');
-    addLine('║   ▶ LAYER 1 of 3 — HASH CRACKING    ║', 'highlight');
-    addLine('╚══════════════════════════════════════╝', 'highlight');
-    addLine('', '');
-    addLine('AI CORE: "When you make a password on a website, they don\'t', 'purple');
-    addLine('          save the actual word. They run it through a HASH', 'purple');
-    addLine('          function — like a secret fingerprint machine."', 'purple');
-    addLine('', '');
-    addLine('AI CORE: "You put a word in, you get a number out. Same word', 'purple');
-    addLine('          always gives the same number. But you can\'t go', 'purple');
-    addLine('          backwards — the number won\'t tell you the word."', 'purple');
-    addLine('', '');
-    addLine('AI CORE: "VICTOR\'s hash function: add up each letter\'s', 'purple');
-    addLine('          position in the alphabet. A=1, B=2, ... Z=26."', 'purple');
-    addLine('', '');
-    addLine('          Example: CAT = C(3) + A(1) + T(20) = <span class="highlight">24</span>', 'purple');
-    addLine('', '');
-    addLine('AI CORE: "The backdoor stores hash = <span class="highlight">40</span>. Which password', 'purple');
-    addLine('          from this list has that hash?"', 'purple');
-    addLine('', '');
-    addPre('  ┌─────────────────────────────────┐\n  │         ╔═══╗  ╔═══╗  ╔═══╗     │\n  │         ║DOG║  ║KIT║  ║FOX║     │\n  │         ╚═══╝  ╚═══╝  ╚═══╝     │\n  └─────────────────────────────────┘');
-    addLine('', '');
-    addPre('   A=1   B=2   C=3   D=4   E=5\n   F=6   G=7   H=8   I=9   J=10\n   K=11  L=12  M=13  N=14  O=15\n   P=16  Q=17  R=18  S=19  T=20\n   U=21  V=22  W=23  X=24  Y=25\n   Z=26');
-    addLine('', '');
-    addLine('Which password has hash = 40?', 'warning');
+  if (s.phase === 0) return phaseImages();
+  if (s.phase === 1) return phaseSound();
+  if (s.phase === 2) return phaseVideo();
+  if (s.phase === 3) return phaseEverything();
+}
 
-    s.hashStep = 0;
+// ============================================================
+// PHASE 1: IMAGES ARE NUMBERS
+// ============================================================
+function phaseImages() {
+  const s = state.missionState;
+  s.step = 0;
 
-    setCurrentInputHandler((input) => {
-      if (s.hashStep === 0) {
-        // KIT = K(11) + I(9) + T(20) = 40
-        if (input.toUpperCase().trim() === 'KIT') {
-          sound.success();
-          addLine('', '');
-          addLine('[MATCH FOUND] K(11) + I(9) + T(20) = 40 ✓', 'success');
-          addLine('', '');
-          addLine('AI CORE: "Good. Now here\'s the twist. Look at this', 'purple');
-          addLine('          other word: LINE."', 'purple');
-          addLine('', '');
-          addLine('          LINE = L(12) + I(9) + N(14) + E(5) = <span class="highlight">40</span>', 'info');
-          addLine('', '');
-          addLine('AI CORE: "Different word, different length — same hash!', 'purple');
-          addLine('          The system only stores the number 40. If', 'purple');
-          addLine('          someone types LINE instead of KIT, would the', 'purple');
-          addLine('          system let them in?"', 'purple');
-          addLine('', '');
-          addLine('Type YES or NO:', 'warning');
-          s.hashStep = 1;
-        } else {
-          sound.denied();
-          addLine('[CLOSE] I\'ll help — DOG = D(4)+O(15)+G(7) = 26. FOX = F(6)+O(15)+X(24) = 45. Try the last one!', 'error');
-        }
-      } else if (s.hashStep === 1) {
-        if (input.toUpperCase().trim() === 'YES') {
-          sound.success();
-          addLine('', '');
-          addLine('>>> LAYER 1 CRACKED <<<', 'success big');
-          addLine('', '');
-          addLine('AI CORE: "Exactly. That\'s called a HASH COLLISION —', 'purple');
-          addLine('          two different inputs that make the same hash.', 'purple');
-          addLine('          The system can\'t tell them apart!"', 'purple');
-          addLine('', '');
-          addLine('AI CORE: "Imagine if two different keys opened your front', 'purple');
-          addLine('          door. That\'s what a collision is. Real websites', 'purple');
-          addLine('          use hash functions so complex that finding a', 'purple');
-          addLine('          collision would take longer than the age of the', 'purple');
-          addLine('          universe. VICTOR\'s addition hash? Child\'s play."', 'purple');
-          addLine('', '');
-          addLine('[LAYER 1 SEALED — accessing layer 2...]', 'system');
-          addLine('', '');
-          addLine('AI CORE: "Nice work. But cracking a weak hash was the easy', 'purple');
-          addLine('          part. VICTOR\'s next layer asks a bigger question:', 'purple');
-          addLine('          what makes a password STRONG in the first place?"', 'purple');
-          s.phase = 1;
-          addLine('');
-          setTimeout(runS2M1Phase, 1800);
-        } else {
-          sound.denied();
-          addLine('[ALMOST] Remember — the system only sees the number 40. Both KIT and LINE produce 40. So what happens if someone types LINE?', 'error');
-        }
-      }
-    });
-  } else if (s.phase === 1) {
-    // Phase 2: Password strength / combinatorics
-    addLine('╔══════════════════════════════════════╗', 'highlight');
-    addLine('║  ▶ LAYER 2 of 3 — PASSWORD STRENGTH  ║', 'highlight');
-    addLine('╚══════════════════════════════════════╝', 'highlight');
-    addLine('', '');
-    addLine('AI CORE: "VICTOR chose a short, simple password for his', 'purple');
-    addLine('          first lock. Sloppy. But his next layer is about', 'purple');
-    addLine('          WHY longer passwords are harder to crack."', 'purple');
-    addLine('', '');
-    addLine('AI CORE: "The answer is math. Picture a combination lock', 'purple');
-    addLine('          with 2 digit wheels, each going from 0-9.', 'purple');
-    addLine('          How many possible combinations?"', 'purple');
-    addLine('', '');
-    addPre('   ╔════════╗   ╔════════╗\n   ║ Wheel 1 ║   ║ Wheel 2 ║\n   ║  0 - 9  ║   ║  0 - 9  ║\n   ║ (10 ea) ║   ║ (10 ea) ║\n   ╚════════╝   ╚════════╝\n\n   Total = 10 × 10 = ???');
-    addLine('', '');
-    addLine('Type the total number of combinations:', 'warning');
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║   ▶ PART 1 of 4 — IMAGES ARE NUMBERS    ║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
+  addLine('', '');
+  addLine('AI CORE: "Zoom WAY into any photo on your phone. Like, too', 'purple');
+  addLine('          far. You stop seeing the picture and start seeing', 'purple');
+  addLine('          tiny colored squares. Those squares are PIXELS."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Here\'s the trick: every pixel is just THREE', 'purple');
+  addLine('          numbers. How much RED, how much GREEN, how much', 'purple');
+  addLine('          BLUE — each from 0 (none) to 255 (maximum)."', 'purple');
+  addLine('', '');
+  addPre('  ┌────────────────────────────────────────┐\n  │  PIXEL = ( R , G , B )                  │\n  │                                          │\n  │  (255,   0,   0) = PURE RED   🟥        │\n  │  (  0, 255,   0) = PURE GREEN 🟩        │\n  │  (  0,   0, 255) = PURE BLUE  🟦        │\n  │  (255, 255, 255) = WHITE (all on)       │\n  │  (  0,   0,   0) = BLACK (all off)      │\n  └────────────────────────────────────────┘');
+  addLine('', '');
+  addLine('AI CORE: "Mixing light is different from mixing paint. Red', 'purple');
+  addLine('          light PLUS green light actually makes..."', 'purple');
+  addLine('', '');
+  addLine('   Pixel = (255, 255, 0)   →   what color?', 'warning');
+  addLine('', '');
+  addLine('(Type the color name)', 'info');
 
-    s.comboStep = 0;
-
-    setCurrentInputHandler((input) => {
-      const n = parseInt(input.trim());
-
-      if (s.comboStep === 0) {
-        if (n === 100) {
-          sound.success();
-          addLine('[GOT IT] 10 × 10 = 100 combinations!', 'success');
-          addLine('', '');
-          addLine('AI CORE: "Good. Now you add just ONE more digit wheel.', 'purple');
-          addLine('          Three wheels total, still 0-9 each."', 'purple');
-          addLine('', '');
-          addPre('   ╔════════╗   ╔════════╗   ╔════════╗\n   ║ Wheel 1 ║   ║ Wheel 2 ║   ║ Wheel 3 ║\n   ║  0 - 9  ║   ║  0 - 9  ║   ║  0 - 9  ║\n   ║ (10 ea) ║   ║ (10 ea) ║   ║ (10 ea) ║\n   ╚════════╝   ╚════════╝   ╚════════╝');
-          addLine('', '');
-          addLine('AI CORE: "Does the total go to 110 (added 10 more)', 'purple');
-          addLine('          or 1000 (multiplied by 10)?"', 'purple');
-          addLine('', '');
-          addLine('Type 110 or 1000:', 'warning');
-          s.comboStep = 1;
-        } else {
-          sound.denied();
-          addLine('[KEEP GOING] Each wheel has 10 options. When you combine them, you multiply: 10 × 10 = ?', 'error');
-        }
-      } else if (s.comboStep === 1) {
-        if (n === 1000) {
-          sound.success();
-          addLine('[YES] 10 × 10 × 10 = 1,000! One wheel → ten TIMES more.', 'success');
-          addLine('', '');
-          addLine('AI CORE: "Not 110 — one THOUSAND. Adding a wheel', 'purple');
-          addLine('          doesn\'t add options, it MULTIPLIES them.', 'purple');
-          addLine('          That\'s why every extra character makes a', 'purple');
-          addLine('          password exponentially harder to crack."', 'purple');
-          addLine('', '');
-          addLine('AI CORE: "Now the big question. A 4-digit PIN using', 'purple');
-          addLine('          only numbers (0-9) has 10×10×10×10 = 10,000', 'purple');
-          addLine('          combinations."', 'purple');
-          addLine('', '');
-          addLine('AI CORE: "But real passwords mix in letters — that\'s 36', 'purple');
-          addLine('          choices per slot instead of 10. With 4 slots,', 'purple');
-          addLine('          does the total jump closer to..."', 'purple');
-          addLine('', '');
-          addPre('   A)  ~40,000     (about 4× more)\n   B)  ~1,600,000  (about 160× more)');
-          addLine('', '');
-          addLine('Type A or B:', 'warning');
-          s.comboStep = 2;
-        } else {
-          sound.denied();
-          addLine('[THINK ABOUT IT] You had 100 combos with 2 wheels. A 3rd wheel gives each of those 100 combos 10 new endings. Is that +10 or ×10?', 'error');
-        }
-      } else if (s.comboStep === 2) {
-        const answer = input.trim().toUpperCase();
-        if (answer === 'B') {
-          sound.success();
-          addLine('', '');
-          addLine('>>> LAYER 2 CRACKED <<<', 'success big');
-          addLine('36⁴ = 1,679,616 combinations!', 'success');
-          addLine('', '');
-          addLine('AI CORE: "Not 4× more — ONE HUNDRED AND SIXTY-EIGHT', 'purple');
-          addLine('          times more! Each slot multiplied by 36 instead', 'purple');
-          addLine('          of 10, and that difference COMPOUNDS across', 'purple');
-          addLine('          every slot."', 'purple');
-          addLine('', '');
-          addLine('AI CORE: "Think about your name on a video game', 'purple');
-          addLine('          scoreboard — 3 letters, just uppercase. That\'s', 'purple');
-          addLine('          only 17,576 combos. But your real password', 'purple');
-          addLine('          probably has 10+ characters with numbers and', 'purple');
-          addLine('          symbols. TRILLIONS of combos. A computer trying', 'purple');
-          addLine('          every one would be grinding for centuries."', 'purple');
-          addLine('', '');
-          addLine('[LAYER 2 SEALED — accessing final layer...]', 'system');
-          addLine('', '');
-          addLine('AI CORE: "Two down. But the last layer is different.', 'purple');
-          addLine('          So far you\'ve been cracking things. Now you', 'purple');
-          addLine('          have to BUILD something that follows rules."', 'purple');
-          s.phase = 2;
-          addLine('');
-          setTimeout(runS2M1Phase, 1800);
-        } else if (answer === 'A') {
-          sound.denied();
-          addLine('[NOT QUITE] Think about what you just learned — each slot MULTIPLIES. Going from 10 to 36 choices doesn\'t add a little at each slot. It multiplies at EVERY position!', 'error');
-        } else {
-          sound.denied();
-          addLine('[TYPE A or B] Which is closer — 40,000 or 1,600,000?', 'error');
-        }
-      }
-    });
-  } else if (s.phase === 2) {
-    // Phase 3: Constraint construction
-    addLine('╔═══════════════════════════════════════════╗', 'highlight');
-    addLine('║  ▶ LAYER 3 of 3 — CONSTRAINT CONSTRUCTION ║', 'highlight');
-    addLine('╚═══════════════════════════════════════════╝', 'highlight');
-    addLine('', '');
-    addLine('AI CORE: "Last layer. And this one\'s my favorite — VICTOR', 'purple');
-    addLine('          set up a PASSWORD POLICY with five rules. You', 'purple');
-    addLine('          don\'t crack this one. You BUILD a password that', 'purple');
-    addLine('          passes every rule at once."', 'purple');
-    addLine('', '');
-    addLine('AI CORE: "This is called constraint satisfaction. Same idea', 'purple');
-    addLine('          behind Sudoku, school timetables, even how GPS', 'purple');
-    addLine('          finds the fastest route."', 'purple');
-    addLine('', '');
-    addLine('AI CORE: "Fair warning: the rules INTERACT. Choosing one', 'purple');
-    addLine('          thing limits where everything else can go. Think', 'purple');
-    addLine('          about the structure, not just the characters."', 'purple');
-    addLine('', '');
-    addPre('  ╔═══════════════════════════════════════════╗\n  ║  PASSWORD POLICY                           ║\n  ║                                             ║\n  ║  1. Exactly 5 characters                    ║\n  ║  2. Must start with a CAPITAL letter        ║\n  ║  3. Must end with a digit (0-9)             ║\n  ║  4. Must contain exactly 2 of: ! @ #        ║\n  ║  5. The 2 symbols cannot be next             ║\n  ║     to each other                            ║\n  ║                                             ║\n  ║  Positions:  [ 1 ][ 2 ][ 3 ][ 4 ][ 5 ]     ║\n  ╚═══════════════════════════════════════════╝');
-    addLine('', '');
-    addLine('AI CORE: "Think about WHERE each piece can go. The rules', 'purple');
-    addLine('          lock some positions — figure out the pattern."', 'purple');
-
-    setCurrentInputHandler((input) => {
-      const pw = input.trim();
-      const symbolCount = (pw.match(/[!@#]/g) || []).length;
-      const checks = [
-        { ok: pw.length === 5, msg: 'Must be exactly 5 characters' },
-        { ok: /^[A-Z]/.test(pw), msg: 'Must start with a capital letter' },
-        { ok: /\d$/.test(pw), msg: 'Must end with a digit' },
-        { ok: symbolCount === 2, msg: 'Must contain exactly 2 of: ! @ #' },
-        { ok: !/[!@#][!@#]/.test(pw), msg: 'Symbols cannot be next to each other' },
-      ];
-      const failed = checks.filter(c => !c.ok);
-      if (failed.length === 0) {
+  setCurrentInputHandler((input) => {
+    const ans = input.toLowerCase().trim();
+    if (s.step === 0) {
+      if (ans.includes('yellow')) {
         sound.success();
+        addLine('[CORRECT] Red + Green light = YELLOW. 🟨', 'success');
         addLine('', '');
-        addLine('>>> ALL 3 LAYERS SEALED <<<', 'success big');
-        addLine(`Password "${pw}" — all 5 constraints satisfied.`, 'success');
+        addLine('AI CORE: "Weird, right? In paint, red + green = brown.', 'purple');
+        addLine('          But computer screens shine LIGHT, and red light', 'purple');
+        addLine('          plus green light makes yellow. That\'s why', 'purple');
+        addLine('          sunlight looks yellowish-white — it\'s ALL the', 'purple');
+        addLine('          colors of light mixed together."', 'purple');
         addLine('', '');
-        addLine('AI CORE: "Did you see what just happened? Rules 2 and 3', 'purple');
-        addLine('          locked positions 1 and 5. That left only 2, 3, 4', 'purple');
-        addLine('          for the symbols — but they can\'t touch! So they', 'purple');
-        addLine('          HAD to go at 2 and 4. The rules didn\'t just limit', 'purple');
-        addLine('          you — they solved the puzzle FOR you."', 'purple');
+        addLine('AI CORE: "Now — if every pixel is just 3 numbers, and', 'purple');
+        addLine('          numbers are just binary (1s and 0s)... then a', 'purple');
+        addLine('          PICTURE is just a huge list of 1s and 0s!"', 'purple');
         addLine('', '');
-        addLine('AI CORE: "That\'s constraint satisfaction. Sudoku works', 'purple');
-        addLine('          the same way — each clue eliminates options', 'purple');
-        addLine('          until only one answer fits. Computers use this', 'purple');
-        addLine('          to schedule flights, plan routes, and solve', 'purple');
-        addLine('          problems with millions of moving pieces."', 'purple');
+        addLine('AI CORE: "Let me show you. Here is ONE byte — 8 bits —', 'purple');
+        addLine('          that draws a little row of pixels. A 1 means', 'purple');
+        addLine('          the pixel glows ON. A 0 means it stays dark."', 'purple');
         addLine('', '');
-        addLine('╔══════════════════════════════════════╗', 'system');
-        addLine('║        [BACKDOOR SEALED]             ║', 'system');
-        addLine('║     ALL SECURITY LAYERS LOCKED       ║', 'system');
-        addLine('╚══════════════════════════════════════╝', 'system');
+        addPre('            BYTE:   0  1  1  1  1  1  1  0');
         addLine('', '');
-        addLine('AI CORE: "Three layers. Three real ideas — hashing,', 'purple');
-        addLine('          combinatorics, constraint satisfaction. The same', 'purple');
-        addLine('          ideas that protect every password you\'ll ever', 'purple');
-        addLine('          make. VICTOR thought no one would understand', 'purple');
-        addLine('          this. He keeps being wrong about us."', 'purple');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(8), 1500);
+        addLine('AI CORE: "Quick question before I render it — how many', 'purple');
+        addLine('          pixels will be GLOWING in this byte? (Just', 'purple');
+        addLine('          count the 1s.)"', 'purple');
+        addLine('', '');
+        addLine('Type the count:', 'warning');
+        s.step = 1;
       } else {
         sound.denied();
-        const passed = checks.filter(c => c.ok);
-        if (passed.length > 0) {
-          addLine(`[${passed.length}/5 RULES PASSED] ${failed.map(f => '✗ ' + f.msg).join(' | ')}`, 'error');
-        } else {
-          addLine(`[REJECTED] ${failed.map(f => '✗ ' + f.msg).join(' | ')}`, 'error');
-        }
-        addLine('AI CORE: "You\'re getting there. Start with what you know: position 1 must be a letter, position 5 must be a digit. Now — where can the symbols fit?"', 'purple');
+        addLine('[NOT QUITE] Remember — this is LIGHT, not paint. Red light + Green light shining together. What color do you see when a red spotlight and a green spotlight overlap? (Hint: starts with Y.)', 'error');
       }
-    });
-  }
+    } else if (s.step === 1) {
+      const n = parseInt(ans);
+      if (n === 6) {
+        sound.success();
+        addLine('[YES] Six 1s — six glowing pixels. Rendering now...', 'success');
+        addLine('', '');
+
+        const term = document.getElementById('terminal');
+        // Render the single-row byte
+        renderPixelGrid(term, [[0,1,1,1,1,1,1,0]]);
+
+        addLine('AI CORE: "There it is. A row of pixels, rendered from', 'purple');
+        addLine('          8 bits. Now imagine stacking rows on top of', 'purple');
+        addLine('          each other to make a picture..."', 'purple');
+        addLine('', '');
+
+        // Render a little 8x8 smiley face
+        const smile = [
+          [0,0,1,1,1,1,0,0],
+          [0,1,0,0,0,0,1,0],
+          [1,0,1,0,0,1,0,1],
+          [1,0,0,0,0,0,0,1],
+          [1,0,1,0,0,1,0,1],
+          [1,0,0,1,1,0,0,1],
+          [0,1,0,0,0,0,1,0],
+          [0,0,1,1,1,1,0,0],
+        ];
+        renderPixelGrid(term, smile);
+
+        addLine('AI CORE: "An 8×8 smiley face — 64 bits, 8 bytes. That\'s', 'purple');
+        addLine('          it. That\'s the whole secret of images."', 'purple');
+        addLine('', '');
+        addLine('╔══════════════════════════════════════════════╗', 'success');
+        addLine('║  💡 AHA: Every photo on your phone is just    ║', 'success');
+        addLine('║     millions of tiny numbered squares.         ║', 'success');
+        addLine('║     A selfie = a LIST OF NUMBERS.              ║', 'success');
+        addLine('╚══════════════════════════════════════════════╝', 'success');
+        addLine('', '');
+        addLine('>>> PART 1 COMPLETE <<<', 'success big');
+        s.phase = 1;
+        setTimeout(runPhase, 2000);
+      } else {
+        sound.denied();
+        addLine('[COUNT AGAIN] Look at the byte: 0 1 1 1 1 1 1 0. Just tap each digit and count only the 1s. There are two 0s at the ends — everything in the middle is a 1.', 'error');
+      }
+    }
+  });
+}
+
+// ============================================================
+// PHASE 2: SOUND IS NUMBERS
+// ============================================================
+function phaseSound() {
+  const s = state.missionState;
+  s.step = 0;
+
+  addLine('', '');
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║   ▶ PART 2 of 4 — SOUND IS NUMBERS      ║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
+  addLine('', '');
+  addLine('AI CORE: "OK, pictures are numbers. But what about SOUND?', 'purple');
+  addLine('          You can\'t see sound — how do you stuff a song into', 'purple');
+  addLine('          a computer?"', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Sound is air wiggling. When you clap, you push', 'purple');
+  addLine('          air. The air pushes more air. Eventually it pushes', 'purple');
+  addLine('          your eardrum. Your brain says: CLAP!"', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "A microphone measures how hard the air is pushing,', 'purple');
+  addLine('          THOUSANDS of times every second. Each measurement', 'purple');
+  addLine('          is called a SAMPLE. Watch this wave:"', 'purple');
+  addLine('', '');
+  addPre('     +100 ┤           •                              \n      +50 ┤      •         •                          \n        0 ┤  •                 •                •     \n      -50 ┤                        •         •        \n     -100 ┤                           •               \n          └──────────────────────────────────────\n          t: 0   1    2    3    4    5    6    7   8\n\n  SAMPLES: [ 0, 50, 100, 50, 0, -50, -100, -50, 0 ]');
+  addLine('', '');
+  addLine('AI CORE: "See? The wave is just 9 numbers. Play them back', 'purple');
+  addLine('          through a speaker and the speaker wiggles exactly', 'purple');
+  addLine('          like the air was wiggling when we recorded it."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Now — CD-quality music records 44,100 samples', 'purple');
+  addLine('          per SECOND. Every second, forty-four thousand one', 'purple');
+  addLine('          hundred tiny number-measurements of the wiggle."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Quick math. If one second is 44,100 samples, how', 'purple');
+  addLine('          many samples are in a 3-SECOND song?"', 'purple');
+  addLine('', '');
+  addPre('   44,100  samples/second\n        ×  3  seconds\n   ─────────\n        ?  total samples');
+  addLine('', '');
+  addLine('Type the total number of samples:', 'warning');
+
+  setCurrentInputHandler((input) => {
+    const clean = input.replace(/[, _]/g, '').trim();
+    const n = parseInt(clean);
+    if (n === 132300) {
+      sound.success();
+      addLine('[BULLSEYE] 44,100 × 3 = 132,300 samples!', 'success');
+      addLine('', '');
+      addLine('AI CORE: "One hundred and thirty-two THOUSAND numbers —', 'purple');
+      addLine('          for a song that\'s barely long enough to say', 'purple');
+      addLine('          \'hello, how are you.\'"', 'purple');
+      addLine('', '');
+      addLine('AI CORE: "A 3-minute pop song? Over 7.9 MILLION numbers.', 'purple');
+      addLine('          That\'s a normal song. Every single one, just a', 'purple');
+      addLine('          tiny measurement of air-wiggle."', 'purple');
+      addLine('', '');
+      addLine('╔══════════════════════════════════════════════╗', 'success');
+      addLine('║  💡 AHA: Every song on Spotify is a giant     ║', 'success');
+      addLine('║     list of numbers, sampled 44,100 times a    ║', 'success');
+      addLine('║     second. Your ears turn them back into air  ║', 'success');
+      addLine('║     wiggles — and your brain calls it music.   ║', 'success');
+      addLine('╚══════════════════════════════════════════════╝', 'success');
+      addLine('', '');
+      addLine('>>> PART 2 COMPLETE <<<', 'success big');
+      s.phase = 2;
+      setTimeout(runPhase, 2000);
+    } else if (n === 44103 || n === 44100) {
+      sound.denied();
+      addLine('[CLOSE] That\'s just 1 second (or 1 sec plus a little). We want THREE seconds. So multiply, not add.', 'error');
+    } else {
+      sound.denied();
+      addLine('[TRY AGAIN] 44,100 samples every second, for 3 seconds total. 44,100 + 44,100 + 44,100 — or just 44,100 × 3. Grab a pencil if you need to!', 'error');
+    }
+  });
+}
+
+// ============================================================
+// PHASE 3: VIDEO = IMAGES + TIME
+// ============================================================
+function phaseVideo() {
+  const s = state.missionState;
+  s.step = 0;
+
+  addLine('', '');
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║   ▶ PART 3 of 4 — VIDEO IS NUMBERS × TIME║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
+  addLine('', '');
+  addLine('AI CORE: "Last one before I tie it all together. VIDEO."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Flipbook trick: draw a stickman a little different', 'purple');
+  addLine('          on each page, flip fast, and — he\'s WALKING. Your', 'purple');
+  addLine('          brain stitches still pictures into motion."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Video is the exact same trick. A movie is just a', 'purple');
+  addLine('          stack of IMAGES called FRAMES, shown in order,', 'purple');
+  addLine('          really fast — usually 30 frames every second."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Let\'s do the math for ONE FRAME of HD video', 'purple');
+  addLine('          (1080p). Each frame is 1920 wide × 1080 tall."', 'purple');
+  addLine('', '');
+  addPre('   STEP 1  —  how many PIXELS in one frame?\n\n     1920\n   ×  1080\n   ──────\n      ???');
+  addLine('', '');
+  addLine('AI CORE: "Take your time. You can use paper or a calculator', 'purple');
+  addLine('          — real engineers do. What\'s 1920 × 1080?"', 'purple');
+  addLine('', '');
+  addLine('Type the number of pixels:', 'warning');
+
+  s.step = 0;
+
+  setCurrentInputHandler((input) => {
+    const clean = input.replace(/[, _]/g, '').trim();
+    const n = parseInt(clean);
+
+    if (s.step === 0) {
+      if (n === 2073600) {
+        sound.success();
+        addLine('[CORRECT] 1920 × 1080 = 2,073,600 pixels per frame!', 'success');
+        addLine('', '');
+        addLine('AI CORE: "Over two MILLION pixels. In ONE frame. And', 'purple');
+        addLine('          remember — each pixel needs 3 numbers (R, G,', 'purple');
+        addLine('          B). We call 1 number a BYTE."', 'purple');
+        addLine('', '');
+        addPre('   STEP 2  —  how many BYTES in one frame?\n\n     2,073,600 pixels\n   ×         3 bytes/pixel\n   ──────────\n            ??? bytes');
+        addLine('', '');
+        addLine('Type the bytes-per-frame:', 'warning');
+        s.step = 1;
+      } else {
+        sound.denied();
+        addLine('[NOT QUITE] 1920 × 1080. Try it in pieces if it\'s scary: 1920 × 1000 = 1,920,000. Then 1920 × 80 = 153,600. Add them up.', 'error');
+      }
+    } else if (s.step === 1) {
+      if (n === 6220800) {
+        sound.success();
+        addLine('[YES] 2,073,600 × 3 = 6,220,800 bytes per frame!', 'success');
+        addLine('', '');
+        addLine('AI CORE: "Over six MILLION bytes for ONE still picture.', 'purple');
+        addLine('          But video plays THIRTY of those every second."', 'purple');
+        addLine('', '');
+        addPre('   STEP 3  —  how many BYTES per SECOND?\n\n     6,220,800 bytes/frame\n   ×        30 frames/second\n   ──────────\n            ??? bytes/second');
+        addLine('', '');
+        addLine('Type the bytes-per-second:', 'warning');
+        s.step = 2;
+      } else {
+        sound.denied();
+        addLine('[ALMOST] Each pixel is 3 bytes (R + G + B). We just found 2,073,600 pixels. So: 2,073,600 × 3.', 'error');
+      }
+    } else if (s.step === 2) {
+      if (n === 186624000) {
+        sound.success();
+        addLine('[INCREDIBLE] 6,220,800 × 30 = 186,624,000 bytes/second!', 'success');
+        addLine('', '');
+        addLine('AI CORE: "That\'s about 186 MEGABYTES. Per second. Of', 'purple');
+        addLine('          raw video. A 10-minute YouTube clip would be', 'purple');
+        addLine('          over 100 GIGABYTES — bigger than most phones!"', 'purple');
+        addLine('', '');
+        addLine('╔══════════════════════════════════════════════╗', 'success');
+        addLine('║  💡 AHA: Raw video is MASSIVE. That\'s why      ║', 'success');
+        addLine('║     smart people invented COMPRESSION — tricks ║', 'success');
+        addLine('║     to squish those numbers way, way smaller   ║', 'success');
+        addLine('║     so videos actually fit on your phone.      ║', 'success');
+        addLine('╚══════════════════════════════════════════════╝', 'success');
+        addLine('', '');
+        addLine('>>> PART 3 COMPLETE <<<', 'success big');
+        s.phase = 3;
+        setTimeout(runPhase, 2000);
+      } else {
+        sound.denied();
+        addLine('[ONE MORE TRY] 6,220,800 × 30. Shortcut: 6,220,800 × 3 = 18,662,400. Now × 10. (× 10 just adds a zero!)', 'error');
+      }
+    }
+  });
+}
+
+// ============================================================
+// PHASE 4: EVERYTHING IS BINARY
+// ============================================================
+function phaseEverything() {
+  addLine('', '');
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║   ▶ PART 4 of 4 — EVERYTHING IS BINARY  ║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
+  addLine('', '');
+  addLine('AI CORE: "Look what you just figured out, hacker:"', 'purple');
+  addLine('', '');
+  addPre('  ┌──────────────────────────────────────────────┐\n  │                                                │\n  │    TEXT       →  numbers  (A=65, B=66, ...)   │\n  │    IMAGES     →  numbers  (R, G, B per pixel) │\n  │    SOUND      →  numbers  (44,100 per second) │\n  │    VIDEO      →  numbers  (millions per frame)│\n  │                                                │\n  │    ...and numbers are just  1s and 0s.         │\n  │                                                │\n  └──────────────────────────────────────────────┘');
+  addLine('', '');
+  addLine('AI CORE: "Your favorite game? Numbers. The TikTok you', 'purple');
+  addLine('          watched this morning? Numbers. The text your', 'purple');
+  addLine('          friend sent? Numbers. Your voice on a phone call?', 'purple');
+  addLine('          Numbers, going through the air, turning back into', 'purple');
+  addLine('          your voice on the other side."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Final puzzle. And this one\'s sneaky."', 'purple');
+  addLine('', '');
+  addLine('   Name ONE thing your computer does', 'warning');
+  addLine('   that ISN\'T secretly just numbers.', 'warning');
+  addLine('', '');
+  addLine('(Think hard — or type what you notice.)', 'info');
+
+  setCurrentInputHandler((input) => {
+    const ans = input.toLowerCase().trim();
+    const trickAnswers = [
+      'nothing', 'none', 'nada', 'nope', 'zero', 'null',
+      'everything', 'everything is numbers', 'all numbers',
+      'all of it', 'theres nothing', "there's nothing", 'theres none',
+      "there is nothing", 'no', 'n/a', 'na', '0',
+      "it's all numbers", 'its all numbers',
+    ];
+
+    const matchesTrick = trickAnswers.some(t => ans === t || ans.includes(t));
+
+    if (matchesTrick) {
+      sound.success();
+      addLine('', '');
+      addLine('[YOU GOT IT] There is NOTHING. It\'s numbers all the way down.', 'success big');
+      addLine('', '');
+      addLine('AI CORE: "That was a trick question and you saw through', 'purple');
+      addLine('          it. Every pixel, every sound wave, every letter,', 'purple');
+      addLine('          every frame of every video — all of it is just', 'purple');
+      addLine('          numbers that are secretly 1s and 0s."', 'purple');
+      addLine('', '');
+      addLine('AI CORE: "This is the BIGGEST secret in computing. Once', 'purple');
+      addLine('          you see it, you can\'t un-see it. And it means', 'purple');
+      addLine('          something wild: if you can understand numbers,', 'purple');
+      addLine('          you can understand ANYTHING a computer does."', 'purple');
+      addLine('', '');
+      addLine('╔══════════════════════════════════════════════╗', 'success');
+      addLine('║                                                ║', 'success');
+      addLine('║   🧠 BINARY MEDIA: MASTERED                    ║', 'success');
+      addLine('║                                                ║', 'success');
+      addLine('║   You now know the Big Secret of computing.    ║', 'success');
+      addLine('║   Everything is numbers. Numbers are binary.   ║', 'success');
+      addLine('║                                                ║', 'success');
+      addLine('╚══════════════════════════════════════════════╝', 'success');
+      addLine('', '');
+      addLine('AI CORE: "Welcome to Season 2. The REAL stuff starts now."', 'purple');
+      setCurrentInputHandler(null);
+      setTimeout(() => completeMission(8), 2000);
+    } else {
+      sound.denied();
+      addLine('[KEEP THINKING] We went through text, images, sound, and video — and every one turned out to be numbers underneath. So... what does the computer do that ISN\'T numbers? (Hint: the answer might be a word that means "not a single thing".)', 'error');
+    }
+  });
 }
