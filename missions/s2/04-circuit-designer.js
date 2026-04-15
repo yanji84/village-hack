@@ -9,40 +9,35 @@ import {
 export const mission = {
   id: 11,
   num: 'S2-04',
-  title: 'CIRCUIT DESIGNER',
-  name: 'Circuit Designer',
-  desc: 'Fill entire truth tables. Discover the XOR gate. Build a half-adder from scratch.',
-  skill: 'SKILL: Truth Tables + Circuit Design',
+  title: 'SEARCHING',
+  name: 'Searching',
+  desc: 'Linear search vs binary search — how to find one item in a million, with 20 checks instead of a million.',
+  skill: 'SKILL: Search Algorithms + Big-O Intuition',
   hints: [
-    'Phase 1: walk each row carefully. Compute (A AND B) first, then (NOT A), then OR them. Try row A=0,B=0 on paper.',
-    'Phase 2: ignore gate names. Just look at WHEN the output is 1 — is it when both match, or when they disagree?',
-    'Phase 3: compare the SUM column (0,1,1,0) and CARRY column (0,0,0,1) to AND, OR, XOR tables. One matches each.',
+    'Phase 1: "worst case" means the UNLUCKIEST order — the item you want is the very last one you check.',
+    'Phase 2: every check throws away HALF. Start with 1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1. Count the arrows.',
+    'Phase 4: 2^20 is about a million. So twenty halvings shrink a million-item list down to one.',
   ],
   run: async function() {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[ADVANCED FIREWALL] Multiple gates wired together.', cls: 'system' },
-      { text: '[scanning] ████████░░░░░░░░░░░░  38%', cls: 'system' },
-      { text: '[scanning] ██████████████████░░  91%', cls: 'system' },
+      { text: '[DATA VAULT DETECTED] 1,000,000 records. Target inside.', cls: 'system' },
+      { text: '[scanning] █████░░░░░░░░░░░░░░░  24%', cls: 'system' },
+      { text: '[scanning] █████████████░░░░░░░  66%', cls: 'system' },
       { text: '[scanning] ████████████████████  100%', cls: 'system' },
-      { text: '[CIRCUIT MATRIX EXPOSED]', cls: 'system' },
+      { text: '[SEARCH INDEX EXPOSED]', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Back in Season 1, you cracked single gates —', cls: 'purple' },
-      { text: '          one AND, one OR, one NOT. That was the warm up."', cls: 'purple' },
+      { text: 'AI CORE: "VICTOR hid one record inside a vault of a MILLION.', cls: 'purple' },
+      { text: '          You have to find it. But HOW you look matters more', cls: 'purple' },
+      { text: '          than how hard you look."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Real firewalls wire DOZENS of gates together into', cls: 'purple' },
-      { text: '          circuits. To crack a circuit, engineers build a', cls: 'purple' },
-      { text: '          TRUTH TABLE — every possible input combination on', cls: 'purple' },
-      { text: '          the left, the circuit\'s output on the right."', cls: 'purple' },
+      { text: 'AI CORE: "This is the first real ALGORITHM I\'m going to show', cls: 'purple' },
+      { text: '          you. Not a puzzle — a recipe for solving a whole', cls: 'purple' },
+      { text: '          family of problems. The difference between a good', cls: 'purple' },
+      { text: '          recipe and a bad one? Twenty checks versus a million."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Two inputs means four worlds: both off, first on,', cls: 'purple' },
-      { text: '          second on, both on. Fill every row and the circuit', cls: 'purple' },
-      { text: '          has no secrets left."', cls: 'purple' },
-      { text: '', cls: '' },
-      { text: 'AI CORE: "Three phases. Fill a table. Discover a gate I', cls: 'purple' },
-      { text: '          haven\'t shown you yet. Then build something that', cls: 'purple' },
-      { text: '          lives inside every computer on Earth."', cls: 'purple' },
+      { text: 'AI CORE: "Four phases. Two ways to search. One huge payoff."', cls: 'purple' },
       { text: '', cls: '' },
     ]);
 
@@ -52,228 +47,335 @@ export const mission = {
 
 function runS2M4Phase() {
   const s = state.missionState;
-  setPhaseProgress(s.phase + 1, 3);
+  setPhaseProgress(s.phase + 1, 4);
 
   if (s.phase === 0) {
-    // Phase 1: Fill a truth table
+    // Phase 1: Linear search
     addLine('╔══════════════════════════════════════╗', 'highlight');
-    addLine('║  ▶ PHASE 1 of 3 — FILL THE TABLE     ║', 'highlight');
+    addLine('║  ▶ PHASE 1 of 4 — LINEAR SEARCH      ║', 'highlight');
     addLine('╚══════════════════════════════════════╝', 'highlight');
     addLine('', '');
-    addLine('AI CORE: "Your first circuit. Two gates wired together —', 'purple');
-    addLine('          an AND and a NOT, joined by an OR."', 'purple');
+    addLine('AI CORE: "Warm-up. Here are 10 names, in no particular order.', 'purple');
+    addLine('          Your target: EVE. Find her."', 'purple');
     addLine('', '');
-    addPre('            ┌───────┐\n     A ────▶│  AND  │──┐\n            └───────┘  │   ┌──────┐\n     B ────────────┘   ├──▶│  OR  │──▶ OUTPUT\n                       │   └──────┘\n            ┌───────┐  │\n     A ────▶│  NOT  │──┘\n            └───────┘\n\n          Formula:  (A AND B) OR (NOT A)');
+    addPre('   #1  MAYA    #2  JACK    #3  RAVI    #4  NINA\n   #5  OMAR    #6  LILA    #7  KAI     #8  ZARA\n   #9  EVE     #10 TOM');
     addLine('', '');
-    addLine('AI CORE: "Walk each row slowly. Compute (A AND B) first.', 'purple');
-    addLine('          Then (NOT A). Then OR those two results together."', 'purple');
+    addLine('AI CORE: "The simplest way: start at #1 and check each one', 'purple');
+    addLine('          in order. #1 MAYA? No. #2 JACK? No. And so on."', 'purple');
     addLine('', '');
-    addPre('  A | B | A AND B | NOT A | Output\n  0 | 0 |    ?    |   ?   |   ?\n  0 | 1 |    ?    |   ?   |   ?\n  1 | 0 |    ?    |   ?   |   ?\n  1 | 1 |    ?    |   ?   |   ?');
+    addLine('AI CORE: "Here\'s the question. In the WORST case — meaning', 'purple');
+    addLine('          the unluckiest possible arrangement — how many names', 'purple');
+    addLine('          might you have to check before you find the one you', 'purple');
+    addLine('          want?"', 'purple');
     addLine('', '');
-    addLine('Type the four outputs in order, top to bottom,', 'warning');
-    addLine('separated by spaces. Example:  0 1 0 1', 'warning');
+    addLine('Type the number:', 'warning');
+
+    s.step = 0;
+    s.hintIdx = 0;
 
     setCurrentInputHandler((input) => {
-      const vals = input.trim().split(/\s+/).map(Number);
-      // A=0,B=0: (0 AND 0) OR (NOT 0) = 0 OR 1 = 1
-      // A=0,B=1: (0 AND 1) OR (NOT 0) = 0 OR 1 = 1
-      // A=1,B=0: (1 AND 0) OR (NOT 1) = 0 OR 0 = 0
-      // A=1,B=1: (1 AND 1) OR (NOT 1) = 1 OR 0 = 1
-      const expected = [1, 1, 0, 1];
-      if (vals.length === 4 && vals.every((v, i) => v === expected[i])) {
-        sound.success();
-        addLine('', '');
-        addLine('>>> TRUTH TABLE COMPLETE <<<', 'success big');
-        addLine('', '');
-        addPre('  A | B | A AND B | NOT A | Output\n  0 | 0 |    0    |   1   |   1   ✓\n  0 | 1 |    0    |   1   |   1   ✓\n  1 | 0 |    0    |   0   |   0   ✓\n  1 | 1 |    1    |   0   |   1   ✓');
-        addLine('', '');
-        addLine('AI CORE: "See the pattern? NOT A is 1 whenever A is 0, so', 'purple');
-        addLine('          the output is ALWAYS 1 — except the one row where', 'purple');
-        addLine('          A is on and B is off. One tiny dark spot in a', 'purple');
-        addLine('          field of light. That\'s what the circuit DOES."', 'purple');
-        addLine('', '');
-        addLine('AI CORE: "You didn\'t memorize that. You computed it. That\'s', 'purple');
-        addLine('          how every chip designer on Earth verifies their', 'purple');
-        addLine('          work before burning it into silicon."', 'purple');
-        addLine('', '');
-        addLine('[PHASE 1 CLEARED — loading phase 2...]', 'system');
-        s.phase = 1;
-        s.hintIdx = 0;
-        addLine('');
-        setTimeout(runS2M4Phase, 1800);
-      } else {
-        sound.denied();
-        s.hintIdx = (s.hintIdx || 0) + 1;
-        if (vals.length !== 4 || vals.some(v => v !== 0 && v !== 1)) {
-          addLine('[FORMAT] I need exactly four numbers, each 0 or 1, separated by spaces. Like: 1 1 0 1', 'error');
-        } else if (s.hintIdx === 1) {
-          const wrongRows = vals.map((v, i) => v !== expected[i] ? i : -1).filter(i => i >= 0);
-          const rowLabels = ['A=0,B=0', 'A=0,B=1', 'A=1,B=0', 'A=1,B=1'];
-          addLine(`[CLOSE] Row(s) off: ${wrongRows.map(i => rowLabels[i]).join(', ')}. Recompute (A AND B) OR (NOT A) for each.`, 'error');
-        } else if (s.hintIdx === 2) {
-          addLine('[HINT] Try row A=0, B=0: (0 AND 0) = 0. (NOT 0) = 1. 0 OR 1 = 1. So row 1 is 1. Do the same for the others.', 'error');
+      const n = parseInt(input.replace(/[, ]/g, '').trim());
+
+      if (s.step === 0) {
+        if (n === 10) {
+          sound.success();
+          addLine('[CORRECT] Worst case: 10 checks. She could be the very last one.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Right. In the worst case, your target is dead last.', 'purple');
+          addLine('          You had to look at EVERY name to be sure."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "Now scale it up. Imagine the list isn\'t 10 names —', 'purple');
+          addLine('          it\'s ONE MILLION names. Worst case, how many do', 'purple');
+          addLine('          you have to check?"', 'purple');
+          addLine('', '');
+          addLine('Type the number (digits only, no commas needed):', 'warning');
+          s.step = 1;
+          s.hintIdx = 0;
         } else {
-          addLine('[WALKTHROUGH] Row by row: (0,0)→0 OR 1 = 1. (0,1)→0 OR 1 = 1. (1,0)→0 OR 0 = 0. (1,1)→1 OR 0 = 1. Answer: 1 1 0 1', 'error');
+          sound.denied();
+          s.hintIdx++;
+          if (s.hintIdx === 1) {
+            addLine('[THINK] "Worst case" means she could be anywhere — including the LAST slot. How many checks does that take?', 'error');
+          } else if (s.hintIdx === 2) {
+            addLine('[HINT] If EVE is in slot #10, you check #1, then #2, ... all the way to #10 before you find her. Count those checks.', 'error');
+          } else {
+            addLine('[ANSWER] The answer is 10. There are 10 names, and in the worst case she is the last one you check.', 'error');
+          }
+        }
+      } else if (s.step === 1) {
+        if (n === 1000000) {
+          sound.success();
+          addLine('', '');
+          addLine('>>> PHASE 1 COMPLETE <<<', 'success big');
+          addLine('A million names → a million checks, worst case.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "That\'s LINEAR SEARCH. Simple, honest, and slow.', 'purple');
+          addLine('          The work grows in a straight line with the list.', 'purple');
+          addLine('          Double the list, double the work. Every time."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "A modern computer can chew through a million', 'purple');
+          addLine('          comparisons in about a heartbeat. But what about a', 'purple');
+          addLine('          BILLION? A trillion? Google\'s index? Linear falls', 'purple');
+          addLine('          apart. We need a smarter recipe."', 'purple');
+          addLine('', '');
+          addLine('[PHASE 1 SEALED — loading phase 2...]', 'system');
+          s.phase = 1;
+          s.hintIdx = 0;
+          addLine('');
+          setTimeout(runS2M4Phase, 1800);
+        } else {
+          sound.denied();
+          s.hintIdx++;
+          if (s.hintIdx === 1) {
+            addLine('[THINK] Same rule as before — worst case means the target is at the very end. If the list has a million items...', 'error');
+          } else {
+            addLine('[HINT] 10 names → 10 checks. 1,000,000 names → ? Just type 1000000.', 'error');
+          }
         }
       }
     });
+
   } else if (s.phase === 1) {
-    // Phase 2: Discover XOR
+    // Phase 2: Binary search
     addLine('╔══════════════════════════════════════╗', 'highlight');
-    addLine('║  ▶ PHASE 2 of 3 — THE MYSTERY GATE   ║', 'highlight');
+    addLine('║  ▶ PHASE 2 of 4 — BINARY SEARCH      ║', 'highlight');
     addLine('╚══════════════════════════════════════╝', 'highlight');
     addLine('', '');
-    addLine('AI CORE: "Now the fun part. I haven\'t shown you this gate', 'purple');
-    addLine('          yet. No name, no description. Just its behavior."', 'purple');
+    addLine('AI CORE: "Now the magic trick. Same size list — but the', 'purple');
+    addLine('          numbers are SORTED. Your target: 42."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "See if you can figure out its rule just by looking', 'purple');
-    addLine('          at the pattern."', 'purple');
+    addPre('   position:  1   2   3   4   5   6   7   8\n   value:     3   7  11  15  19  23  27  35\n\n   position:  9  10  11  12  13  14  15  16\n   value:    39  42  47  53  59  67  73  81');
     addLine('', '');
-    addPre('  ┌──────────────────────┐\n  │  ???  MYSTERY GATE   │\n  ├──────────────────────┤\n  │   A | B | Output     │\n  │   0 | 0 |   0        │\n  │   0 | 1 |   1        │\n  │   1 | 0 |   1        │\n  │   1 | 1 |   0        │\n  └──────────────────────┘');
+    addLine('AI CORE: "Watch what sorting unlocks. Don\'t start at the', 'purple');
+    addLine('          front. Jump to the MIDDLE and ask one question:', 'purple');
+    addLine('          is my target higher or lower than this?"', 'purple');
     addLine('', '');
-    addLine('AI CORE: "Study the rows. When does a 1 appear? When does a', 'purple');
-    addLine('          0 appear? There\'s a simple rule hiding in there."', 'purple');
+    addPre('   CHECK 1 →  middle is position 8 = 35\n              42 > 35   →  throw away the BOTTOM half\n              (positions 1-8 eliminated in ONE check!)\n\n   CHECK 2 →  middle of 9-16 is position 12 = 53\n              42 < 53   →  throw away the TOP half\n\n   CHECK 3 →  middle of 9-11 is position 10 = 42\n              FOUND! ✓');
     addLine('', '');
-    addLine('  A) Output is 1 when BOTH inputs are 1', 'info');
-    addLine('  B) Output is 1 when inputs are the SAME', 'info');
-    addLine('  C) Output is 1 when inputs are DIFFERENT', 'info');
-    addLine('  D) Output is 1 when AT LEAST ONE input is 1', 'info');
+    addLine('AI CORE: "Three checks. Not ten. Three."', 'purple');
     addLine('', '');
-    addLine('Type A, B, C, or D:', 'warning');
+    addLine('AI CORE: "Every single check threw away HALF of what was', 'purple');
+    addLine('          left. 16 → 8 → 4 → 1. That\'s the whole idea."', 'purple');
+    addLine('', '');
+    addLine('AI CORE: "Now YOU tell me. If the list had 1,000 sorted items,', 'purple');
+    addLine('          and every check halves what\'s left — how many checks,', 'purple');
+    addLine('          at most, to shrink it down to 1?"', 'purple');
+    addLine('', '');
+    addPre('   1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1\n      (count the arrows!)');
+    addLine('', '');
+    addLine('Type the number of checks:', 'warning');
 
     s.hintIdx = 0;
 
     setCurrentInputHandler((input) => {
-      const ans = input.toUpperCase().trim();
-      if (ans === 'C') {
+      const n = parseInt(input.trim());
+      if (n === 10) {
         sound.success();
         addLine('', '');
-        addLine('>>> MYSTERY GATE IDENTIFIED <<<', 'success big');
+        addLine('>>> PHASE 2 COMPLETE <<<', 'success big');
+        addLine('10 checks to search 1,000 sorted items. That\'s BINARY SEARCH.', 'success');
         addLine('', '');
-        addLine('AI CORE: "You found it. Output is 1 when the inputs', 'purple');
-        addLine('          DISAGREE. Same inputs → 0. Different → 1."', 'purple');
+        addLine('AI CORE: "TEN checks for a thousand items. Linear search', 'purple');
+        addLine('          would have taken a thousand. You just went a HUNDRED', 'purple');
+        addLine('          TIMES faster — for free."', 'purple');
         addLine('', '');
-        addLine('[DECLASSIFIED] This gate has a name.', 'system');
+        addLine('AI CORE: "The trick isn\'t speed. The trick is THROWING', 'purple');
+        addLine('          AWAY. Linear search checks one and eliminates one.', 'purple');
+        addLine('          Binary search checks one and eliminates HALF."', 'purple');
         addLine('', '');
-        addPre('   ╔═══════════════════════════════════════╗\n   ║                                         ║\n   ║        X O R    ( eXclusive OR )        ║\n   ║                                         ║\n   ║     "one or the other, but not both"    ║\n   ║                                         ║\n   ╚═══════════════════════════════════════╝');
-        addLine('', '');
-        addLine('AI CORE: "Most people go their whole lives without learning', 'purple');
-        addLine('          this gate exists. It\'s not taught in school. It\'s', 'purple');
-        addLine('          not in movies. But listen to where XOR lives:"', 'purple');
-        addLine('', '');
-        addLine('  ▸ ENCRYPTION — every message app, every HTTPS connection,', 'info');
-        addLine('    every password you\'ve ever sent is scrambled with XOR.', 'info');
-        addLine('  ▸ ERROR DETECTION — the "parity bit" in your RAM, your', 'info');
-        addLine('    hard drive, your internet packets — XOR is how your', 'info');
-        addLine('    computer notices when a bit got corrupted.', 'info');
-        addLine('  ▸ COMPUTER ARITHMETIC — the math you are about to do', 'info');
-        addLine('    in Phase 3. Every number a CPU adds uses XOR.', 'info');
-        addLine('', '');
-        addLine('AI CORE: "One tiny gate. Three industries. You just', 'purple');
-        addLine('          discovered one of the most important ideas in', 'purple');
-        addLine('          computing — and you did it from a table of four', 'purple');
-        addLine('          rows. No one had to tell you."', 'purple');
-        addLine('', '');
-        addLine('[PHASE 2 CLEARED — accessing final phase...]', 'system');
+        addLine('[PHASE 2 SEALED — loading phase 3...]', 'system');
         s.phase = 2;
         s.hintIdx = 0;
         addLine('');
         setTimeout(runS2M4Phase, 1800);
-      } else if (ans === 'A') {
-        sound.denied();
-        addLine('[NOT QUITE] "Both inputs 1" is the AND gate. Check row A=1,B=1 — this gate outputs 0 there. That rules A out.', 'error');
-      } else if (ans === 'B') {
-        sound.denied();
-        addLine('[FLIPPED] Look again — when A=0,B=0 (same), the output is 0. Same inputs give 0, not 1. You\'re describing the OPPOSITE of the pattern.', 'error');
-      } else if (ans === 'D') {
-        sound.denied();
-        addLine('[CLOSE — but that\'s OR] "At least one input is 1" means A=1,B=1 would also give 1. This gate gives 0 there. Look at that last row.', 'error');
       } else {
         sound.denied();
-        addLine('[TYPE A, B, C, or D] Which rule matches the table? Focus on when the output is 1.', 'error');
+        s.hintIdx++;
+        if (s.hintIdx === 1) {
+          addLine('[COUNT THE ARROWS] 1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1. How many arrows between 1000 and 1?', 'error');
+        } else if (s.hintIdx === 2) {
+          addLine('[HINT] Each arrow is one check (one halving). Count them: 1000→500 is arrow 1, 500→250 is arrow 2... keep going to 1.', 'error');
+        } else {
+          addLine('[ANSWER] 10 checks. It takes 10 halvings to go from 1000 down to 1.', 'error');
+        }
       }
     });
+
   } else if (s.phase === 2) {
-    // Phase 3: Half-adder
+    // Phase 3: The catch
     addLine('╔══════════════════════════════════════╗', 'highlight');
-    addLine('║  ▶ PHASE 3 of 3 — BUILD A HALF-ADDER ║', 'highlight');
+    addLine('║  ▶ PHASE 3 of 4 — THE CATCH          ║', 'highlight');
     addLine('╚══════════════════════════════════════╝', 'highlight');
     addLine('', '');
-    addLine('AI CORE: "Watch closely. I\'m about to show you how every', 'purple');
-    addLine('          computer in the world adds numbers. Using nothing', 'purple');
-    addLine('          but the gates you already know."', 'purple');
+    addLine('AI CORE: "Binary search is incredible. But there\'s a catch —', 'purple');
+    addLine('          and it\'s a big one. Look at this list:"', 'purple');
     addLine('', '');
-    addLine('AI CORE: "Add two bits. You get two outputs: a SUM (what you', 'purple');
-    addLine('          write in this column) and a CARRY (what rolls over', 'purple');
-    addLine('          to the next column). Like normal addition — 7+5=12,', 'purple');
-    addLine('          you write 2, carry the 1."', 'purple');
+    addPre('   position:  1   2   3   4   5   6   7   8\n   value:    47  12  83   3  29  91  55  18\n\n   position:  9  10  11  12  13  14  15  16\n   value:    71  34   7  62  26  99   8  41');
     addLine('', '');
-    addPre('   Binary addition — all four cases:\n\n     0 + 0 = 00    sum=0   carry=0\n     0 + 1 = 01    sum=1   carry=0\n     1 + 0 = 01    sum=1   carry=0\n     1 + 1 = 10    sum=0   carry=1   ← rolls over!');
+    addLine('AI CORE: "Same 16 slots. Not sorted. Find 41."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "Now line up the SUM column and the CARRY column', 'purple');
-    addLine('          across those four rows:"', 'purple');
+    addLine('AI CORE: "Try binary search: middle is position 8 = 18. Is', 'purple');
+    addLine('          your target higher or lower? ...Well, 41 is higher', 'purple');
+    addLine('          than 18, so throw away the bottom half, right?"', 'purple');
     addLine('', '');
-    addPre('   A | B | SUM | CARRY\n   0 | 0 |  0  |   0\n   0 | 1 |  1  |   0\n   1 | 0 |  1  |   0\n   1 | 1 |  0  |   1\n\n         ↑       ↑\n     Pattern:  Pattern:\n     0,1,1,0   0,0,0,1');
+    addLine('AI CORE: "But 41 is in position 16. And also, 3 is in position', 'purple');
+    addLine('          4. Smaller things are scattered everywhere. Throwing', 'purple');
+    addLine('          away the bottom half means nothing."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "Each of those patterns IS a gate you already know.', 'purple');
-    addLine('          Which gate produces 0,1,1,0? Which produces 0,0,0,1?"', 'purple');
+    addLine('AI CORE: "Can binary search work on this unsorted list?"', 'purple');
     addLine('', '');
-    addLine('Options: AND, OR, XOR, NOT', 'info');
-    addLine('Type: <sum_gate> <carry_gate>   (example:  OR AND)', 'warning');
+    addLine('Type YES or NO:', 'warning');
 
+    s.step = 0;
     s.hintIdx = 0;
 
     setCurrentInputHandler((input) => {
-      const parts = input.toUpperCase().trim().split(/\s+/);
-      if (parts.length === 2 && parts[0] === 'XOR' && parts[1] === 'AND') {
-        sound.success();
-        addLine('', '');
-        addLine('>>> HALF-ADDER CONSTRUCTED <<<', 'success big');
-        addLine('', '');
-        addLine('     SUM  = A XOR B    CARRY = A AND B', 'success');
-        addLine('', '');
-        addPre('       A ──┬────────┐\n            │        │\n            │    ┌───▼───┐\n            ├───▶│  XOR  │──────▶ SUM\n            │    └───────┘\n       B ──┼────────┐\n            │        │\n            │    ┌───▼───┐\n            └───▶│  AND  │──────▶ CARRY\n                 └───────┘\n\n              T H E   H A L F - A D D E R');
-        addLine('', '');
-        addLine('AI CORE: "That\'s it. That\'s the whole thing. Two gates, two', 'purple');
-        addLine('          wires each. This circuit is inside every CPU ever', 'purple');
-        addLine('          built."', 'purple');
-        addLine('', '');
-        addLine('AI CORE: "And here\'s the real magic — chain half-adders', 'purple');
-        addLine('          together, feeding each CARRY into the next column,', 'purple');
-        addLine('          and you can add numbers of ANY size. 32 bits.', 'purple');
-        addLine('          64 bits. A billion bits. Same two gates, copied."', 'purple');
-        addLine('', '');
-        addPre('    column 3   column 2   column 1   column 0\n   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐\n   │ ADDER  │◀│ ADDER  │◀│ ADDER  │◀│ ADDER  │\n   └────────┘ └────────┘ └────────┘ └────────┘\n       ▲          ▲          ▲          ▲\n    carries ripple up the chain — that\'s a CPU');
-        addLine('', '');
-        addLine('AI CORE: "Two gates. That\'s all it takes to add. Every', 'purple');
-        addLine('          calculator. Every computer. Every phone. Every', 'purple');
-        addLine('          spreadsheet cell, every video game score, every', 'purple');
-        addLine('          GPS route — this is how they all add numbers."', 'purple');
-        addLine('', '');
-        addLine('AI CORE: "You didn\'t copy it out of a textbook. You', 'purple');
-        addLine('          DERIVED it. You looked at binary addition, spotted', 'purple');
-        addLine('          two patterns, matched them to gates. That is', 'purple');
-        addLine('          what computer science actually is."', 'purple');
-        addLine('', '');
-        addLine('╔══════════════════════════════════════╗', 'system');
-        addLine('║     [ADVANCED FIREWALL DISARMED]     ║', 'system');
-        addLine('║       CIRCUIT MATRIX BYPASSED        ║', 'system');
-        addLine('╚══════════════════════════════════════╝', 'system');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(11), 2000);
-      } else {
-        sound.denied();
-        s.hintIdx = (s.hintIdx || 0) + 1;
-        if (parts.length !== 2) {
-          addLine('[FORMAT] Two gate names, separated by a space. First the SUM gate, then the CARRY gate. Example: OR AND', 'error');
-        } else if (parts[0] === 'AND' && parts[1] === 'XOR') {
-          addLine('[FLIPPED] You have them backwards! You named the right two gates — just swap the order. SUM first, then CARRY.', 'error');
-        } else if (s.hintIdx === 1) {
-          addLine('[HINT] Start with CARRY: 0,0,0,1 — only a 1 when BOTH inputs are 1. Which gate does that?', 'error');
-        } else if (s.hintIdx === 2) {
-          addLine('[WALKTHROUGH] CARRY = 0,0,0,1 matches AND (only 1 when both are 1). SUM = 0,1,1,0 matches the gate you just discovered — outputs 1 when inputs DIFFER.', 'error');
+      const ans = input.toUpperCase().trim();
+      if (s.step === 0) {
+        if (ans === 'NO') {
+          sound.success();
+          addLine('[EXACTLY] Binary search fails on unsorted data. The halving rule needs ORDER to work.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Right. "Throw away the lower half" only makes', 'purple');
+          addLine('          sense if the values ARE sorted low-to-high. No', 'purple');
+          addLine('          order → no halving → no speedup."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "So what do you HAVE to do first, before binary', 'purple');
+          addLine('          search can save you? One word."', 'purple');
+          addLine('', '');
+          addLine('Type the word:', 'warning');
+          s.step = 1;
+          s.hintIdx = 0;
+        } else if (ans === 'YES') {
+          sound.denied();
+          addLine('[NO] Look again. The numbers jump around — 47, 12, 83, 3. "Higher or lower than the middle" tells you nothing about where 41 hides.', 'error');
         } else {
-          addLine('[ANSWER] Type: XOR AND  — SUM is XOR (0,1,1,0), CARRY is AND (0,0,0,1).', 'error');
+          sound.denied();
+          addLine('[TYPE YES or NO] Can binary search work on this unsorted list?', 'error');
+        }
+      } else if (s.step === 1) {
+        if (ans === 'SORT' || ans === 'SORTING' || ans === 'SORT IT') {
+          sound.success();
+          addLine('', '');
+          addLine('>>> PHASE 3 COMPLETE <<<', 'success big');
+          addLine('SORT first. THEN binary search. That\'s the deal.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "And now you know why sorting matters. It\'s not', 'purple');
+          addLine('          about neatness. It\'s not so the list looks pretty', 'purple');
+          addLine('          in a spreadsheet. Sorting is what UNLOCKS binary', 'purple');
+          addLine('          search — and every other fast lookup technique."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "Every phone contacts app. Every dictionary. Every', 'purple');
+          addLine('          database index. They\'re sorted so you can find', 'purple');
+          addLine('          anything in a handful of checks instead of a', 'purple');
+          addLine('          million. Sort once, search forever."', 'purple');
+          addLine('', '');
+          addLine('[PHASE 3 SEALED — loading final phase...]', 'system');
+          s.phase = 3;
+          s.hintIdx = 0;
+          addLine('');
+          setTimeout(runS2M4Phase, 1800);
+        } else {
+          sound.denied();
+          s.hintIdx++;
+          if (s.hintIdx === 1) {
+            addLine('[ONE WORD] What do you do to a messy list to put it in order — smallest to largest?', 'error');
+          } else {
+            addLine('[HINT] The word starts with S. You "___ the list" from smallest to largest.', 'error');
+          }
+        }
+      }
+    });
+
+  } else if (s.phase === 3) {
+    // Phase 4: The power
+    addLine('╔══════════════════════════════════════╗', 'highlight');
+    addLine('║  ▶ PHASE 4 of 4 — THE POWER          ║', 'highlight');
+    addLine('╚══════════════════════════════════════╝', 'highlight');
+    addLine('', '');
+    addLine('AI CORE: "Back to VICTOR\'s vault. One MILLION sorted records.', 'purple');
+    addLine('          One target hidden somewhere inside."', 'purple');
+    addLine('', '');
+    addPre('   ╔════════════════════════════════════════╗\n   ║        VICTOR\'S VAULT                  ║\n   ║        1,000,000 sorted records        ║\n   ║        ONE target. Find it.            ║\n   ╚════════════════════════════════════════╝');
+    addLine('', '');
+    addLine('AI CORE: "First question: if you use LINEAR search, how many', 'purple');
+    addLine('          records do you check in the worst case?"', 'purple');
+    addLine('', '');
+    addLine('Type the number:', 'warning');
+
+    s.step = 0;
+    s.hintIdx = 0;
+
+    setCurrentInputHandler((input) => {
+      const n = parseInt(input.replace(/[, ]/g, '').trim());
+
+      if (s.step === 0) {
+        if (n === 1000000) {
+          sound.success();
+          addLine('[RIGHT] Linear: 1,000,000 checks. Worst case, the target is dead last.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Now binary search. Every check halves what\'s', 'purple');
+          addLine('          left. Start at a million, halve repeatedly:"', 'purple');
+          addLine('', '');
+          addPre('   1,000,000 → 500,000 → 250,000 → 125,000 → 62,500\n   → 31,250 → 15,625 → 7,813 → 3,907 → 1,954\n   → 977 → 489 → 245 → 123 → 62\n   → 31 → 16 → 8 → 4 → 2 → 1');
+          addLine('', '');
+          addLine('AI CORE: "Count those arrows. How many halvings does it', 'purple');
+          addLine('          take to shrink a million down to 1?"', 'purple');
+          addLine('', '');
+          addLine('Hint: it\'s the power n where 2^n ≈ 1,000,000.', 'info');
+          addLine('', '');
+          addLine('Type the number of checks:', 'warning');
+          s.step = 1;
+          s.hintIdx = 0;
+        } else {
+          sound.denied();
+          s.hintIdx++;
+          if (s.hintIdx === 1) {
+            addLine('[LINEAR = ONE BY ONE] A million items, checked one at a time, worst case is... a million. Type 1000000.', 'error');
+          } else {
+            addLine('[ANSWER] 1000000. Linear search on 1,000,000 items means up to 1,000,000 checks.', 'error');
+          }
+        }
+      } else if (s.step === 1) {
+        if (n === 20) {
+          sound.success();
+          addLine('', '');
+          addLine('>>> ALL 4 PHASES SEALED <<<', 'success big');
+          addLine('1,000,000 items → 20 checks. ONE MILLION vs TWENTY.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Say it out loud. Twenty. Twenty checks to find', 'purple');
+          addLine('          one record in a MILLION. Because 2 × 2 × 2 ×', 'purple');
+          addLine('          ... twenty times is about a million."', 'purple');
+          addLine('', '');
+          addPre('    2^10 =        1,024   (about a thousand)\n    2^20 =    1,048,576   (about a million)\n    2^30 = 1,073,741,824  (about a billion)\n\n   → A BILLION items? Only 30 checks.');
+          addLine('', '');
+          addLine('AI CORE: "That\'s the whole reason algorithms are a real', 'purple');
+          addLine('          subject. Same problem, same computer, same data —', 'purple');
+          addLine('          but a million steps versus twenty. That is the', 'purple');
+          addLine('          difference between a good algorithm and a bad one."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "Every search bar you\'ve ever used. Every', 'purple');
+          addLine('          autocomplete. Every database lookup. They don\'t', 'purple');
+          addLine('          scan a billion rows — they HALVE. Over and over.', 'purple');
+          addLine('          This is what computer science IS."', 'purple');
+          addLine('', '');
+          addLine('╔══════════════════════════════════════╗', 'system');
+          addLine('║       [DATA VAULT CRACKED]           ║', 'system');
+          addLine('║    TARGET RECORD — 20 CHECKS TO      ║', 'system');
+          addLine('║    FIND ONE IN A MILLION             ║', 'system');
+          addLine('╚══════════════════════════════════════╝', 'system');
+          setCurrentInputHandler(null);
+          setTimeout(() => completeMission(11), 2000);
+        } else {
+          sound.denied();
+          s.hintIdx++;
+          if (s.hintIdx === 1) {
+            addLine('[COUNT THE ARROWS] Count each arrow in that chain from 1,000,000 all the way down to 1. Each one is one check.', 'error');
+          } else if (s.hintIdx === 2) {
+            addLine('[HINT] 2^10 ≈ 1,000. 2^20 ≈ 1,000,000. So how many halvings to go from a million to one?', 'error');
+          } else {
+            addLine('[ANSWER] 20. Twenty halvings shrinks 1,000,000 down to 1 — because 2^20 is about a million.', 'error');
+          }
         }
       }
     });
