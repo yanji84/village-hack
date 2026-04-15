@@ -3,312 +3,343 @@ import {
   state, sound,
   addLine, addPre, typeLines,
   setPhaseProgress, setCurrentInputHandler,
-  completeMission, renderMaze,
+  completeMission,
 } from '../../engine.js';
-
-const loopMazes = [
-  {
-    name: 'Straight Shot',
-    grid: [
-      '###########',
-      '#@.......X#',
-      '###########',
-    ],
-    budget: 1,
-    intro: 'One hallway. No turns. But look at the old way: RIGHT, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT. Eight commands. Your new router can do better.',
-    hint: 'One straight run = ONE command. How far is the goal?',
-    lesson: 'One command replaced eight. That is the whole point of a loop.',
-  },
-  {
-    name: 'The Corner',
-    grid: [
-      '##########',
-      '#@.......#',
-      '########.#',
-      '########X#',
-      '##########',
-    ],
-    budget: 2,
-    intro: 'One turn. Count the STRAIGHT RUNS \u2014 the corner is what separates commands.',
-    hint: 'A run right, then a run down. Two runs = two commands.',
-    lesson: 'Every turn in a maze is a new command. No turns = one command. One turn = two.',
-  },
-  {
-    name: 'Zigzag Vault',
-    grid: [
-      '##########',
-      '#@.......#',
-      '##.#######',
-      '#........#',
-      '########.#',
-      '#........#',
-      '#X########',
-      '##########',
-    ],
-    budget: 6,
-    intro: 'Five turns now. Trace the path with your finger FIRST, counting each straight run. Then type.',
-    hint: 'Six runs total. If you planned it step-by-step, you will blow the budget.',
-    lesson: 'Loops turn tedious work into thinking work. You traded typing for planning.',
-  },
-  {
-    name: 'The Gauntlet',
-    grid: [
-      '############',
-      '#@.........#',
-      '##########.#',
-      '#..........#',
-      '#.##########',
-      '#.........X#',
-      '############',
-    ],
-    budget: 5,
-    intro: 'Big maze. But structure is what matters, not size. Look for the runs \u2014 they are LONG here.',
-    hint: 'Four turns. Five runs. The runs are 9-2-9-2-9. See the pattern?',
-    lesson: 'Doubling the maze size barely changed the command count. Loops make size cheap.',
-  },
-];
 
 export const mission = {
   id: 10,
   num: 'S2-03',
-  title: 'LOOP ROUTER',
-  name: 'Loop Router',
-  desc: 'Upgrade from one-move-at-a-time to REPEAT loops. Learn the single most important idea in programming.',
-  skill: 'SKILL: Loops + Abstraction',
+  title: 'FUNCTIONS',
+  name: 'Functions',
+  desc: 'Name a block of code, call it anywhere. The single biggest leap in programming: DRY, composition, and building software from tiny machines.',
+  skill: 'SKILL: Functions + Abstraction + Composition',
   hints: [
-    'Before typing ANYTHING, trace the path with your finger and count the straight runs. Each run = one command.',
-    'Turns separate commands. A straight hallway with no turns is always ONE command, no matter how long.',
-    'Over budget? You are typing move-by-move. Look for runs of 3+ steps and compress them with REPEAT.',
+    'A function is a machine: input goes in, output comes out. double(7) means "run double with x=7". What does x * 2 give you?',
+    'double(double(3)) runs INSIDE-OUT. First solve the inner call, then feed the answer to the outer one.',
+    'For is_hot(35): first convert 35°C to °F using the formula, then check if it is above 90.',
   ],
   run: async function() {
-    state.missionState = { mazeIdx: 0, hintIdx: 0 };
+    state.missionState = { phase: 0 };
 
     await typeLines([
-      { text: '[DEEP NETWORK] Backdoor buried in the routing layer.', cls: 'system' },
+      { text: '[AI CORE — DEEPER LAYER]', cls: 'system' },
       { text: '[scanning] ████████████████████  100%', cls: 'system' },
+      { text: '[BACKDOOR FOUND] Hidden in the function library.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Back in Season 1, you walked mazes step by step.', cls: 'purple' },
-      { text: '          UP, UP, UP, RIGHT, RIGHT, RIGHT. It worked \u2014', cls: 'purple' },
-      { text: '          but it was slow, and your fingers got tired."', cls: 'purple' },
+      { text: 'AI CORE: "Back in Season 1 you wrote programs line by line.', cls: 'purple' },
+      { text: '          Every step, spelled out. That works... until your', cls: 'purple' },
+      { text: '          program has a thousand steps. Then it is misery."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Professional programmers hate tedium. They', cls: 'purple' },
-      { text: '          invented something called a LOOP. A loop is a', cls: 'purple' },
-      { text: '          promise to the computer:"', cls: 'purple' },
+      { text: 'AI CORE: "Today you learn the single biggest leap in all of', cls: 'purple' },
+      { text: '          programming: the FUNCTION. A function is a block', cls: 'purple' },
+      { text: '          of code you give a NAME. Once named, you can call', cls: 'purple' },
+      { text: '          it anywhere, as many times as you want."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: '            \u201cDo this thing. This many times.\u201d', cls: 'info' },
-      { text: '', cls: '' },
-      { text: 'AI CORE: "One instruction replaces a hundred. This might be', cls: 'purple' },
-      { text: '          the most important idea in all of programming.', cls: 'purple' },
-      { text: '          Every app on your phone runs loops billions of', cls: 'purple' },
-      { text: '          times a second. Without loops, software would not', cls: 'purple' },
-      { text: '          exist."', cls: 'purple' },
-      { text: '', cls: '' },
-      { text: 'AI CORE: "I\u2019ve upgraded your router. You used to write one', cls: 'purple' },
-      { text: '          instruction per step. Now you can write one', cls: 'purple' },
-      { text: '          instruction for a hundred steps:"', cls: 'purple' },
-      { text: '', cls: '' },
-      { text: '            REPEAT 3 UP', cls: 'info' },
-      { text: '', cls: '' },
-      { text: 'AI CORE: "Chain several with commas:"', cls: 'purple' },
-      { text: '', cls: '' },
-      { text: '            REPEAT 3 UP, REPEAT 2 RIGHT, REPEAT 4 DOWN', cls: 'info' },
-      { text: '', cls: '' },
-      { text: 'AI CORE: "Your goal is different from Season 1. Before, you', cls: 'purple' },
-      { text: '          counted MOVES. Now you count COMMANDS. Solve each', cls: 'purple' },
-      { text: '          maze in the fewest commands. Think first, type', cls: 'purple' },
-      { text: '          second \u2014 that is what programming really is."', cls: 'purple' },
+      { text: 'AI CORE: "VICTOR hid his backdoor inside a tangle of', cls: 'purple' },
+      { text: '          copy-pasted code. If you can see why functions', cls: 'purple' },
+      { text: '          beat copy-paste, you can untangle him. Ready?"', cls: 'purple' },
       { text: '', cls: '' },
     ]);
 
-    loadLoopMaze(0);
+    runPhase();
   },
 };
 
-const TOTAL_PHASES = loopMazes.length + 1; // mazes + final insight
+const TOTAL_PHASES = 4;
 
-function loadLoopMaze(idx) {
-  const m = loopMazes[idx];
+function runPhase() {
   const s = state.missionState;
-  setPhaseProgress(idx + 1, TOTAL_PHASES);
-  s.maze = m.grid.map(r => r.split(''));
-  s.budget = m.budget;
+  setPhaseProgress(s.phase + 1, TOTAL_PHASES);
 
-  for (let r = 0; r < s.maze.length; r++) {
-    for (let c = 0; c < s.maze[r].length; c++) {
-      if (s.maze[r][c] === '@') { s.pr = r; s.pc = c; }
-    }
-  }
+  if (s.phase === 0) runPhase1();
+  else if (s.phase === 1) runPhase2();
+  else if (s.phase === 2) runPhase3();
+  else if (s.phase === 3) runPhase4();
+}
 
+// ────────────────────────────────────────────────────────────
+// PHASE 1: What is a function?
+// ────────────────────────────────────────────────────────────
+function runPhase1() {
+  const s = state.missionState;
+
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║  ▶ PHASE 1 of 4 — WHAT IS A FUNCTION?    ║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
   addLine('', '');
-  addLine('\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501', 'highlight');
-  addLine(`\u25b6 MAZE ${idx + 1} of ${loopMazes.length} \u2014 ${m.name}`, 'highlight');
-  addLine('\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501', 'highlight');
+  addLine('AI CORE: "Here is my first function. It is called DOUBLE."', 'purple');
   addLine('', '');
-  addLine(`AI CORE: "${m.intro}"`, 'purple');
+  addPre('   def double(x):\n       return x * 2');
   addLine('', '');
-  renderMaze();
+  addLine('AI CORE: "Read it like English. \'Define a function named', 'purple');
+  addLine('          double. It takes one input, x. It returns x times 2.\'"', 'purple');
   addLine('', '');
-  addLine(`[BUDGET] ${m.budget} command${m.budget === 1 ? '' : 's'} max   \u2022   @ = you   \u2022   X = goal   \u2022   . = breadcrumb trail`, 'info');
-  addLine(`HINT: ${m.hint}`, 'warning');
+  addLine('AI CORE: "Now I CALL the function by writing its name with a', 'purple');
+  addLine('          value in parentheses."', 'purple');
   addLine('', '');
-  addLine('Type your program (example: REPEAT 3 RIGHT, REPEAT 2 UP):', 'warning');
+  addPre('     ┌──────────┐\n  7 ─▶│  double  │─▶ ?\n     └──────────┘\n         x * 2');
+  addLine('', '');
+  addLine('AI CORE: "What does double(7) return?"', 'purple');
+  addLine('', '');
+  addLine('Type the number:', 'warning');
+
+  s.p1Step = 0;
 
   setCurrentInputHandler((input) => {
-    const program = input.toUpperCase().trim();
-    const commands = program.split(',').map(c => c.trim()).filter(c => c);
+    const n = parseInt(input.trim());
 
-    if (commands.length === 0) {
-      addLine('[EMPTY] Type at least one command. Example: REPEAT 5 RIGHT', 'error');
-      return;
-    }
-
-    // Detect uncompressed move-by-move typing first for a friendlier message.
-    const singleMoves = commands.filter(c => ['UP','DOWN','LEFT','RIGHT'].includes(c)).length;
-
-    if (commands.length > s.budget) {
-      sound.denied();
-      addLine(`[OVER BUDGET] You used ${commands.length} commands. The limit is ${s.budget}.`, 'error');
-      if (singleMoves >= 3) {
-        addLine(`AI CORE: "You typed ${singleMoves} single moves. Look for runs of 3 or more in the same direction and wrap them in REPEAT."`, 'purple');
+    if (s.p1Step === 0) {
+      if (n === 14) {
+        sound.success();
+        addLine('[YES] double(7) = 7 × 2 = 14. The machine ran. ✓', 'success');
+        addLine('', '');
+        addLine('AI CORE: "Good. Now here is the wild part. Functions can', 'purple');
+        addLine('          be called INSIDE other function calls."', 'purple');
+        addLine('', '');
+        addPre('   double( double( 3 ) )\n     │        │\n     │        └─▶ runs first: double(3) = 6\n     │\n     └─▶ then runs: double(6) = ?');
+        addLine('', '');
+        addLine('AI CORE: "Solve it inside-out. What does double(double(3))', 'purple');
+        addLine('          return?"', 'purple');
+        addLine('', '');
+        addLine('Type the number:', 'warning');
+        s.p1Step = 1;
       } else {
-        addLine('AI CORE: "Count the straight runs in the maze. That is your command count. If it is more than the budget, there is a shorter path."', 'purple');
-      }
-      return;
-    }
-
-    // Reset maze to fresh state for execution
-    s.maze = m.grid.map(r => r.split(''));
-    for (let r = 0; r < s.maze.length; r++) {
-      for (let c = 0; c < s.maze[r].length; c++) {
-        if (s.maze[r][c] === '@') { s.pr = r; s.pc = c; }
-      }
-    }
-
-    const dirMap = { UP: [-1,0], DOWN: [1,0], LEFT: [0,-1], RIGHT: [0,1] };
-
-    for (const cmd of commands) {
-      let match = cmd.match(/^REPEAT\s+(\d+)\s+(UP|DOWN|LEFT|RIGHT)$/);
-      let count = 1, dir;
-      if (match) { count = parseInt(match[1]); dir = match[2]; }
-      else if (['UP','DOWN','LEFT','RIGHT'].includes(cmd)) dir = cmd;
-      else {
         sound.denied();
-        addLine(`[SYNTAX ERROR] "${cmd}" isn\u2019t a command I know.`, 'error');
-        addLine('Use: REPEAT <number> <UP|DOWN|LEFT|RIGHT>. Example: REPEAT 3 UP', 'info');
-        return;
+        addLine('[NOT QUITE] The function says: return x * 2. When you call double(7), x becomes 7. So the output is 7 × 2. What\u2019s 7 × 2?', 'error');
       }
-
-      const [dr, dc] = dirMap[dir];
-      for (let i = 0; i < count; i++) {
-        const nr = s.pr + dr;
-        const nc = s.pc + dc;
-        if (nr < 0 || nr >= s.maze.length || nc < 0 || nc >= s.maze[0].length || s.maze[nr][nc] === '#') {
-          sound.denied();
-          addLine(`[CRASH] "${cmd}" hit a wall on step ${i+1}.`, 'error');
-          renderMaze();
-          addLine('AI CORE: "No worries \u2014 every programmer debugs. Check where the walls force a turn, then try again."', 'purple');
-          return;
-        }
-        if (s.maze[nr][nc] === 'X') {
-          s.maze[s.pr][s.pc] = ',';
-          s.maze[nr][nc] = '@';
-          s.pr = nr; s.pc = nc;
-          sound.success();
-          addLine('', '');
-          addLine(`[GOAL] Solved in ${commands.length} command${commands.length === 1 ? '' : 's'} (budget was ${s.budget}).`, 'success');
-          renderMaze();
-          addLine('', '');
-          addLine(`AI CORE: "${m.lesson}"`, 'purple');
-
-          s.mazeIdx = idx + 1;
-          if (s.mazeIdx < loopMazes.length) {
-            addLine('', '');
-            setTimeout(() => loadLoopMaze(s.mazeIdx), 1400);
-          } else {
-            setTimeout(runFinalInsight, 1600);
-          }
-          return;
-        }
-        s.maze[s.pr][s.pc] = ',';
-        s.maze[nr][nc] = '@';
-        s.pr = nr; s.pc = nc;
+    } else if (s.p1Step === 1) {
+      if (n === 12) {
+        sound.success();
+        addLine('[EXACTLY] double(3) = 6. Then double(6) = 12. ✓', 'success');
+        addLine('', '');
+        addLine('>>> PHASE 1 CLEARED <<<', 'success big');
+        addLine('', '');
+        addLine('AI CORE: "Remember those two ideas. A function is a', 'purple');
+        addLine('          MACHINE — input in, output out. And the output of', 'purple');
+        addLine('          one machine can become the input of another. You', 'purple');
+        addLine('          just chained two machines together."', 'purple');
+        s.phase = 1;
+        setTimeout(runPhase, 1600);
+      } else if (n === 6) {
+        sound.denied();
+        addLine('[HALF WAY] You solved the INNER call — double(3) = 6. But there\u2019s still an OUTER double wrapped around it. Now feed 6 into double again. What do you get?', 'error');
+      } else {
+        sound.denied();
+        addLine('[WORK INSIDE-OUT] First: double(3) = ? Then: double of THAT answer. Two steps.', 'error');
       }
     }
-
-    renderMaze();
-    addLine('[PROGRAM ENDED] Your program ran out before reaching the goal. Trace where you stopped and try again.', 'warning');
   });
 }
 
-function runFinalInsight() {
+// ────────────────────────────────────────────────────────────
+// PHASE 2: Why functions matter — DRY
+// ────────────────────────────────────────────────────────────
+function runPhase2() {
   const s = state.missionState;
-  setPhaseProgress(TOTAL_PHASES, TOTAL_PHASES);
-  setCurrentInputHandler(null);
 
   addLine('', '');
-  addLine('\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501', 'highlight');
-  addLine('\u25b6 FINAL INSIGHT \u2014 WHY THIS MATTERS', 'highlight');
-  addLine('\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501', 'highlight');
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║  ▶ PHASE 2 of 4 — WHY FUNCTIONS MATTER   ║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
   addLine('', '');
-  addLine('AI CORE: "One more question. No maze this time \u2014 just think."', 'purple');
+  addLine('AI CORE: "VICTOR\u2019s backdoor calculates tax on three prices.', 'purple');
+  addLine('          Look how he wrote it WITHOUT functions:"', 'purple');
   addLine('', '');
-  addLine('AI CORE: "Imagine a maze that is one GIANT straight hallway,', 'purple');
-  addLine('          100 squares long. No turns. Just a long, boring', 'purple');
-  addLine('          corridor from @ to X."', 'purple');
+  addPre('   # Price 1\n   subtotal = 10\n   tax = subtotal * 0.08\n   total = subtotal + tax\n   print(total)\n\n   # Price 2\n   subtotal = 25\n   tax = subtotal * 0.08\n   total = subtotal + tax\n   print(total)\n\n   # Price 3\n   subtotal = 50\n   tax = subtotal * 0.08\n   total = subtotal + tax\n   print(total)');
   addLine('', '');
-  addPre('  #####################...###########\n  #@..................................X#\n  #####################...###########\n                 (100 squares long)');
+  addLine('AI CORE: "Same four lines. Copied three times. Now the same', 'purple');
+  addLine('          thing WITH a function:"', 'purple');
   addLine('', '');
-  addLine('AI CORE: "WITHOUT loops, how many commands?', 'purple');
-  addLine('          WITH one REPEAT, how many commands?"', 'purple');
+  addPre('   def price_with_tax(subtotal):\n       tax = subtotal * 0.08\n       return subtotal + tax\n\n   print(price_with_tax(10))\n   print(price_with_tax(25))\n   print(price_with_tax(50))');
   addLine('', '');
-  addLine('Type your answer as TWO numbers separated by a space (without with):', 'warning');
-  addLine('(Example: if you think 50 without and 2 with, type: 50 2)', 'info');
-
-  s.insightStep = 0;
+  addLine('AI CORE: "Same result. But here is the test. Imagine the tax', 'purple');
+  addLine('          rate just changed — it is now 0.09 instead of 0.08."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "In the WITHOUT-functions version, how many lines do', 'purple');
+  addLine('          you have to change? In the WITH-function version?"', 'purple');
+  addLine('', '');
+  addLine('Type two numbers separated by a space (without with):', 'warning');
+  addLine('(Example: if you think 9 and 2, type: 9 2)', 'info');
 
   setCurrentInputHandler((input) => {
     const parts = input.trim().split(/\s+/).map(n => parseInt(n));
     if (parts.length !== 2 || parts.some(isNaN)) {
-      addLine('[FORMAT] Type two numbers with a space. Example: 100 1', 'error');
+      addLine('[FORMAT] Type two numbers with a space. Example: 3 1', 'error');
       return;
     }
-    const [without, withLoop] = parts;
+    const [without, withFn] = parts;
 
-    if (without === 100 && withLoop === 1) {
+    if (without === 3 && withFn === 1) {
       sound.success();
       addLine('', '');
-      addLine('>>> 100 vs 1 <<<', 'success big');
+      addLine('>>> 3 vs 1 <<<', 'success big');
       addLine('', '');
-      addLine('AI CORE: "One command. One. That is the whole magic.', 'purple');
-      addLine('          A hundred moves, packed into a single line of', 'purple');
-      addLine('          instruction. And it works the exact same way', 'purple');
-      addLine('          for a MILLION moves, or a BILLION."', 'purple');
+      addLine('AI CORE: "Three edits versus one. And that is a TINY', 'purple');
+      addLine('          program. Real programs call functions thousands of', 'purple');
+      addLine('          times. Fix once, fixed everywhere."', 'purple');
       addLine('', '');
-      addLine('AI CORE: "This is called ABSTRACTION \u2014 describing WHAT', 'purple');
-      addLine('          you want instead of every tiny step. When you', 'purple');
-      addLine('          watch a video, thousands of loops are running.', 'purple');
-      addLine('          When a game renders a screen, loops. When your', 'purple');
-      addLine('          phone scrolls a list, loops."', 'purple');
+      addLine('AI CORE: "This rule has a name: DRY — Don\u2019t Repeat Yourself.', 'purple');
+      addLine('          Every time you catch yourself copy-pasting code,', 'purple');
+      addLine('          a function wants to be born."', 'purple');
       addLine('', '');
-      addLine('AI CORE: "You didn\u2019t just solve mazes today. You learned', 'purple');
-      addLine('          to think like a programmer: find the pattern,', 'purple');
-      addLine('          then compress it."', 'purple');
-      addLine('', '');
-      addLine('╔══════════════════════════════════════╗', 'system');
-      addLine('║      [ROUTING LAYER CLEARED]         ║', 'system');
-      addLine('║       LOOP ABSTRACTION LOCKED        ║', 'system');
-      addLine('╚══════════════════════════════════════╝', 'system');
-      setCurrentInputHandler(null);
-      setTimeout(() => completeMission(10), 1800);
-    } else if (without === 100 && withLoop !== 1) {
+      addLine('AI CORE: "Copy-paste is how bugs hide. You fix one copy and', 'purple');
+      addLine('          forget the other two. Functions kill that whole', 'purple');
+      addLine('          category of mistake."', 'purple');
+      s.phase = 2;
+      setTimeout(runPhase, 1800);
+    } else if (without === 3 && withFn !== 1) {
       sound.denied();
-      addLine('[HALF RIGHT] Yes \u2014 100 commands without loops, one per step. But WITH loops, how few commands could cover all 100 squares in one straight direction?', 'error');
-    } else if (withLoop === 1 && without !== 100) {
+      addLine('[HALF RIGHT] Yes — 3 copies without functions. But WITH a function, the tax rate appears in ONE place: inside the function definition. So how many lines to edit?', 'error');
+    } else if (withFn === 1 && without !== 3) {
       sound.denied();
-      addLine('[HALF RIGHT] Yes \u2014 one REPEAT command covers the whole hallway. But WITHOUT loops, you\u2019d need one command per square. How many squares?', 'error');
+      addLine('[HALF RIGHT] Yes — one edit with the function. But WITHOUT it, how many copies of \u201csubtotal * 0.08\u201d are in VICTOR\u2019s code? Count them.', 'error');
     } else {
       sound.denied();
-      addLine('[THINK AGAIN] Without loops: one command = one move. 100 squares = ? commands. With a loop: REPEAT 100 RIGHT is one single command.', 'error');
+      addLine('[LOOK AGAIN] Count the lines containing \u201c* 0.08\u201d in each version. That is your answer.', 'error');
+    }
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// PHASE 3: Functions with multiple inputs
+// ────────────────────────────────────────────────────────────
+function runPhase3() {
+  const s = state.missionState;
+
+  addLine('', '');
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║  ▶ PHASE 3 of 4 — MULTIPLE INPUTS        ║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
+  addLine('', '');
+  addLine('AI CORE: "So far your functions took one input. But most', 'purple');
+  addLine('          functions take several. Look at this one:"', 'purple');
+  addLine('', '');
+  addPre('   def area(width, height):\n       return width * height');
+  addLine('', '');
+  addLine('AI CORE: "Two inputs this time. When you call it, you pass', 'purple');
+  addLine('          both values in order."', 'purple');
+  addLine('', '');
+  addPre('            ┌────────┐\n   5, 3  ─▶│  area  │─▶ ?\n            └────────┘\n         width * height');
+  addLine('', '');
+  addLine('AI CORE: "What is area(5, 3)?"', 'purple');
+  addLine('', '');
+  addLine('Type the number:', 'warning');
+
+  s.p3Step = 0;
+
+  setCurrentInputHandler((input) => {
+    if (s.p3Step === 0) {
+      const n = parseInt(input.trim());
+      if (n === 15) {
+        sound.success();
+        addLine('[CORRECT] area(5, 3) = 5 × 3 = 15. ✓', 'success');
+        addLine('', '');
+        addLine('AI CORE: "Now — here is the real power. Functions are not', 'purple');
+        addLine('          just math. A function can do ANYTHING: loops,', 'purple');
+        addLine('          decisions, printing, whatever. Watch this:"', 'purple');
+        addLine('', '');
+        addPre('   def greet(name, times):\n       i = 0\n       while i < times:\n           print("Hello, " + name + "!")\n           i = i + 1');
+        addLine('', '');
+        addLine('AI CORE: "A loop, tucked inside a function. Two inputs:', 'purple');
+        addLine('          a name and a number of times."', 'purple');
+        addLine('', '');
+        addLine('AI CORE: "If I call greet("Ada", 3), how many lines of', 'purple');
+        addLine('          output appear?"', 'purple');
+        addLine('', '');
+        addLine('Type the number:', 'warning');
+        s.p3Step = 1;
+      } else {
+        sound.denied();
+        addLine('[CHECK THE FORMULA] The function returns width * height. You passed width=5 and height=3. What\u2019s 5 × 3?', 'error');
+      }
+    } else if (s.p3Step === 1) {
+      const n = parseInt(input.trim());
+      if (n === 3) {
+        sound.success();
+        addLine('[YES] Three "Hello, Ada!" lines. The loop runs once per count. ✓', 'success');
+        addLine('', '');
+        addLine('>>> PHASE 3 CLEARED <<<', 'success big');
+        addLine('', '');
+        addLine('AI CORE: "Functions are mini-programs. They can contain', 'purple');
+        addLine('          loops, decisions, other function calls — anything', 'purple');
+        addLine('          a normal program can do. Think of them as', 'purple');
+        addLine('          programs you can REUSE by name."', 'purple');
+        s.phase = 3;
+        setTimeout(runPhase, 1600);
+      } else {
+        sound.denied();
+        addLine('[WATCH THE LOOP] The \u201ctimes\u201d input is 3. The while loop runs while i < 3, so it runs when i = 0, 1, 2. That\u2019s how many prints?', 'error');
+      }
+    }
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// PHASE 4: Building blocks — composition
+// ────────────────────────────────────────────────────────────
+function runPhase4() {
+  const s = state.missionState;
+
+  addLine('', '');
+  addLine('╔══════════════════════════════════════════╗', 'highlight');
+  addLine('║  ▶ PHASE 4 of 4 — BUILDING BLOCKS        ║', 'highlight');
+  addLine('╚══════════════════════════════════════════╝', 'highlight');
+  addLine('', '');
+  addLine('AI CORE: "Last phase. The real magic of functions is that', 'purple');
+  addLine('          they STACK. Small functions call other small', 'purple');
+  addLine('          functions. Like LEGO blocks."', 'purple');
+  addLine('', '');
+  addPre('   def celsius_to_fahrenheit(c):\n       return c * 9 / 5 + 32\n\n   def is_hot(temp_c):\n       return celsius_to_fahrenheit(temp_c) > 90');
+  addLine('', '');
+  addLine('AI CORE: "Read carefully. is_hot takes a celsius temperature,', 'purple');
+  addLine('          converts it to fahrenheit by CALLING the other', 'purple');
+  addLine('          function, and checks if the result is above 90."', 'purple');
+  addLine('', '');
+  addLine('AI CORE: "Trace through is_hot(35) step by step:"', 'purple');
+  addLine('', '');
+  addPre('   STEP 1 — inner call:\n     celsius_to_fahrenheit(35)\n     = 35 * 9 / 5 + 32\n     = 63 + 32\n     = 95\n\n   STEP 2 — outer check:\n     is 95 > 90 ?');
+  addLine('', '');
+  addLine('AI CORE: "What does is_hot(35) return — TRUE or FALSE?"', 'purple');
+  addLine('', '');
+  addLine('Type TRUE or FALSE:', 'warning');
+
+  setCurrentInputHandler((input) => {
+    const ans = input.trim().toUpperCase();
+    if (ans === 'TRUE') {
+      sound.success();
+      addLine('', '');
+      addLine('>>> ALL 4 PHASES CLEARED <<<', 'success big');
+      addLine('35°C = 95°F, and 95 > 90, so is_hot returns TRUE. ✓', 'success');
+      addLine('', '');
+      addLine('AI CORE: "See what you just did? You used one function to', 'purple');
+      addLine('          BUILD another. celsius_to_fahrenheit is a tiny', 'purple');
+      addLine('          block. is_hot is a block built FROM that block."', 'purple');
+      addLine('', '');
+      addLine('AI CORE: "Real software is not one giant program. It is', 'purple');
+      addLine('          THOUSANDS of tiny functions calling each other.', 'purple');
+      addLine('          A web browser is millions of them. A game engine,', 'purple');
+      addLine('          tens of millions."', 'purple');
+      addLine('', '');
+      addLine('AI CORE: "Every one of them is just: take some input, do a', 'purple');
+      addLine('          small job, return an output. LEGO blocks, all the', 'purple');
+      addLine('          way down."', 'purple');
+      addLine('', '');
+      addLine('╔══════════════════════════════════════╗', 'system');
+      addLine('║    [FUNCTION LIBRARY SEALED]         ║', 'system');
+      addLine('║   ABSTRACTION + DRY + COMPOSITION    ║', 'system');
+      addLine('╚══════════════════════════════════════╝', 'system');
+      addLine('', '');
+      addLine('AI CORE: "Three ideas you will use every single day of', 'purple');
+      addLine('          programming: name your code, don\u2019t repeat yourself,', 'purple');
+      addLine('          and build big things from small things."', 'purple');
+      setCurrentInputHandler(null);
+      setTimeout(() => completeMission(10), 1800);
+    } else if (ans === 'FALSE') {
+      sound.denied();
+      addLine('[CHECK STEP 2] You had the formula right if you got this far: 35 * 9 / 5 + 32 = 95. Now compare: is 95 greater than 90? If yes, is_hot returns TRUE.', 'error');
+    } else {
+      sound.denied();
+      addLine('[TYPE TRUE OR FALSE] is_hot returns a comparison result. 95 > 90 is either TRUE or FALSE.', 'error');
     }
   });
 }
