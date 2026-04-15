@@ -318,8 +318,10 @@ function runS2M5Phase() {
           addLine('          how doubling the input quadruples the work.', 'purple');
           addLine('          That INTUITION is what separates a programmer', 'purple');
           addLine('          who writes code from one who knows why it\'s', 'purple');
-          addLine('          slow. Next layer, we\'ll see what happens when', 'purple');
-          addLine('          smart people refuse to accept O(n²)."', 'purple');
+          addLine('          slow. Next layer goes even deeper \u2014 below the', 'purple');
+          addLine('          code, down to the GATES that make every', 'purple');
+          addLine('          computation possible. Victor\u2019s firewall lives', 'purple');
+          addLine('          there, and we\u2019re going to crack it open."', 'purple');
           setCurrentInputHandler(null);
           setTimeout(() => completeMission(12), 1500);
         } else if (answer === 'YES') {

@@ -586,8 +586,9 @@ async function runFinale() {
   await sleep(1400);
   await typeLines([
     { text: `AI CORE: "And now you\u2019ve chained binary, arrays, functions,`, cls: 'purple' },
-    { text: '          searching, and cryptanalysis into a single hack.', cls: 'purple' },
-    { text: '          You closed the loop on Season 2. On all of it."', cls: 'purple' },
+    { text: '          searching, and cryptanalysis into a single hack \u2014', cls: 'purple' },
+    { text: '          with sorting and circuits in your pocket to make it', cls: 'purple' },
+    { text: '          all possible. You closed the loop on Season 2."', cls: 'purple' },
     { text: '', cls: '' },
   ]);
   await sleep(1600);
@@ -609,13 +610,13 @@ async function runFinale() {
     '  \u2713 [S1] CONDITIONALS & LOOPS \u2014 shut down the rogue AI',
   ];
   const skillsS2 = [
-    '  \u2605 [S2] PASSWORD SECURITY \u2014 real attacker thinking',
-    '  \u2605 [S2] BINARY MEDIA \u2014 pixels, RGB, binary at scale',
-    '  \u2605 [S2] LOOP LOGIC \u2014 routers, counters, accumulators',
-    '  \u2605 [S2] CIRCUITS \u2014 designed gates that compute',
+    '  \u2605 [S2] BINARY MEDIA \u2014 every pixel, sound, frame is numbers',
+    '  \u2605 [S2] ARRAYS \u2014 numbered slots, scaled by loops',
+    '  \u2605 [S2] FUNCTIONS \u2014 named machines, DRY, composition',
+    '  \u2605 [S2] SEARCHING \u2014 halved a million down to twenty checks',
+    '  \u2605 [S2] SORTING \u2014 bubble sort and the cost of O(n\u00b2)',
+    '  \u2605 [S2] CIRCUITS \u2014 truth tables, XOR, built a half-adder',
     '  \u2605 [S2] CRYPTANALYSIS \u2014 broke ciphers without the key',
-    '  \u2605 [S2] FUNCTIONS \u2014 read, traced, called, composed',
-    '  \u2605 [S2] JOINS & QUERIES \u2014 found truth across tables',
     '  \u2605 [S2] THE CHAIN \u2014 wove it ALL into one hack',
   ];
 
