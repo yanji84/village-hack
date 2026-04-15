@@ -6,45 +6,37 @@ import {
   completeMission,
 } from '../../engine.js';
 
-import { caesarEncrypt } from '../helpers.js';
-
 export const mission = {
   id: 12,
   num: 'S2-05',
-  title: 'CRYPTANALYSIS',
-  name: 'Cryptanalysis',
-  desc: 'Crack ciphers WITHOUT the key using brute force and frequency analysis \u2014 the real technique that broke Enigma.',
-  skill: 'SKILL: Brute Force + Frequency Analysis',
+  title: 'SORTING',
+  name: 'Sorting',
+  desc: 'Meet bubble sort — your first real sorting algorithm. Trace it by hand and feel how the cost EXPLODES as the list grows.',
+  skill: 'SKILL: Bubble Sort + Algorithmic Complexity',
   hints: [
-    'Phase 1 (brute force): scan each of the 26 lines until one stops being gibberish. Only one will be a real English word.',
-    'Phase 2 (frequency): count the letters in the cipher. The most common one is almost certainly an E in disguise. Shift = (cipher-letter index) - (E index), wrapped mod 26.',
-    'Phase 3 (decrypt): once you know the shift, walk each cipher letter BACKWARD by that many positions. Wrap Z \u2192 A if you fall off the end.',
+    'Describe any reasonable strategy in a few words — "compare and swap", "find smallest first", anything that sorts works.',
+    'For a bubble sort pass: compare each neighbor pair left-to-right, swap if out of order. The biggest number ends up at the far right.',
+    'For the 200-item question: doubling input QUADRUPLES work. 5,000 × 4 = 20,000.',
   ],
   run: async function() {
     state.missionState = { phase: 0, hintIdx: 0 };
 
     await typeLines([
-      { text: '[CIPHER FILES INTERCEPTED] Encrypted. Key missing.', cls: 'system' },
-      { text: '[scanning] \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  100%', cls: 'system' },
-      { text: '[status] NO KEY. NO SENDER. JUST CIPHERTEXT.', cls: 'system' },
+      { text: '[AI CORE — BACKDOOR LAYER 5 / SORT VAULT]', cls: 'system' },
+      { text: '[loading] ███████░░░░░░░░░░░░░  35%', cls: 'system' },
+      { text: '[loading] ███████████████░░░░░  78%', cls: 'system' },
+      { text: '[loading] ████████████████████  100%', cls: 'system' },
+      { text: '[VAULT OPEN] Scrambled data detected.', cls: 'system' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "In Season 1, you decoded messages when you KNEW the', cls: 'purple' },
-      { text: '          shift. That was the easy version. This time we have', cls: 'purple' },
-      { text: '          NOTHING \u2014 just a wall of scrambled letters."', cls: 'purple' },
+      { text: 'AI CORE: "You just learned binary search. Remember the one', cls: 'purple' },
+      { text: '          rule it MUST have to work?"', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Breaking codes WITHOUT the key has a name.', cls: 'purple' },
-      { text: '          CRYPTANALYSIS. In 1940, a mathematician named Alan', cls: 'purple' },
-      { text: '          Turing sat in a hut in England doing exactly what', cls: 'purple' },
-      { text: '          you\'re about to do. His target: the Nazi Enigma', cls: 'purple' },
-      { text: '          machine. His tools: patterns in language."', cls: 'purple' },
+      { text: 'AI CORE: "The list has to be SORTED. Without that, half-and-', cls: 'purple' },
+      { text: '          half guessing is nonsense."', cls: 'purple' },
       { text: '', cls: '' },
-      { text: 'AI CORE: "Historians say his work shortened World War II by', cls: 'purple' },
-      { text: '          two years and saved millions of lives. You are', cls: 'purple' },
-      { text: '          about to learn the same technique."', cls: 'purple' },
-      { text: '', cls: '' },
-      { text: 'AI CORE: "Three phases. Brute force. Frequency analysis.', cls: 'purple' },
-      { text: '          Then you apply the shift and read the message', cls: 'purple' },
-      { text: '          yourself. Ready?"', cls: 'purple' },
+      { text: 'AI CORE: "So here\'s the question that built half of computer', cls: 'purple' },
+      { text: '          science: how does a computer actually sort? It', cls: 'purple' },
+      { text: '          can\'t glance at the list and \'just see\' the order."', cls: 'purple' },
       { text: '', cls: '' },
     ]);
 
@@ -54,288 +46,289 @@ export const mission = {
 
 function runS2M5Phase() {
   const s = state.missionState;
-  setPhaseProgress(s.phase + 1, 3);
+  setPhaseProgress(s.phase + 1, 4);
 
   if (s.phase === 0) {
-    // ────────────────────────────────────────────
-    // PHASE 1 — BRUTE FORCE
-    // ────────────────────────────────────────────
-    const plain = 'ATTACK';
-    const shift = 11;
-    const encrypted = caesarEncrypt(plain, shift);
-
-    addLine('\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557', 'highlight');
-    addLine('\u2551  \u25b6 PHASE 1 of 3 \u2014 BRUTE FORCE     \u2551', 'highlight');
-    addLine('\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d', 'highlight');
+    // Phase 1: Why sorting matters — free-form strategy
+    addLine('╔══════════════════════════════════════════╗', 'highlight');
+    addLine('║   ▶ PHASE 1 of 4 — WHY SORTING MATTERS   ║', 'highlight');
+    addLine('╚══════════════════════════════════════════╝', 'highlight');
     addLine('', '');
-    addLine('AI CORE: "Simplest attack in the book: try EVERY possible', 'purple');
-    addLine('          key. Caesar has only 26 shifts \u2014 one for each', 'purple');
-    addLine('          letter. A computer scans all 26 in a blink."', 'purple');
+    addLine('AI CORE: "Here\'s 5 scrambled numbers. Pretend you\'re', 'purple');
+    addLine('          explaining to a friend — in your own words — how', 'purple');
+    addLine('          YOU would put them in order, smallest to biggest."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "This is BRUTE FORCE. No cleverness, just volume.', 'purple');
-    addLine('          It works when the key space is tiny."', 'purple');
+    addPre('   ┌─────┬─────┬─────┬─────┬─────┐\n   │  7  │  2  │  9  │  4  │  1  │\n   └─────┴─────┴─────┴─────┴─────┘');
     addLine('', '');
-    addLine(`Intercepted cipher: ${encrypted}`, 'info');
+    addLine('AI CORE: "Just a few words. \'compare and swap\', \'find the', 'purple');
+    addLine('          smallest first\', \'insert one at a time\' — any real', 'purple');
+    addLine('          strategy counts. Give me something."', 'purple');
     addLine('', '');
-    addLine('AI CORE: "Below are all 26 possible decryptions \u2014 one per', 'purple');
-    addLine('          shift. Exactly ONE will be a real English word.', 'purple');
-    addLine('          Your eyes are the detector. Find it."', 'purple');
-    addLine('', '');
-
-    let pre = '';
-    for (let sh = 0; sh < 26; sh++) {
-      const decoded = encrypted.split('').map(c => {
-        if (c === ' ') return ' ';
-        const code = c.charCodeAt(0) - 65;
-        return String.fromCharCode(((code - sh + 26) % 26) + 65);
-      }).join('');
-      pre += `  shift=${sh.toString().padStart(2)}: ${decoded}\n`;
-    }
-    addPre(pre);
-
-    addLine('', '');
-    addLine('Only ONE line is a real English word. Type the decoded message:', 'warning');
-
-    s.bruteStep = 0;
+    addLine('Describe your sorting strategy:', 'warning');
 
     setCurrentInputHandler((input) => {
-      if (s.bruteStep === 0) {
-        if (input.toUpperCase().trim() === plain) {
+      const cleaned = input.trim().toLowerCase();
+      if (cleaned.length < 4) {
+        sound.denied();
+        addLine('[TOO SHORT] Give me a real sentence — what would you DO with the numbers? "compare them", "pick smallest", anything real.', 'error');
+        return;
+      }
+
+      sound.success();
+      addLine('', '');
+      addLine(`[STRATEGY LOGGED] "${input.trim()}"`, 'success');
+      addLine('', '');
+      addLine('AI CORE: "That\'s a real strategy. And here\'s the wild part:', 'purple');
+      addLine('          there are DOZENS of ways to sort. Bubble sort,', 'purple');
+      addLine('          insertion sort, merge sort, quicksort, heap sort,', 'purple');
+      addLine('          radix sort — computer scientists have been', 'purple');
+      addLine('          inventing them for 70 years."', 'purple');
+      addLine('', '');
+      addLine('AI CORE: "Each one trades speed, memory, and simplicity', 'purple');
+      addLine('          differently. Today we learn the SIMPLEST one —', 'purple');
+      addLine('          the one you could teach a 5-year-old. It has a', 'purple');
+      addLine('          cute name: BUBBLE SORT."', 'purple');
+      addLine('', '');
+      addLine('[PHASE 1 COMPLETE — advancing...]', 'system');
+      s.phase = 1;
+      setTimeout(runS2M5Phase, 1800);
+    });
+
+  } else if (s.phase === 1) {
+    // Phase 2: One pass of bubble sort
+    addLine('╔════════════════════════════════════════════╗', 'highlight');
+    addLine('║  ▶ PHASE 2 of 4 — BUBBLE SORT: ONE PASS    ║', 'highlight');
+    addLine('╚════════════════════════════════════════════╝', 'highlight');
+    addLine('', '');
+    addLine('AI CORE: "The rule is simple: walk left to right. Look at', 'purple');
+    addLine('          each pair of neighbors. If they\'re out of order,', 'purple');
+    addLine('          swap them. That\'s it. The whole algorithm."', 'purple');
+    addLine('', '');
+    addLine('Starting list:', 'info');
+    addPre('   ┌─────┬─────┬─────┬─────┬─────┐\n   │  5  │  3  │  8  │  1  │  4  │\n   └─────┴─────┴─────┴─────┴─────┘');
+    addLine('', '');
+    addLine('AI CORE: "Watch one full pass:"', 'purple');
+    addLine('', '');
+    addPre('   Step 1:  [5, 3] → 5 > 3 → SWAP → [3, 5, 8, 1, 4]\n   Step 2:  [5, 8] → 5 < 8 → ok   → [3, 5, 8, 1, 4]\n   Step 3:  [8, 1] → 8 > 1 → SWAP → [3, 5, 1, 8, 4]\n   Step 4:  [8, 4] → 8 > 4 → SWAP → [3, 5, 1, 4, 8]');
+    addLine('', '');
+    addLine('AI CORE: "After that one pass, stare at the LAST element.', 'purple');
+    addLine('          What can you guarantee about it?"', 'purple');
+    addLine('', '');
+    addPre('   A) It\'s the smallest number\n   B) It\'s the biggest number\n   C) Nothing is guaranteed');
+    addLine('', '');
+    addLine('Type A, B, or C:', 'warning');
+
+    setCurrentInputHandler((input) => {
+      const answer = input.trim().toUpperCase();
+      if (answer === 'B') {
+        sound.success();
+        addLine('', '');
+        addLine('[CORRECT] The last element is guaranteed to be the BIGGEST.', 'success');
+        addLine('', '');
+        addLine('AI CORE: "Exactly. That\'s WHY it\'s called bubble sort.', 'purple');
+        addLine('          Each pass, the biggest remaining number', 'purple');
+        addLine('          \'bubbles up\' to the end — like a bubble rising', 'purple');
+        addLine('          through water. The 8 passed every smaller', 'purple');
+        addLine('          neighbor it met."', 'purple');
+        addLine('', '');
+        addLine('AI CORE: "Once it\'s at the end, it STAYS. Next pass only', 'purple');
+        addLine('          has to worry about the remaining unsorted part."', 'purple');
+        addLine('', '');
+        addLine('[PHASE 2 COMPLETE — advancing...]', 'system');
+        s.phase = 2;
+        setTimeout(runS2M5Phase, 1800);
+      } else if (answer === 'A') {
+        sound.denied();
+        addLine('[THINK AGAIN] Big numbers WIN every comparison going right — they keep getting swapped forward. So where does the biggest end up?', 'error');
+      } else if (answer === 'C') {
+        sound.denied();
+        addLine('[NOT QUITE] Something IS guaranteed. Every time a big number met a smaller neighbor, it won and moved right. It had to land somewhere specific...', 'error');
+      } else {
+        sound.denied();
+        addLine('[TYPE A, B, or C] Pick one.', 'error');
+      }
+    });
+
+  } else if (s.phase === 2) {
+    // Phase 3: Full sort — trace each pass
+    addLine('╔════════════════════════════════════════════╗', 'highlight');
+    addLine('║    ▶ PHASE 3 of 4 — TRACE THE FULL SORT    ║', 'highlight');
+    addLine('╚════════════════════════════════════════════╝', 'highlight');
+    addLine('', '');
+    addLine('AI CORE: "One pass buries the biggest. But the rest is still', 'purple');
+    addLine('          scrambled. So you run another pass. And another.', 'purple');
+    addLine('          Until nothing swaps."', 'purple');
+    addLine('', '');
+    addLine('AI CORE: "Your turn. Trace this one by hand. Starting list:"', 'purple');
+    addLine('', '');
+    addPre('   ┌─────┬─────┬─────┬─────┬─────┐\n   │  4  │  2  │  7  │  1  │  3  │\n   └─────┴─────┴─────┴─────┴─────┘');
+    addLine('', '');
+    addLine('AI CORE: "Give me the array AFTER pass 1. Type it as 5', 'purple');
+    addLine('          numbers separated by spaces or commas. No brackets', 'purple');
+    addLine('          needed — just the numbers."', 'purple');
+    addLine('', '');
+    addLine('Remember: one pass = walk left to right, swap any pair where left > right.', 'info');
+    addLine('', '');
+    addLine('Array after pass 1?', 'warning');
+
+    s.passStep = 0;
+
+    setCurrentInputHandler((input) => {
+      const nums = (input.match(/\d+/g) || []).map(Number);
+      const check = (expected) => JSON.stringify(nums) === JSON.stringify(expected);
+
+      if (s.passStep === 0) {
+        if (check([2, 4, 1, 3, 7])) {
+          sound.success();
+          addLine('[PASS 1 CORRECT] [2, 4, 1, 3, 7] — the 7 bubbled to the end.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Perfect. Now run pass 2 on that. What do you', 'purple');
+          addLine('          get?"', 'purple');
+          addLine('', '');
+          addLine('Array after pass 2?', 'warning');
+          s.passStep = 1;
+        } else {
+          sound.denied();
+          addLine('[NOT QUITE] Walk it slowly on [4,2,7,1,3]:', 'error');
+          addLine('  (4,2) → swap → [2,4,7,1,3]', 'error');
+          addLine('  (4,7) → ok   → [2,4,7,1,3]', 'error');
+          addLine('  (7,1) → swap → [2,4,1,7,3]', 'error');
+          addLine('  (7,3) → swap → [2,4,1,3,7]', 'error');
+          addLine('Try typing that result.', 'error');
+        }
+      } else if (s.passStep === 1) {
+        if (check([2, 1, 3, 4, 7])) {
+          sound.success();
+          addLine('[PASS 2 CORRECT] [2, 1, 3, 4, 7] — the 4 bubbled up behind the 7.', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Two sorted at the end. Pass 3 — go."', 'purple');
+          addLine('', '');
+          addLine('Array after pass 3?', 'warning');
+          s.passStep = 2;
+        } else {
+          sound.denied();
+          addLine('[CHECK AGAIN] Start from [2,4,1,3,7]. Pairs: (2,4)ok, (4,1)swap, (4,3)swap, (4,7)ok. Walk them one at a time.', 'error');
+        }
+      } else if (s.passStep === 2) {
+        if (check([1, 2, 3, 4, 7])) {
+          sound.success();
+          addLine('[PASS 3 CORRECT] [1, 2, 3, 4, 7] — fully sorted!', 'success');
+          addLine('', '');
+          addLine('AI CORE: "Three passes. The 7 settled in pass 1, the 4', 'purple');
+          addLine('          in pass 2, the rest fell into place in pass 3.', 'purple');
+          addLine('          Each pass does about n comparisons, and you', 'purple');
+          addLine('          need about n passes."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "n passes × n comparisons each = n × n. Hmm.', 'purple');
+          addLine('          That number is going to bite us in a second."', 'purple');
+          addLine('', '');
+          addLine('[PHASE 3 COMPLETE — advancing...]', 'system');
+          s.phase = 3;
+          setTimeout(runS2M5Phase, 1800);
+        } else {
+          sound.denied();
+          addLine('[ONE MORE PASS] From [2,1,3,4,7]: only (2,1) is out of order. Swap them, the rest stay.', 'error');
+        }
+      }
+    });
+
+  } else if (s.phase === 3) {
+    // Phase 4: The cost — quadratic scaling
+    addLine('╔══════════════════════════════════════════╗', 'highlight');
+    addLine('║     ▶ PHASE 4 of 4 — THE COST OF IT      ║', 'highlight');
+    addLine('╚══════════════════════════════════════════╝', 'highlight');
+    addLine('', '');
+    addLine('AI CORE: "Let\'s count the damage. Here\'s how many comparisons', 'purple');
+    addLine('          bubble sort does as the list grows:"', 'purple');
+    addLine('', '');
+    addPre('   ┌──────────┬──────────────────┐\n   │  ITEMS   │   COMPARISONS    │\n   ├──────────┼──────────────────┤\n   │     5    │        ~10       │\n   │    10    │        ~45       │\n   │   100    │      ~4,950      │\n   │   200    │        ???       │\n   └──────────┴──────────────────┘');
+    addLine('', '');
+    addLine('AI CORE: "For 100 items, bubble sort needs about 5,000', 'purple');
+    addLine('          comparisons. Now — if you DOUBLE the list to 200', 'purple');
+    addLine('          items, roughly how many comparisons?"', 'purple');
+    addLine('', '');
+    addPre('   A)   ~10,000   (doubled — twice the work)\n   B)   ~20,000   (quadrupled — four times the work)\n   C)  ~500,000   (exploded)');
+    addLine('', '');
+    addLine('Type A, B, or C:', 'warning');
+
+    s.costStep = 0;
+
+    setCurrentInputHandler((input) => {
+      const answer = input.trim().toUpperCase();
+
+      if (s.costStep === 0) {
+        if (answer === 'B') {
           sound.success();
           addLine('', '');
-          addLine(`[CRACKED] "${plain}" \u2014 shift was ${shift}!`, 'success');
+          addLine('[CORRECT] ~20,000 — the work QUADRUPLED, not doubled.', 'success');
           addLine('', '');
-          addLine('AI CORE: "Exactly. Your brain filtered 25 lines of', 'purple');
-          addLine('          gibberish and locked onto the one that made', 'purple');
-          addLine('          sense. Language is the detector."', 'purple');
+          addLine('AI CORE: "Here\'s why: bubble sort does roughly n × n work.', 'purple');
+          addLine('          Double n, and n × n becomes (2n) × (2n) = 4 × n².', 'purple');
+          addLine('          Four times the comparisons. Every. Single. Time.', 'purple');
+          addLine('          you double the list."', 'purple');
           addLine('', '');
-          addLine('AI CORE: "But now the important question. Imagine a', 'purple');
-          addLine('          cipher with ONE MILLION possible keys instead', 'purple');
-          addLine('          of 26. Could you still brute force it by', 'purple');
-          addLine('          reading lines with your eyes?"', 'purple');
+          addPre('      10 items → ~45\n     100 items → ~5,000     (×10 input = ×100 work)\n   1,000 items → ~500,000\n  10,000 items → ~50,000,000');
+          addLine('', '');
+          addLine('AI CORE: "This is called QUADRATIC time. Computer', 'purple');
+          addLine('          scientists write it O(n²). The work grows like', 'purple');
+          addLine('          the SQUARE of the input."', 'purple');
+          addLine('', '');
+          addLine('AI CORE: "One last question. You have a playlist of', 'purple');
+          addLine('          10,000 songs and want to sort them by title.', 'purple');
+          addLine('          Bubble sort needs ~50 MILLION comparisons. Do', 'purple');
+          addLine('          you think Spotify uses bubble sort?"', 'purple');
           addLine('', '');
           addLine('Type YES or NO:', 'warning');
-          s.bruteStep = 1;
-        } else if (/^[A-Z\s]+$/i.test(input.trim())) {
+          s.costStep = 1;
+        } else if (answer === 'A') {
           sound.denied();
-          addLine('[NOT IT] That word isn\'t in the list above. Scan line-by-line \u2014 most are gibberish. Only ONE reads like real English.', 'error');
+          addLine('[THINK AGAIN] Bubble sort is n × n work. If n doubles, n × n becomes (2n)(2n) = 4 × n². Not 2×. Try again.', 'error');
+        } else if (answer === 'C') {
+          sound.denied();
+          addLine('[TOO FAR] Going from 100 to 200 is doubling — not multiplying by 100. The work squares with the DOUBLING factor: 2² = 4×. So 5,000 × 4 = ?', 'error');
         } else {
           sound.denied();
-          addLine('[NEED LETTERS] Type the decoded word itself (letters only, no numbers).', 'error');
+          addLine('[TYPE A, B, or C] Pick one.', 'error');
         }
-      } else if (s.bruteStep === 1) {
-        const a = input.trim().toUpperCase();
-        if (a === 'NO' || a === 'N') {
+      } else if (s.costStep === 1) {
+        if (answer === 'NO') {
           sound.success();
           addLine('', '');
-          addLine('[EXACTLY] At a million lines per second you\'d still be reading for 11 days straight.', 'success');
+          addLine('[RIGHT] No — 50 million comparisons for a playlist would be painfully slow.', 'success');
           addLine('', '');
-          addLine('AI CORE: "That\'s the real insight. Brute force only', 'purple');
-          addLine('          works when the key space is SMALL. Modern', 'purple');
-          addLine('          ciphers have more keys than there are atoms', 'purple');
-          addLine('          in the observable universe. You\'d never', 'purple');
-          addLine('          finish \u2014 not in a trillion lifetimes."', 'purple');
+          addLine('AI CORE: "Real systems use smarter sorts. Merge sort and', 'purple');
+          addLine('          quicksort run in about n × log(n) time — for', 'purple');
+          addLine('          10,000 items, that\'s closer to 130,000', 'purple');
+          addLine('          comparisons. Not 50 million. About 400× faster."', 'purple');
           addLine('', '');
-          addLine('AI CORE: "So when brute force fails, we need to be', 'purple');
-          addLine('          CLEVER. We need to use patterns in the', 'purple');
-          addLine('          language itself. That\'s phase 2."', 'purple');
+          addLine('AI CORE: "But here\'s the secret: those faster sorts are', 'purple');
+          addLine('          built on the SAME idea you just used — compare,', 'purple');
+          addLine('          swap, repeat. They\'re just cleverer about which', 'purple');
+          addLine('          pairs to compare. Bubble sort is the foundation."', 'purple');
           addLine('', '');
-          addLine('>>> PHASE 1 COMPLETE <<<', 'success big');
-          s.phase = 1;
-          addLine('');
-          setTimeout(runS2M5Phase, 1500);
-        } else if (a === 'YES' || a === 'Y') {
+          addLine('>>> SORT VAULT CLEARED <<<', 'success big');
+          addLine('', '');
+          addLine('╔══════════════════════════════════════╗', 'system');
+          addLine('║   [BUBBLE SORT — UNDERSTOOD]         ║', 'system');
+          addLine('║   [QUADRATIC COST — UNDERSTOOD]      ║', 'system');
+          addLine('║   [BACKDOOR LAYER 5 — SEALED]        ║', 'system');
+          addLine('╚══════════════════════════════════════╝', 'system');
+          addLine('', '');
+          addLine('AI CORE: "You traced a real algorithm by hand. You felt', 'purple');
+          addLine('          how doubling the input quadruples the work.', 'purple');
+          addLine('          That INTUITION is what separates a programmer', 'purple');
+          addLine('          who writes code from one who knows why it\'s', 'purple');
+          addLine('          slow. Next layer, we\'ll see what happens when', 'purple');
+          addLine('          smart people refuse to accept O(n²)."', 'purple');
+          setCurrentInputHandler(null);
+          setTimeout(() => completeMission(12), 1500);
+        } else if (answer === 'YES') {
           sound.denied();
-          addLine('[THINK AGAIN] Sure, a computer can generate a million decryptions. But YOU would still have to read each one to pick out the English. How long would reading a million lines take?', 'error');
+          addLine('[THINK] 50 million comparisons to sort 10,000 songs? Your playlist would take seconds to load. Real engineers wouldn\'t tolerate that.', 'error');
         } else {
           sound.denied();
-          addLine('[TYPE YES OR NO] Could you personally read a million lines and spot the English one?', 'error');
+          addLine('[TYPE YES or NO] Would Spotify use bubble sort on 10,000 songs?', 'error');
         }
-      }
-    });
-  } else if (s.phase === 1) {
-    // ────────────────────────────────────────────
-    // PHASE 2 — FREQUENCY ANALYSIS
-    // ────────────────────────────────────────────
-    addLine('\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557', 'highlight');
-    addLine('\u2551 \u25b6 PHASE 2 of 3 \u2014 FREQUENCY ANALYSIS \u2551', 'highlight');
-    addLine('\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d', 'highlight');
-    addLine('', '');
-    addLine('AI CORE: "Here\'s the secret that broke codes for a thousand', 'purple');
-    addLine('          years before computers. English letters are NOT', 'purple');
-    addLine('          evenly distributed. E shows up about 12% of the', 'purple');
-    addLine('          time. T is second. Then A, O, I, N. Always."', 'purple');
-    addLine('', '');
-    addLine('English letter frequency (from millions of words of text):', 'info');
-    addPre('  E \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 12.7%\n  T \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588    9.1%\n  A \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      8.2%\n  O \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      7.5%\n  I \u2588\u2588\u2588\u2588\u2588\u2588\u2588       7.0%\n  N \u2588\u2588\u2588\u2588\u2588\u2588\u2588       6.7%');
-    addLine('', '');
-    addLine('AI CORE: "A Caesar shift just renames the letters \u2014 it', 'purple');
-    addLine('          doesn\'t change how often each one appears. So the', 'purple');
-    addLine('          most common letter in the CIPHER is almost', 'purple');
-    addLine('          certainly E wearing a disguise."', 'purple');
-    addLine('', '');
-
-    // Longer ciphertext, shift = 5
-    const plain2 = 'THE SECRET MEETING IS AT THE OLD TREE AT MIDNIGHT BRING THE KEY';
-    const shift2 = 5;
-    const enc2 = caesarEncrypt(plain2, shift2);
-    addLine('Intercepted cipher:', 'info');
-    addPre(`  ${enc2}`);
-    addLine('', '');
-
-    // Count letters
-    const counts = {};
-    for (const c of enc2) {
-      if (c === ' ') continue;
-      counts[c] = (counts[c] || 0) + 1;
-    }
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    const maxCount = sorted[0][1];
-
-    addLine('Letter frequencies in the cipher (bar chart):', 'info');
-    // Full bar chart, sorted by frequency
-    const barLines = sorted.map(([l, c]) => {
-      const barWidth = Math.round((c / maxCount) * 20);
-      const bar = '\u2588'.repeat(barWidth) + '\u2591'.repeat(20 - barWidth);
-      return `  ${l}  ${bar}  (${c})`;
-    });
-    addPre(barLines.join('\n'));
-    addLine('', '');
-
-    const mostCommon = sorted[0][0];
-    const expectedShift = (mostCommon.charCodeAt(0) - 'E'.charCodeAt(0) + 26) % 26;
-
-    addLine('AI CORE: "Look at that bar chart. One letter towers over', 'purple');
-    addLine('          the others. That\'s our disguised E."', 'purple');
-    addLine('', '');
-    addLine(`AI CORE: "The most common letter in the cipher is ${mostCommon}. In`, 'purple');
-    addLine(`          English, the most common letter is E. So ${mostCommon} is`, 'purple');
-    addLine('          probably E in disguise."', 'purple');
-    addLine('', '');
-    addLine(`AI CORE: "Now the detective question: what shift turns E into ${mostCommon}?`, 'purple');
-    addLine(`          Count forward: E \u2192 F \u2192 G \u2192 ... \u2192 ${mostCommon}. How many steps?"`, 'purple');
-    addLine('', '');
-    addPre('  A=0  B=1  C=2  D=3  E=4  F=5  G=6\n  H=7  I=8  J=9  K=10 L=11 M=12 N=13\n  O=14 P=15 Q=16 R=17 S=18 T=19 U=20\n  V=21 W=22 X=23 Y=24 Z=25\n\n  shift = (cipher_letter_index) - (E_index)\n        = (cipher_letter_index) - 4   (wrap mod 26)');
-    addLine('', '');
-    addLine('What is the shift? (number from 0 to 25)', 'warning');
-
-    setCurrentInputHandler((input) => {
-      const n = parseInt(input.trim());
-      if (Number.isNaN(n)) {
-        sound.denied();
-        addLine('[NEED A NUMBER] Type a single number between 0 and 25.', 'error');
-        return;
-      }
-      if (n === expectedShift) {
-        sound.success();
-        addLine('', '');
-        addLine(`[CORRECT] Shift = ${n}. E was hiding as ${mostCommon} all along.`, 'success');
-        addLine('', '');
-        addLine('AI CORE: "That\'s how Turing\'s team at Bletchley Park', 'purple');
-        addLine('          worked \u2014 patterns, guesses, then confirmation.', 'purple');
-        addLine('          You just did the same thing."', 'purple');
-        addLine('', '');
-        addLine('>>> PHASE 2 COMPLETE <<<', 'success big');
-        // Stash shift and cipher for phase 3
-        s.phase2Shift = expectedShift;
-        s.phase2Cipher = enc2;
-        s.phase2Plain = plain2;
-        s.phase = 2;
-        addLine('');
-        setTimeout(runS2M5Phase, 1500);
-      } else if (n < 0 || n > 25) {
-        sound.denied();
-        addLine('[OUT OF RANGE] A Caesar shift is always 0 to 25. Try again.', 'error');
-      } else {
-        sound.denied();
-        addLine(`[NOT QUITE] Count forward from E to ${mostCommon}. E=4, so shift = (${mostCommon}\'s index) - 4. If it goes negative, add 26.`, 'error');
-      }
-    });
-  } else if (s.phase === 2) {
-    // ────────────────────────────────────────────
-    // PHASE 3 — APPLY THE SHIFT
-    // ────────────────────────────────────────────
-    addLine('\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557', 'highlight');
-    addLine('\u2551  \u25b6 PHASE 3 of 3 \u2014 DECRYPT IT        \u2551', 'highlight');
-    addLine('\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d', 'highlight');
-    addLine('', '');
-    addLine('AI CORE: "Knowing the shift isn\'t enough. A real', 'purple');
-    addLine('          cryptanalyst has to READ the message. That means', 'purple');
-    addLine('          taking every cipher letter and walking it', 'purple');
-    addLine('          BACKWARD by the shift."', 'purple');
-    addLine('', '');
-    addLine(`Shift (from Phase 2): ${s.phase2Shift}`, 'info');
-    addLine('Intercepted cipher:', 'info');
-    addPre(`  ${s.phase2Cipher}`);
-    addLine('', '');
-    addLine('AI CORE: "Take each letter. Walk it BACK by the shift \u2014', 'purple');
-    addLine('          that many positions earlier in the alphabet. If', 'purple');
-    addLine('          you fall off the start, wrap around from Z."', 'purple');
-    addLine('', '');
-    addPre(`  Example: first cipher letter = ${s.phase2Cipher[0]}\n           walk back ${s.phase2Shift} positions\n           \u2192 that\'s the first plaintext letter\n\n  Spaces stay as spaces.`);
-    addLine('', '');
-    addLine('Type the full decoded message (letters and spaces):', 'warning');
-
-    setCurrentInputHandler((input) => {
-      const guess = input.toUpperCase().trim().replace(/\s+/g, ' ');
-      const target = s.phase2Plain;
-
-      if (guess === target) {
-        sound.success();
-        addLine('', '');
-        addLine('>>> PHASE 3 COMPLETE <<<', 'success big');
-        addLine(`Decoded: ${target}`, 'highlight');
-        addLine('', '');
-        addLine('\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557', 'system');
-        addLine('\u2551     [CIPHER BROKEN \u2014 MESSAGE READ]   \u2551', 'system');
-        addLine('\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d', 'system');
-        addLine('', '');
-        addLine('AI CORE: "You did it. Three phases \u2014 brute force,', 'purple');
-        addLine('          frequency analysis, and applying the shift to', 'purple');
-        addLine('          read the plaintext. The same three moves', 'purple');
-        addLine('          cryptanalysts have made for a thousand years."', 'purple');
-        addLine('', '');
-        addLine('AI CORE: "Alan Turing didn\'t have a computer like yours.', 'purple');
-        addLine('          He had pencil, paper, and a team in a cold hut.', 'purple');
-        addLine('          The technique you just learned is the ancestor', 'purple');
-        addLine('          of everything they did at Bletchley Park."', 'purple');
-        addLine('', '');
-        addLine('AI CORE: "Modern encryption is designed SPECIFICALLY to', 'purple');
-        addLine('          defeat these two attacks. Big key spaces to', 'purple');
-        addLine('          kill brute force. Flat output distributions to', 'purple');
-        addLine('          kill frequency analysis. Every security system', 'purple');
-        addLine('          you use is built on top of what you just did."', 'purple');
-        addLine('', '');
-        addLine('Cryptanalysis complete!', 'success big');
-        setCurrentInputHandler(null);
-        setTimeout(() => completeMission(12), 1500);
-        return;
-      }
-
-      // Partial / educational feedback
-      sound.denied();
-      if (guess.length === 0) {
-        addLine('[EMPTY] Type the decoded message. Letters and spaces only.', 'error');
-        return;
-      }
-      if (/[^A-Z\s]/.test(guess)) {
-        addLine('[LETTERS ONLY] Use A-Z and spaces. No numbers or symbols.', 'error');
-        return;
-      }
-
-      // Count correct leading characters (aligned)
-      let correctLead = 0;
-      for (let i = 0; i < Math.min(guess.length, target.length); i++) {
-        if (guess[i] === target[i]) correctLead++;
-        else break;
-      }
-
-      if (correctLead >= 3) {
-        addLine(`[CLOSE] First ${correctLead} characters match \u2014 keep going. Walk each remaining cipher letter back ${s.phase2Shift} positions.`, 'error');
-      } else if (guess.length !== target.length) {
-        addLine(`[LENGTH OFF] Your answer is ${guess.length} chars; the cipher is ${target.length}. Decode letter-for-letter, keep the spaces where they are.`, 'error');
-      } else {
-        addLine(`[TRY AGAIN] Take the first cipher letter "${s.phase2Cipher[0]}", walk back ${s.phase2Shift} positions (wrap Z\u2192A if needed). That\'s the first letter of the message.`, 'error');
       }
     });
   }
