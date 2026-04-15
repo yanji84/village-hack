@@ -179,7 +179,7 @@ function runS2M7Phase() {
     addLine('          certainly E wearing a disguise."', 'purple');
     addLine('', '');
 
-    const plain2 = 'THE SECRET MEETING IS AT THE OLD TREE AT MIDNIGHT BRING THE KEY';
+    const plain2 = 'MEET ME AT THE OLD TREE';
     const shift2 = 5;
     const enc2 = caesarEncrypt(plain2, shift2);
     addLine('Intercepted cipher:', 'info');
