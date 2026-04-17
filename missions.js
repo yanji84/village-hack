@@ -15,8 +15,9 @@ import { mission as m12 } from './missions/s2/05-cryptanalysis.js';
 import { mission as m13 } from './missions/s2/06-code-tracer.js';
 import { mission as m14 } from './missions/s2/07-join-investigation.js';
 import { mission as m15 } from './missions/s2/08-chain-hack.js';
+import { mission as m16 } from './missions/s2/09-bonus-cipher.js';
 
-const allMissions = [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15];
+const allMissions = [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16];
 
 export const MISSIONS = allMissions.map(m => ({
   id: m.id, num: m.num, title: m.title, name: m.name, desc: m.desc, skill: m.skill,

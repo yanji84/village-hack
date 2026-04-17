@@ -673,7 +673,7 @@ function renderMissionCard(grid, m) {
       <div class="mission-desc">Complete previous mission to unlock</div>
     `;
   } else {
-    const badge = m.id >= 8 ? '<span class="hard-badge">HARD</span>' : '';
+    const badge = m.num === 'BONUS' ? '<span class="hard-badge" style="background:#ffdd33;color:#000">BONUS</span>' : (m.id >= 8 ? '<span class="hard-badge">HARD</span>' : '');
     card.innerHTML = `
       <div class="mission-num">MISSION ${m.num}</div>
       <h3>${m.name}${badge}</h3>
@@ -825,9 +825,14 @@ function completeMission(id) {
     sub = `Season 1 complete, ${state.hackerName || 'HACKER'}! Share your badge with a friend, then check the AI's new transmission.`;
     opts.share = 's1';
   } else if (id === 15) {
-    title = 'LEGEND STATUS';
+    title = 'SEASON 2 COMPLETE';
     color = 'var(--purple)';
-    sub = `You defeated the backdoor and became an Elite Hacker, ${state.hackerName || 'HACKER'}. Share your legendary badge!`;
+    sub = `You defeated the backdoor, ${state.hackerName || 'HACKER'}! But the AI Core has one more challenge... a BONUS mission just unlocked.`;
+    opts.share = 's2';
+  } else if (id === 16) {
+    title = 'LEGEND STATUS';
+    color = '#ffdd33';
+    sub = `You wrote your first program from scratch, ${state.hackerName || 'HACKER'}. From decoder to creator. You are a true hacker.`;
     opts.share = 's2';
   } else if (nextId < MISSIONS.length) {
     const nextM = MISSIONS[nextId];
