@@ -3,7 +3,7 @@ import {
   state, sound, sleep, $,
   addLine, addPre, typeLines,
   setPhaseProgress, setCurrentInputHandler,
-  completeMission, escHtml,
+  completeMission,
 } from '../../engine.js';
 import { caesarEncrypt } from '../helpers.js';
 
@@ -161,14 +161,42 @@ function lockLine(lineId, code, indent = false) {
   // Brief flash animation
   el.row.style.background = 'rgba(0,255,65,0.08)';
   setTimeout(() => { el.row.style.background = 'none'; }, 800);
+  // Keep the editor visible as lines fill in
+  if (editorContainer) {
+    editorContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 function highlightLine(lineId) {
   const el = editorLineEls[lineId];
   if (!el) return;
+
+  // Inject blink animation once
+  if (!document.getElementById('editor-blink-style')) {
+    const style = document.createElement('style');
+    style.id = 'editor-blink-style';
+    style.textContent = `
+      @keyframes editor-pulse { 0%,100%{border-color:#00ffff;box-shadow:0 0 6px rgba(0,255,255,0.15);} 50%{border-color:#007a8a;box-shadow:none;} }
+      @keyframes cursor-blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    `;
+    document.head.appendChild(style);
+  }
+
   el.numEl.style.color = '#00ffff';
   el.codeEl.style.color = '#00ffff';
   el.row.style.background = 'rgba(0,255,255,0.04)';
+  el.row.style.border = '1px solid #00ffff';
+  el.row.style.borderRadius = '3px';
+  el.row.style.animation = 'editor-pulse 1.5s ease-in-out infinite';
+
+  // Add blinking cursor at the end of the placeholder
+  if (!el.codeEl.querySelector('.blink-cursor')) {
+    const cursor = document.createElement('span');
+    cursor.className = 'blink-cursor';
+    cursor.textContent = '\u2588';
+    cursor.style.cssText = 'color:#00ffff;animation:cursor-blink 0.8s step-end infinite;margin-left:2px;font-size:13px;';
+    el.codeEl.appendChild(cursor);
+  }
 }
 
 function dimLine(lineId) {
@@ -177,6 +205,10 @@ function dimLine(lineId) {
   el.numEl.style.color = '#444';
   el.codeEl.style.color = '#555';
   el.row.style.background = 'none';
+  el.row.style.border = 'none';
+  el.row.style.animation = 'none';
+  const cursor = el.codeEl.querySelector('.blink-cursor');
+  if (cursor) cursor.remove();
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -187,14 +219,16 @@ function normalize(s) {
   return s.replace(/\s+/g, '').replace(/['"]/g, '"').toLowerCase();
 }
 
+function hasPlaceholderBlanks(input) {
+  return /___/.test(input);
+}
+
 function validateVarMessage(input) {
-  const n = normalize(input);
   // Accept: message = "HELLO", message="HELLO", message = 'HELLO', etc.
   return /message\s*=\s*["']HELLO["']/i.test(input.trim());
 }
 
 function validateVarShift(input) {
-  const n = normalize(input);
   return /shift\s*=\s*3/i.test(input.trim());
 }
 
@@ -303,7 +337,11 @@ function getHint(lineId, attempt) {
   const hints = HINTS[lineId];
   if (!hints) return null;
   const idx = Math.min(attempt - 1, hints.length - 1);
-  return hints[idx];
+  let hint = hints[idx];
+  if (attempt === 1) {
+    hint += ' (Keep trying — each attempt gives you a better hint!)';
+  }
+  return hint;
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -325,6 +363,10 @@ async function introSequence() {
     { text: 'AI CORE: "In Season 2, you traced code, debugged programs,', cls: 'purple' },
     { text: '          chained algorithms together. But always — someone', cls: 'purple' },
     { text: '          else\'s code."', cls: 'purple' },
+    { text: '', cls: '' },
+    { text: 'AI CORE: "Remember KHOOR from Season 1? That was HELLO shifted', cls: 'purple' },
+    { text: '          by 3. You decoded it. Now YOU\'re going to be the', cls: 'purple' },
+    { text: '          one who CREATES it."', cls: 'purple' },
     { text: '', cls: '' },
     { text: 'AI CORE: "Now? You write your own."', cls: 'purple' },
     { text: '', cls: '' },
@@ -355,6 +397,7 @@ function startPhase1() {
   state.missionState.phase = 1;
   state.missionState.p1step = 0;
   state.missionState.attempts = {};
+  setPhaseProgress(1, 4);
 
   addLine('', '');
   addLine('╔══════════════════════════════════════════════╗', 'highlight');
@@ -377,6 +420,10 @@ function startPhase1() {
 }
 
 function handlePhase1(input) {
+  if (hasPlaceholderBlanks(input)) {
+    addLine('[HINT] Replace the ___ blanks with actual values! Look at the hints for what to type.', 'warning');
+    return;
+  }
   const s = state.missionState;
   const step = s.p1step;
 
@@ -453,6 +500,7 @@ function handlePhase1(input) {
 function startPhase2() {
   state.missionState.phase = 2;
   state.missionState.attempts = {};
+  setPhaseProgress(2, 4);
 
   addLine('', '');
   addLine('╔══════════════════════════════════════════════╗', 'highlight');
@@ -474,6 +522,10 @@ function startPhase2() {
 }
 
 function handlePhase2(input) {
+  if (hasPlaceholderBlanks(input)) {
+    addLine('[HINT] Replace the ___ blanks with actual values! Look at the hints for what to type.', 'warning');
+    return;
+  }
   const s = state.missionState;
 
   if (validateLoop(input)) {
@@ -489,6 +541,9 @@ function handlePhase2(input) {
     sound.success();
     s.attempts = {};
     setTimeout(() => startPhase3(), 1500);
+  } else if (/for\s+\w+\s+in\s+["']/.test(input.trim())) {
+    sound.denied();
+    addLine('[CLOSE!] Use the variable name "message" instead of typing the text directly.', 'error');
   } else {
     s.attempts.loop = (s.attempts.loop || 0) + 1;
     sound.denied();
@@ -505,6 +560,7 @@ function startPhase3() {
   state.missionState.phase = 3;
   state.missionState.p3step = 0;
   state.missionState.attempts = {};
+  setPhaseProgress(3, 4);
 
   addLine('', '');
   addLine('╔══════════════════════════════════════════════╗', 'highlight');
@@ -518,7 +574,7 @@ function startPhase3() {
   addLine('AI CORE: "Four lines inside the loop. This is the hardest', 'purple');
   addLine('          part — but you\'ve already done this math before."', 'purple');
   addLine('', '');
-  addPre('   REMINDER:  A=0  B=1  C=2 ... Z=25\n              ord("A") = 65, so ord(letter) - 65 gives position\n              chr(number + 65) converts back to a letter');
+  addPre('   EXAMPLE:   letter = "A", shift = 3\n              code = ord("A") - 65 = 0\n              new_code = (0 + 3) % 26 = 3\n              new_letter = chr(3 + 65) = "D"\n              So A becomes D!\n\n   REMINDER:  A=0  B=1  C=2 ... Z=25\n              ord("A") = 65, so ord(letter) - 65 gives position\n              chr(number + 65) converts back to a letter');
   addLine('', '');
 
   highlightLine('code_pos');
@@ -530,6 +586,10 @@ function startPhase3() {
 }
 
 function handlePhase3(input) {
+  if (hasPlaceholderBlanks(input)) {
+    addLine('[HINT] Replace the ___ blanks with actual values! Look at the hints for what to type.', 'warning');
+    return;
+  }
   const s = state.missionState;
   const step = s.p3step;
 
@@ -549,6 +609,9 @@ function handlePhase3(input) {
       addLine('   Line 6: Calculate the new code. Add shift, mod 26 to wrap.', 'warning');
       addLine('           Store it in new_code.', 'info');
       addLine('', '');
+    } else if (/^\s*\w+\s*=/.test(input) && !/^\s*code\s*=/i.test(input)) {
+      sound.denied();
+      addLine('[CLOSE!] Good idea, but store it in a variable called "code" (to match the rest of the program).', 'error');
     } else {
       s.attempts.code_pos = (s.attempts.code_pos || 0) + 1;
       sound.denied();
@@ -613,6 +676,9 @@ function handlePhase3(input) {
       sound.success();
       s.attempts = {};
       setTimeout(() => startPhase4(), 1500);
+    } else if (/append|\.add/i.test(input)) {
+      sound.denied();
+      addLine('[CLOSE!] For strings we use + to combine them, not append. Try: result = result + new_letter', 'error');
     } else {
       s.attempts.append = (s.attempts.append || 0) + 1;
       sound.denied();
@@ -629,6 +695,7 @@ function handlePhase3(input) {
 function startPhase4() {
   state.missionState.phase = 4;
   state.missionState.p4step = 0;
+  setPhaseProgress(4, 4);
 
   addLine('', '');
   addLine('╔══════════════════════════════════════════════╗', 'highlight');
@@ -694,6 +761,12 @@ async function executeProgram() {
   execTitle.style.cssText = 'color:#00ffff;font-size:11px;letter-spacing:2px;margin-bottom:10px;font-weight:bold;';
   execBox.appendChild(execTitle);
 
+  // Running result display
+  const resultTracker = document.createElement('div');
+  resultTracker.style.cssText = 'margin-bottom:10px;padding:6px 10px;border:1px solid #1a3a1a;border-radius:3px;background:#060a06;font-size:13px;';
+  resultTracker.innerHTML = '<span style="color:#888;">result = "</span><span style="color:#00ff41;font-weight:bold;" id="result-building"></span><span style="color:#888;">"</span>';
+  execBox.appendChild(resultTracker);
+
   terminal.appendChild(execBox);
   terminal.scrollTop = terminal.scrollHeight;
 
@@ -712,6 +785,9 @@ async function executeProgram() {
 
     await sleep(200);
     stepEl.style.opacity = '1';
+    // Update the running result display
+    const buildingEl = document.getElementById('result-building');
+    if (buildingEl) buildingEl.textContent = result;
     sound.keyClick();
     await sleep(600);
   }
@@ -759,7 +835,8 @@ async function executeProgram() {
   await sleep(1000);
 
   // Phase 2: encrypt their hacker name
-  const hackerName = (state.hackerName || 'HACKER').toUpperCase().replace(/[^A-Z]/g, '');
+  let hackerName = (state.hackerName || 'HACKER').toUpperCase().replace(/[^A-Z]/g, '');
+  if (!hackerName) hackerName = 'HACKER';
 
   addLine('AI CORE: "Now the real test. Encrypt YOUR name."', 'purple');
   addLine('', '');
